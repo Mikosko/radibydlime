@@ -12,7 +12,7 @@ This route uses the third-party `@gethopp/figma-mcp-bridge`, independently of Fi
 
 On 2026-09-10, upstream review identified **0.0.21** as the current npm/release version. It supports the basic inspection and editing needed here and is the initial preferred local option when the limitations below are acceptable. Reassess the bridge if requirements or upstream behavior change.
 
-The published npm package's manifest, tool registrations, stdio startup, and HTTP/WebSocket code were inspected alongside the upstream README, plugin manifest, and release information. This verifies the advertised interface and communication path; it is **not a completed live Figma Desktop connection test**. Follow the connection check below on each developer's machine.
+The published npm package's manifest, tool registrations, stdio startup, and HTTP/WebSocket code were inspected alongside the upstream README, plugin manifest, and release information. A subsequent read-only check through the local bridge successfully discovered the connected `Radi Bydlíme` file and read its current page, selection, and top-level frames. Canvas writes have not been tested through the local bridge. Follow the connection check below on each developer's machine.
 
 Sources: [upstream guide and tool list](https://github.com/gethopp/figma-mcp-bridge), [0.0.21 release and plugin download](https://github.com/gethopp/figma-mcp-bridge/releases/tag/v0.0.21), [npm package](https://www.npmjs.com/package/@gethopp/figma-mcp-bridge), and [Codex MCP documentation](https://developers.openai.com/codex/mcp/).
 
@@ -50,6 +50,20 @@ The check should call `list_files`, then use the returned `fileKey` with `get_me
 During a later authorized exploration, the bridge can create frames, text, and simple shapes; edit text, geometry, and paints; and set auto-layout. Verify a small reversible change in a designated scratch area before larger edits: create a labeled frame and text, read them back with `get_node`, inspect a screenshot, and remove only those test nodes. `delete_nodes` requires `confirm: true`. This documentation change does not create a Figma design or perform that write check.
 
 Continue through the existing workflow: repository constraints → exploration → human approval → repository change specification → Astro/Tailwind implementation. Preserve accepted requirements in repository text with the reviewed frame reference; update durable contracts when approved decisions change them. A successful tool call is not design approval.
+
+## Figma page convention
+
+When practical, organize the shared Figma design file around three workflow pages:
+
+- `01 — References` — visual inspiration, screenshots, photography, typography, and other references. Treat these as influences to interpret, not designs to reproduce literally.
+- `02 — Explorations` — disposable design alternatives, experiments, and work in progress. Create new visual proposals here by default.
+- `03 — Approved` — human-approved visual targets intended to inform implementation. Do not add, replace, or materially modify approved designs unless explicitly instructed.
+
+References may communicate only part of a desired direction. Where annotations or human feedback identify a specific quality—such as typography, spacing, composition, imagery, or color—prefer that stated intent over inferring that the entire reference should be followed.
+
+When implementing from Figma, use `03 — Approved` as the visual target, while repository architecture, the [UI contract](../src/styles/UI.md), content contracts, and component specifications remain authoritative for behavior and technical constraints.
+
+Durable visual decisions discovered through exploration should be incorporated into the UI contract when they become generally applicable across the site.
 
 ## Limitations and troubleshooting
 
