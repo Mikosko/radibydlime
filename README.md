@@ -21,6 +21,10 @@ Validation runs Astro/TypeScript checking, a production build, integration tests
 
 `npm run build` writes static output to `dist/`; `npm run preview` serves that output locally. No runtime adapter is configured.
 
+## Optional local Figma tooling
+
+For AI-assisted visual exploration, see the [local Figma bridge guide](docs/figma-local.md). It connects Codex to a development plugin in Figma Desktop through developer-local tooling. Follow the [UI contract](src/styles/UI.md) for visual constraints and human review. The website builds and deploys independently of this optional setup.
+
 ## GitHub Pages deployment
 
 The repository is prepared to deploy its static `dist/` output to GitHub Pages through `.github/workflows/deploy.yml`. Every push to `main` runs the full validation suite and deploys only if it succeeds. The workflow uses Astro's official Pages action and GitHub's Pages deployment action; it does not use a runtime server or a separate publishing branch.

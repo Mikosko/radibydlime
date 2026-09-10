@@ -35,7 +35,7 @@ Resolve conflicts through an explicit repository change. Update lasting principl
 **Repository UI contract → Figma exploration → human review/approval → repository change specification → Codex implementation.**
 
 1. Read this contract and relevant current code/contracts. Explore with realistic content, representative narrow/wide layouts, and interaction states needed to explain the proposal.
-2. Use Figma as the visual exploration and review surface. Agents may create or inspect designs through available Figma tooling when appropriate to the task. No particular MCP implementation or desktop app is required; integration installation is not a prerequisite.
+2. Use Figma as the visual exploration and review surface. Agents may create or inspect designs through available Figma tooling when appropriate to the task. No particular MCP implementation or desktop app is mandatory for the project. Developers may choose the [optional local bridge](../../docs/figma-local.md), which requires Figma Desktop and a development plugin on their machine.
 3. Obtain explicit human approval of the chosen proposal. Distinguish accepted decisions from alternatives and unresolved questions. A file edit, tool result, or design link alone is not implementation approval.
 4. After approval, perform repository reconnaissance and create a temporary specification following [CHANGES.md](../../changes/CHANGES.md). Record the approved file/frame reference, an identifiable reviewed revision or snapshot where useful, and approval context. Describe accepted layout, responsive behavior, relevant states, assets, accessibility expectations, observable acceptance criteria, and needed contract updates in repository text. Resolve material gaps before dependent implementation.
 5. Review and commit that specification through the existing lifecycle before Codex implementation. Translate approved intent into Astro and Tailwind, verify the browser result, and preserve lasting decisions in repository contracts. Design approval does not bypass specification review or authorize unrelated changes.
@@ -44,6 +44,6 @@ Keep the handoff understandable without live Figma access: repository text must 
 
 ## Progressive adoption
 
-Figma stays completely outside the build and production runtime and can be replaced without changing the website architecture. This workflow introduces no dependencies, runtime server, SSR, or database.
+Figma stays completely outside the build and production runtime and can be replaced without changing the website architecture. Optional bridge processes and plugins belong to developer machines; they introduce no website dependencies, runtime server, SSR, or database.
 
-Do not introduce a large design system, component library, token synchronization, Code Connect, bidirectional component sync, Figma-to-code automation, or tool-specific integration infrastructure at this stage. Additional machinery requires a later change justified by repeated concrete use cases.
+Do not introduce a large design system, component library, token synchronization, Code Connect, bidirectional component sync, Figma-to-code automation, or repository-managed integration infrastructure at this stage. Additional machinery requires a later change justified by repeated concrete use cases.
