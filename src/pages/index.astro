@@ -1,0 +1,94 @@
+---
+import { Image } from 'astro:assets';
+import { getPublishedProjects } from '../content/projects/query';
+import SiteLayout from '../layouts/site/SiteLayout.astro';
+
+const projects = await getPublishedProjects();
+---
+
+<SiteLayout
+  title="Místo, které roste s námi"
+  description="Rádi bydlíme. Rodinný prostor pro příběhy obnovy starého domu, tvoření a radosti z vlastní práce."
+>
+  <section
+    class="max-w-3xl pt-16 pb-14 sm:pt-24 sm:pb-20"
+    aria-labelledby="uvod"
+  >
+    <p class="mb-6 text-xs font-semibold tracking-widest text-accent uppercase">
+      Dům · zahrada · vlastníma rukama
+    </p>
+    <h1
+      id="uvod"
+      class="font-display text-5xl leading-tight tracking-tight sm:text-7xl"
+    >
+      Místo, které
+      <br />
+      roste s námi.
+    </h1>
+    <p class="mt-7 max-w-xl text-lg leading-relaxed text-muted sm:text-xl">
+      Starý dům, nové nápady a radost z každého malého pokroku. Prostor pro
+      příběhy oprav, tvoření a života mezi tím.
+    </p>
+    <a
+      href="#projekty"
+      class="mt-8 inline-flex items-center gap-3 py-2 text-sm font-semibold underline"
+    >
+      Nahlédnout do projektů <span aria-hidden="true">↓</span>
+    </a>
+  </section>
+
+  <section
+    id="projekty"
+    aria-labelledby="projekty-nadpis"
+    class="scroll-mt-8 border-t border-line pt-8"
+  >
+    <div class="mb-8 flex flex-wrap items-baseline justify-between gap-3">
+      <h2 id="projekty-nadpis" class="font-display text-3xl">
+        Na čem se pracuje
+      </h2>
+      <p class="text-sm text-muted">Jeden krok za druhým</p>
+    </div>
+    {projects.length === 0 ? (
+      <p class="py-8 text-muted">
+        První příběhy právě chystáme. Brzy tu najdete víc.
+      </p>
+    ) : (
+      <ul class="space-y-12">
+        {projects.map(({ data }) => (
+          <li>
+            <article class="grid items-center gap-7 md:grid-cols-2 md:gap-12">
+              <Image
+                src={data.hero.src}
+                alt={data.hero.alt}
+                class="aspect-4/3 w-full rounded-sm object-cover"
+              />
+              <div>
+                <p class="mb-4 text-xs font-semibold tracking-widest text-accent uppercase">
+                  Z našich projektů
+                </p>
+                <h3 class="font-display text-3xl leading-tight sm:text-4xl">
+                  <a href={`/projekty/${data.slug}/`} class="hover:underline">
+                    {data.title}
+                  </a>
+                </h3>
+                <p class="mt-5 text-lg leading-relaxed text-muted">
+                  {data.summary}
+                </p>
+                <p class="mt-6 text-sm text-muted">
+                  <time datetime={data.publishedAt.toISOString()}>
+                    {data.publishedAt.toLocaleDateString('cs-CZ', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                      timeZone: 'UTC',
+                    })}
+                  </time>
+                </p>
+              </div>
+            </article>
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+</SiteLayout>
