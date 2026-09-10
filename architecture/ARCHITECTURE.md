@@ -31,6 +31,8 @@ The production site is served from `https://www.radibydlime.cz/`. Astro sets tha
 
 ## Styling
 
+The [UI contract](../src/styles/UI.md) owns cross-page visual principles and the Figma exploration/review workflow.
+
 Tailwind is the primary styling approach. Establish only a small coherent foundation for typography, spacing, content widths, responsive behavior, and basic surfaces. Reuse existing design tokens and conventions; avoid a large anticipatory design system. Custom CSS is allowed when Tailwind does not express a requirement cleanly.
 
 ## Durable contracts and changes

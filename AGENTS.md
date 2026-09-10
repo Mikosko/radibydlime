@@ -3,6 +3,7 @@
 * Always read and follow [architecture/ARCHITECTURE.md](architecture/ARCHITECTURE.md).
 * Read [changes/CHANGES.md](changes/CHANGES.md) only when creating or processing a change specification.
 * Load subsystem contracts according to the task:
+  * Visual exploration, visual review, or presentation changes: [src/styles/UI.md](src/styles/UI.md).
   * Components: [src/components/COMPONENTS.md](src/components/COMPONENTS.md).
   * Semantic content blocks: [src/blocks/BLOCKS.md](src/blocks/BLOCKS.md).
   * Layouts: [src/layouts/LAYOUTS.md](src/layouts/LAYOUTS.md).
