@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   output: 'static',
+  site: 'https://www.radibydlime.cz',
   trailingSlash: 'always',
   integrations: [markdoc({ allowHTML: false })],
   vite: {

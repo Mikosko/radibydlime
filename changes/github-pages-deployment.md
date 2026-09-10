@@ -69,3 +69,9 @@ Expected affected areas during implementation:
 ## Architectural impact
 
 Adds GitHub Actions and GitHub Pages as the delivery mechanism for the existing static application. It does not replace any architectural technology or introduce runtime behavior. Update current deployment truth during implementation; the existing static-first ADR remains valid. No additional ADR or infrastructure abstraction is required for this minimal hosting setup.
+
+## Implementation status
+
+Repository implementation is complete: the official Astro-supported workflow deploys pushes from `main`, runs reproducible installation and full validation before artifact upload, preserves root paths, serializes deployments, and uses GitHub's standard Pages environment and permissions. Astro sets the confirmed `https://www.radibydlime.cz` origin directly, and `origin` points to the confirmed `Mikosko/radibydlime` GitHub repository. Durable documentation reflects the deployment contract. Ten integration tests, including the production-origin and root-path case, pass.
+
+External completion remains pending. The repository must be pushed, and an administrator must complete the Pages, DNS, HTTPS, first-deployment, and live-site verification steps documented in `README.md`. Keep this temporary specification until those acceptance criteria are verified; do not represent the deployment as live before then.

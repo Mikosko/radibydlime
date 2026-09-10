@@ -15,6 +15,12 @@ The product is a Czech-first personal/family website about estate restoration, D
 - Do not introduce a database, SSR/runtime server, CMS, authentication, commerce infrastructure, Nx, monorepo tooling, or infrastructure for hypothetical applications. A frontend framework such as React requires a demonstrated need; Astro is the default.
 - Prefer the smallest implementation meeting current requirements. Share abstractions only after multiple concrete uses establish the same underlying concept.
 
+## Delivery
+
+The repository is configured for static deployment to GitHub Pages through the official Astro-supported GitHub Actions workflow. Pushes to `main` validate, build, upload, and deploy `dist/`; failed validation prevents publication. The workflow uses GitHub's standard Pages permissions and `github-pages` environment, with serialized production runs.
+
+The production site is served from `https://www.radibydlime.cz/`. Astro sets that origin directly and leaves `base` unset. The GitHub destination is `Mikosko/radibydlime`; Pages settings, DNS, and HTTPS enablement remain owner-admin configuration until their completion is recorded in `README.md`. No runtime adapter, server, database, extra provider, committed build output, `gh-pages` branch, or repository `CNAME` file is part of delivery.
+
 ## Responsibility boundaries
 
 - Content Collections own typed domain content and references; see [CONTENT.md](../src/content/CONTENT.md).
@@ -41,4 +47,4 @@ The homepage and `/projekty/<slug>/` route query the same published Project reco
 
 Do not pre-build workshop or sale systems, galleries, before/after blocks, editors, authentication, commerce, or an extensive component library. Do not create implementation directories for hypothetical features.
 
-`npm run validate` runs TypeScript/Astro checks, the production build and Node integration tests, and Prettier validation. Build-time schema and query checks reject malformed metadata, missing local images, and duplicate Project IDs/slugs. Relationship validation remains deferred with relationship fields. No separate linter is configured. Before completing changes, run all configured validation, inspect the final diff against the contracts, and report deviations or unresolved issues.
+`npm run validate` runs TypeScript/Astro checks, the production build and Node integration tests, and Prettier validation. Build-time schema and query checks reject malformed metadata, missing local images, and duplicate Project IDs/slugs. Deployment checks also cover production-origin requirements and root-path output. Relationship validation remains deferred with relationship fields. No separate linter is configured. Before completing changes, run all configured validation, inspect the final diff against the contracts, and report deviations or unresolved issues.

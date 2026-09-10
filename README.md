@@ -19,7 +19,23 @@ npm run validate
 
 Validation runs Astro/TypeScript checking, a production build, integration tests, and Prettier checks. Tests use Node's built-in runner and temporary copies of the project for invalid-content builds; they do not alter authored content. `npm run format` applies formatting. `INIT.md` and the user-maintained `AGENTS.md` are excluded from automatic formatting to preserve their source text.
 
-`npm run build` writes static output to `dist/`; `npm run preview` serves that output locally. No hosting provider, production domain, or runtime adapter is configured.
+`npm run build` writes static output to `dist/`; `npm run preview` serves that output locally. No runtime adapter is configured.
+
+## GitHub Pages deployment
+
+The repository is prepared to deploy its static `dist/` output to GitHub Pages through `.github/workflows/deploy.yml`. Every push to `main` runs the full validation suite and deploys only if it succeeds. The workflow uses Astro's official Pages action and GitHub's Pages deployment action; it does not use a runtime server or a separate publishing branch.
+
+The GitHub destination is `git@github.com:Mikosko/radibydlime.git`, and the production origin is `https://www.radibydlime.cz`. Complete these owner/admin steps before the first production deployment:
+
+1. Push `main` to `origin`. Confirm the repository's visibility/plan supports Pages and its Actions policy permits the official actions used by the workflow.
+2. In **Settings → Pages**, select **GitHub Actions** as the publishing source. Ensure the `github-pages` environment permits automatic deployments from `main` without a required approval.
+3. Verify `radibydlime.cz` with GitHub when possible. In **Settings → Pages → Custom domain**, enter and save `www.radibydlime.cz` before changing DNS.
+4. At the existing DNS provider, create a `CNAME` for `www.radibydlime.cz` pointing directly to `mikosko.github.io`, without the repository name. To redirect the apex domain too, configure `radibydlime.cz` using GitHub's current Pages `A` records (`185.199.108.153`, `185.199.109.153`, `185.199.110.153`, and `185.199.111.153`) or a supported `ALIAS`/`ANAME` pointing to `mikosko.github.io`. Check GitHub's current documentation before applying DNS because provider interfaces and target values can change. Preserve unrelated records and avoid wildcard records.
+5. After DNS has propagated and GitHub's domain check succeeds, enable **Enforce HTTPS**. Verify that `https://radibydlime.cz` redirects to `https://www.radibydlime.cz` when the apex records are configured.
+
+Astro sets `https://www.radibydlime.cz` as its production `site` origin. It deliberately has no repository-name `base`, so routes and assets are served from the custom domain root. A repository `CNAME` file is intentionally absent because GitHub ignores it for custom Actions publishing; the Pages setting and DNS records are authoritative.
+
+After the first deployment, confirm the workflow is green and directly load `/` and `/projekty/druhy-zivot-starych-dveri/` over HTTPS, including a browser refresh. Check navigation, CSS, images, and the apex-to-`www` redirect when configured. Record the live verification here.
 
 ## Authoring and repository contracts
 

@@ -58,6 +58,25 @@ async function build(directory: string) {
   );
 }
 
+test('production site configuration uses the custom domain at the URL root', async () => {
+  await withFixture(async (directory) => {
+    await writeFile(
+      join(directory, 'src/pages/site.txt.ts'),
+      "export function GET({ site }) { return new Response(site?.href ?? ''); }\n",
+    );
+    await build(directory);
+
+    assert.equal(
+      await readFile(join(directory, 'dist/site.txt'), 'utf8'),
+      'https://www.radibydlime.cz/',
+    );
+    const home = await readFile(join(directory, 'dist/index.html'), 'utf8');
+    assert.match(home, /href="\/projekty\/druhy-zivot-starych-dveri\/"/);
+    assert.match(home, /(?:href|src)="\/_astro\//);
+    assert.doesNotMatch(home, /\/radibydlime\//);
+  });
+});
+
 test('published pages render Czech metadata, Markdoc, navigation, and local images without scripts', async () => {
   const home = await readFile(join(root, 'dist/index.html'), 'utf8');
   const project = await readFile(join(root, 'dist', projectRoute), 'utf8');
