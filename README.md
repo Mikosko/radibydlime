@@ -25,7 +25,7 @@ Validation runs Astro/TypeScript checking, a production build, integration tests
 
 The repository is prepared to deploy its static `dist/` output to GitHub Pages through `.github/workflows/deploy.yml`. Every push to `main` runs the full validation suite and deploys only if it succeeds. The workflow uses Astro's official Pages action and GitHub's Pages deployment action; it does not use a runtime server or a separate publishing branch.
 
-The GitHub destination is `git@github.com:Mikosko/radibydlime.git`, and the production origin is `https://www.radibydlime.cz`. Complete these owner/admin steps before the first production deployment:
+The GitHub destination is `git@github.com:Mikosko/radibydlime.git`, and the production origin is `https://www.radibydlime.cz`. The following owner/admin steps document how the current setup is maintained or recreated:
 
 1. Push `main` to `origin`. Confirm the repository's visibility/plan supports Pages and its Actions policy permits the official actions used by the workflow.
 2. In **Settings → Pages**, select **GitHub Actions** as the publishing source. Ensure the `github-pages` environment permits automatic deployments from `main` without a required approval.
@@ -35,7 +35,9 @@ The GitHub destination is `git@github.com:Mikosko/radibydlime.git`, and the prod
 
 Astro sets `https://www.radibydlime.cz` as its production `site` origin. It deliberately has no repository-name `base`, so routes and assets are served from the custom domain root. A repository `CNAME` file is intentionally absent because GitHub ignores it for custom Actions publishing; the Pages setting and DNS records are authoritative.
 
-After the first deployment, confirm the workflow is green and directly load `/` and `/projekty/druhy-zivot-starych-dveri/` over HTTPS, including a browser refresh. Check navigation, CSS, images, and the apex-to-`www` redirect when configured. Record the live verification here.
+The first deployment of commit `b22b75d` succeeded in [GitHub Actions](https://github.com/Mikosko/radibydlime/actions/runs/34473313766), including repository validation and both Pages jobs. GitHub Pages uses Actions publishing, `www.radibydlime.cz` is its custom domain, and the `github-pages` environment permits only `main`.
+
+The live setup was verified on 2026-09-10. FORPSI DNS points `www.radibydlime.cz` to `mikosko.github.io` and the apex to GitHub Pages. GitHub's certificate covers both hostnames and HTTPS enforcement is enabled. The HTTPS homepage and direct Project route return the deployed Czech content; navigation, CSS, and images load from the domain root; HTTP redirects to HTTPS; and the apex redirects to `https://www.radibydlime.cz/`.
 
 ## Authoring and repository contracts
 
