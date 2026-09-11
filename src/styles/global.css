@@ -1,19 +1,81 @@
 @import 'tailwindcss';
 
+/* Locally subset faces; provenance and original family names: ../assets/fonts/README.md. */
+@font-face {
+  font-family: 'Radi Display';
+  src: url('../assets/fonts/display-400.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* Match the selected display face more closely while its bytes arrive. */
+@font-face {
+  font-family: 'Radi Display Fallback';
+  src: local('Georgia');
+  font-style: normal;
+  font-weight: 400;
+  size-adjust: 88.5%;
+  ascent-override: 104.41%;
+  descent-override: 32.43%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Radi Reading';
+  src: url('../assets/fonts/body-400-600.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Radi Reading';
+  src: url('../assets/fonts/body-italic-400.woff2') format('woff2');
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Radi Annotation';
+  src: url('../assets/fonts/annotation-400.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Radi Editorial Note';
+  src: url('../assets/fonts/editorial-note-400.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
 @theme {
   --color-paper: #f8f5ed;
   --color-ink: #293c30;
   --color-muted: #596256;
   --color-line: #d8d7c9;
   --color-accent: #855034;
-  --font-sans: 'Segoe UI', system-ui, sans-serif;
-  --font-display: Georgia, 'Times New Roman', serif;
+  --font-body: 'Radi Reading', Georgia, 'Times New Roman', serif;
+  --font-display:
+    'Radi Display', 'Radi Display Fallback', Georgia, 'Times New Roman', serif;
+  --font-annotation: 'Radi Annotation', Georgia, 'Times New Roman', serif;
+  --font-editorial-note:
+    'Radi Editorial Note', Georgia, 'Times New Roman', serif;
+  --default-font-family: var(--font-body);
   --container-site: 72rem;
 }
 
 @layer base {
+  html {
+    font-synthesis: none;
+  }
+
   body {
-    @apply bg-paper font-sans text-ink antialiased;
+    @apply bg-paper font-body text-ink antialiased;
   }
 
   a {
@@ -64,6 +126,6 @@
   }
 
   .narrative blockquote {
-    @apply border-l-2 border-accent pl-6 font-display text-2xl text-ink italic;
+    @apply border-l-2 border-accent pl-6 font-body text-2xl text-ink italic;
   }
 }

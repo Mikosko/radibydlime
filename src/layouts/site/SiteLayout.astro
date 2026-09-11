@@ -1,5 +1,7 @@
 ---
 import '../../styles/global.css';
+import bodyFont from '../../assets/fonts/body-400-600.woff2?url';
+import displayFont from '../../assets/fonts/display-400.woff2?url';
 
 interface Props {
   title: string;
@@ -16,6 +18,20 @@ const isHome = Astro.url.pathname === '/';
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    <link
+      rel="preload"
+      href={bodyFont}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href={displayFont}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <title>{title} | Rádi bydlíme</title>
   </head>
   <body class="flex min-h-screen flex-col">

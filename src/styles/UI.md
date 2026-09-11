@@ -7,7 +7,7 @@ This contract defines shared visual intent and the design review workflow. Git d
 The current site provides an evolving baseline, not a finalized brand system:
 
 - **Direction:** calm, warm, editorial presentation that gives family stories, restoration work, and real content room to lead.
-- **Typography:** clear hierarchy, serif display emphasis, and legible system-font body text. Preserve Czech readability and comfortable line spacing.
+- **Typography:** Cormorant Garamond gives major headings their editorial character; Source Serif 4 provides readable body text and long-form prose. Preserve Czech readability and comfortable line spacing. Accent faces are occasional, explicit choices as defined below.
 - **Spacing/layout:** consistent rhythm and generous separation should express content grouping. Prefer simple, content-driven composition.
 - **Content widths:** use a bounded page shell and a narrower reading measure for prose; extra screen space should not produce excessively long lines.
 - **Imagery/photo treatment:** support the real subject, preserve important details when cropping, and avoid distortion. Retain meaningful captions and credits. The sample illustration does not establish a photographic style.
@@ -18,6 +18,21 @@ The current site provides an evolving baseline, not a finalized brand system:
 - **Reuse:** use established Tailwind tokens and components. Extract shared abstractions only after concrete reuse demonstrates a common need.
 
 Detailed photography art direction, further page compositions, and any motion language remain open for real examples and human review. Evolve this contract from accepted decisions; do not fill these gaps with an exhaustive palette, scale, or component inventory.
+
+## Typography roles
+
+Use the semantic roles established in Tailwind/CSS rather than choosing font families independently in components:
+
+- **Display (`font-display`): Cormorant Garamond.** Major headings, editorial titles and the existing text site name. Keep small supporting text and long passages in the body role; an actual brand-logo asset is not replaced with typography.
+- **Body (`font-body`): Source Serif 4.** Default text, long-form reading, navigation, controls, captions, ordinary dates/labels, and supporting text. Quotations and emphasis use intentional body italic/semibold styles. Preserve a comfortable reading measure and clear heading hierarchy.
+- **Annotation (`font-annotation`): Allura.** Short personal notes, handwritten annotations or signature-like accents, used sparingly. Never normal body copy, navigation, controls or long passages.
+- **Editorial note (`font-editorial-note`): Special Elite.** Occasional short stamps, dates, torn-paper notes or editorial labels in a deliberately selected context. Never a general body or heading face, and not automatically every date or label.
+
+Accents use their regular styles; do not combine them with arbitrary bold/italic treatments or introduce decorative content merely to use every face. Keep real text, semantic markup and reading order. Decoration must not carry essential meaning alone or reduce contrast, legibility or usability at zoom. Increase space or use the body role when an accent cannot be read comfortably.
+
+All selected faces have verified Czech letters and punctuation; broader language coverage is not implied. Check the exact text when extending their use. For unsupported glyphs, use the body role for the entire label or annotation rather than removing diacritics or accepting a mixture of fallback letters. Font failure must still leave readable text through sensible serif fallbacks. Review narrow/wide, zoomed, slow-loading and blocked-font rendering when changing typography.
+
+Fonts are self-hosted static assets. Keep styles and loading proportional to actual use, avoid synthetic emphasis, and load accent faces only where used. [Asset provenance](../assets/fonts/README.md) records exact subsets, styles, internal aliases and licenses; CSS owns file declarations, metric adjustments, sizes and fallback stacks. Figma may explore these roles but does not override them.
 
 ## Responsibility boundaries
 
