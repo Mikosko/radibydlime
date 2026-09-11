@@ -8,3 +8,5 @@
 - Colocate tests for meaningful local behavior. Add a local `SPEC.md` when durable behavioral or design rules warrant it; do not create either for symmetry alone.
 
 A unit with such a contract may use `src/components/workshop-card/WorkshopCard.astro`, `WorkshopCard.spec.ts`, and `SPEC.md`. This illustrates colocation only; it is not an instruction to create a workshop card.
+
+Render published media IDs through [MediaImage](media-image/SPEC.md), supplying a validated catalog from route/assembly code. It owns native image semantics and resolution; consumers own contextual presentation, captions and credits. Local authored assets continue using Astro's `Image`.

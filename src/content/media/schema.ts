@@ -79,7 +79,7 @@ export function validateCatalog(records: { source: string; data: unknown }[]) {
 
 export function resolveMedia(
   id: string,
-  catalog: Map<string, Media>,
+  catalog: ReadonlyMap<string, Media>,
   source: string,
 ) {
   const item = catalog.get(id);

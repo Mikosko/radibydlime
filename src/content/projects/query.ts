@@ -1,14 +1,12 @@
 import { getCollection } from 'astro:content';
-import { resolveMedia, validateCatalog } from '../media/schema';
+import { resolveMedia, type Media } from '../media/schema';
+import { getMediaCatalog } from '../media/query';
 
-export async function getPublishedProjects() {
+export async function getPublishedProjects(
+  catalog?: ReadonlyMap<string, Media>,
+) {
   const projects = await getCollection('projects');
-  const media = validateCatalog(
-    (await getCollection('media')).map((entry) => ({
-      source: entry.id,
-      data: entry.data,
-    })),
-  );
+  const media = catalog ?? (await getMediaCatalog());
   const ids = new Set<string>();
   const slugs = new Set<string>();
 

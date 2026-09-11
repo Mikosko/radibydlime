@@ -14,6 +14,8 @@ The public origin is `https://media.radibydlime.cz` in `schema.ts`; resolve it w
 
 The local upload command adds a record only after successful secure-transfer readback (FTPS or SFTP) and public HTTPS byte verification. Catalog file creation is exclusive and atomic; upload does not commit or deploy. A failed check does not add a record or remove a previously valid one. Git remains canonical for reviewed metadata; bytes and camera originals stay outside Git.
 
-Projects may use `hero: { mediaId }` instead of the existing local hero object. Resolve remote metadata once from this catalog and render an ordinary static image with explicit dimensions, alt text and existing caption/credit behavior. The build validates every catalog record and every Project reference, including hidden Projects and unused media. Invalid files/IDs report their source. An empty catalog is valid.
+`query.ts` exposes `getMediaCatalog()` to load and validate the complete collection in content/route assembly. Share that map with Project queries and [MediaImage](../../components/media-image/SPEC.md) instances within the assembly operation; there is no global cache or per-image collection query. The resolver accepts a read-only map and remains the public URL authority.
+
+Projects may use `hero: { mediaId }` instead of the existing local hero object. `MediaImage` resolves the ID into native image semantics; consuming routes own layout and caption/credit markup. The build validates every catalog record and every Project reference, including hidden Projects and unused media. Invalid files/IDs report their source. An empty catalog is valid.
 
 Builds require no hosting connection, originals, credentials, ExifTool or model runner. No remote image probing, build-time transformation, SSR, runtime API or processor call is allowed. Narrative image/gallery blocks and other content types remain future changes.

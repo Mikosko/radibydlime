@@ -1,70 +1,12 @@
 import assert from 'node:assert/strict';
-import { execFile } from 'node:child_process';
-import {
-  cp,
-  mkdir,
-  mkdtemp,
-  readFile,
-  rename,
-  rm,
-  stat,
-  symlink,
-  writeFile,
-} from 'node:fs/promises';
-import { tmpdir } from 'node:os';
+import { mkdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { test } from 'node:test';
-import { fileURLToPath } from 'node:url';
-import { promisify } from 'node:util';
+import { root, withFixture, build } from '../helpers/astro-build.ts';
 
-const exec = promisify(execFile);
-const root = fileURLToPath(new URL('../../', import.meta.url));
 const samplePath = 'src/content/projects/entrance-door.mdoc';
 const projectRoute = 'projekty/druhy-zivot-starych-dveri/index.html';
 const sample = await readFile(join(root, samplePath), 'utf8');
-
-async function withFixture(run: (directory: string) => Promise<void>) {
-  const directory = await mkdtemp(join(tmpdir(), 'radibydlime-build-'));
-  try {
-    for (const path of [
-      'src',
-      'astro.config.mjs',
-      'tsconfig.json',
-      'package.json',
-    ]) {
-      await cp(join(root, path), join(directory, path), { recursive: true });
-    }
-    await symlink(
-      join(root, 'node_modules'),
-      join(directory, 'node_modules'),
-      'dir',
-    );
-    const configPath = join(directory, 'astro.config.mjs');
-    await writeFile(
-      configPath,
-      (await readFile(configPath, 'utf8')).replace(
-        'defineConfig({',
-        "defineConfig({ cacheDir: './.astro/cache',",
-      ),
-    );
-    await run(directory);
-  } finally {
-    await rm(directory, { recursive: true, force: true });
-  }
-}
-
-async function build(directory: string) {
-  return exec(
-    process.execPath,
-    [join(root, 'node_modules/astro/bin/astro.mjs'), 'build'],
-    {
-      cwd: directory,
-      env: { ...process.env, ASTRO_TELEMETRY_DISABLED: '1' },
-      timeout: 60_000,
-      maxBuffer: 2 * 1024 * 1024,
-    },
-  );
-}
 
 test('production site configuration uses the custom domain at the URL root', async () => {
   await withFixture(async (directory) => {
@@ -286,6 +228,17 @@ test('media IDs resolve to static public images and catalog metadata without fet
         html.includes(`src="https://media.radibydlime.cz${mediaRecord.path}"`),
       );
       assert.match(html, /width="1600"/);
+      assert.match(html, /decoding="async"/);
+      assert.match(
+        html,
+        page === 'index.html' ? /loading="lazy"/ : /loading="eager"/,
+      );
+      assert.match(
+        html,
+        page === 'index.html'
+          ? /class="aspect-4\/3 w-full rounded-sm object-cover"/
+          : /class="max-h-144 w-full rounded-sm object-cover"/,
+      );
       assert.match(html, /height="1200"/);
       assert.match(html, /alt="Obnovené vstupní dveře\."/);
       assert.doesNotMatch(

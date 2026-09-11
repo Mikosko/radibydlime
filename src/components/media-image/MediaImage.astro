@@ -1,0 +1,66 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import {
+  mediaId as mediaIdSchema,
+  resolveMedia,
+  type Media,
+} from '../../content/media/schema';
+
+interface Props extends Pick<
+  HTMLAttributes<'img'>,
+  | 'class'
+  | 'class:list'
+  | 'style'
+  | 'id'
+  | 'aria-describedby'
+  | 'loading'
+  | 'decoding'
+  | 'fetchpriority'
+  | 'sizes'
+> {
+  mediaId: Media['id'];
+  catalog: ReadonlyMap<string, Media>;
+  decorative?: boolean;
+  [attribute: `data-${string}`]: string | number | boolean | null | undefined;
+}
+
+const {
+  mediaId,
+  catalog,
+  decorative = false,
+  class: className,
+  'class:list': classList,
+  style,
+  id,
+  'aria-describedby': describedBy,
+  loading = 'lazy',
+  decoding = 'async',
+  fetchpriority,
+  sizes,
+} = Astro.props;
+const context = `MediaImage on ${Astro.url.pathname}`;
+if (!mediaIdSchema.safeParse(mediaId).success) {
+  throw new Error(`Invalid media ID ${String(mediaId)} in ${context}`);
+}
+const media = resolveMedia(mediaId, catalog, context);
+// Forward annotations (including Astro scope markers), never source/alt/event overrides.
+const dataAttributes = Object.fromEntries(
+  Object.entries(Astro.props).filter(([key]) => /^data-[\w.-]+$/.test(key)),
+);
+---
+
+<img
+  {...dataAttributes}
+  src={media.src}
+  width={media.width}
+  height={media.height}
+  alt={decorative ? '' : media.alt}
+  {loading}
+  {decoding}
+  {fetchpriority}
+  {sizes}
+  class:list={[className, classList]}
+  {style}
+  {id}
+  aria-describedby={describedBy}
+/>

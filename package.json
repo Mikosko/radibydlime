@@ -11,7 +11,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "test": "npm run test:media && npm run build && node --experimental-strip-types --test tests/integration/*.spec.ts",
+    "test": "npm run test:media && npm run build && node --experimental-strip-types --test src/components/*/*.spec.ts tests/integration/*.spec.ts",
     "test:media": "node --experimental-strip-types --test scripts/media/*.spec.ts",
     "media:process": "node --experimental-strip-types scripts/media/cli.ts process",
     "media:upload": "node --experimental-strip-types scripts/media/cli.ts upload",

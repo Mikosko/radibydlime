@@ -1,22 +1,26 @@
 ---
 import { render } from 'astro:content';
 import { Image } from 'astro:assets';
+import MediaImage from '../../components/media-image/MediaImage.astro';
+import { getMediaCatalog } from '../../content/media/query';
 import { getPublishedProjects } from '../../content/projects/query';
 import SiteLayout from '../../layouts/site/SiteLayout.astro';
 
 export async function getStaticPaths() {
-  const projects = await getPublishedProjects();
+  const catalog = await getMediaCatalog();
+  const projects = await getPublishedProjects(catalog);
   return projects.map((project) => ({
     params: { slug: project.data.slug },
-    props: { project },
+    props: { project, catalog },
   }));
 }
 
 interface Props {
+  catalog: Awaited<ReturnType<typeof getMediaCatalog>>;
   project: Awaited<ReturnType<typeof getPublishedProjects>>[number];
 }
 
-const { project } = Astro.props;
+const { project, catalog } = Astro.props;
 const { data, hero } = project;
 const { Content } = await render(project);
 ---
@@ -52,11 +56,9 @@ const { Content } = await render(project);
     </header>
     <figure>
       {'width' in hero ? (
-        <img
-          src={hero.src}
-          width={hero.width}
-          height={hero.height}
-          alt={hero.alt}
+        <MediaImage
+          mediaId={hero.id}
+          catalog={catalog}
           loading="eager"
           class="max-h-144 w-full rounded-sm object-cover"
         />
