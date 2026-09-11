@@ -2,7 +2,7 @@
 
 ## Domain and authoring
 
-Use Astro Content Collections with typed schemas. Author structured metadata in YAML frontmatter and narrative/rich bodies in Markdoc. Keep images local and content portable; authored content must not contain executable application code.
+Use Astro Content Collections with typed schemas. Author structured metadata in YAML frontmatter and narrative/rich bodies in Markdoc. Keep content portable; small authored images may stay local, while bulk photographs use the [published media catalog](media/SPEC.md); authored content must not contain executable application code.
 
 The durable domain vocabulary is Project, JournalEntry, Workshop, SaleItem, and Page. These are domain types, not page templates. Each may combine structured metadata with a flexible narrative body. The current slice implements only Project; its concrete rules live in [projects/SPEC.md](projects/SPEC.md). Implement collections and schemas only for actual content. Do not create empty collections for the rest.
 
@@ -21,7 +21,7 @@ Model only metadata currently useful. For a routed entry, identity, slug, and ti
 
 Where lifecycle is relevant, use `draft`, `published`, and `archived`. Draft content must not appear in public output or public queries. Define archived route/listing behavior in the concrete content contract when archiving is first needed; do not infer it from a status name alone. Apply visibility rules consistently to routes and reused content queries.
 
-Image metadata includes alt text, with optional caption and credit where useful. Informative images need meaningful alt text; explicitly decorative images may use empty alt text. Validate local image references during content processing/build where practical.
+Image metadata includes alt text, with optional caption and credit where useful. Informative images need meaningful alt text; explicitly decorative images may use empty alt text. Validate local image references and published media IDs during content processing/build. Published photographs are prepared and approved with optional local tooling; see [the media guide](../../docs/media.md). The catalog owns their public metadata; originals, work files and credentials stay outside Git.
 
 ## Reuse and validation
 

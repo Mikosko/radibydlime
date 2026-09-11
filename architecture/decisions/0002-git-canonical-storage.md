@@ -1,6 +1,6 @@
 # 0002 — Git as canonical storage
 
-Status: Accepted
+Status: Accepted for Git-canonical code, content and contracts. The local-image-only portion is superseded by [0005](0005-external-media-storage.md).
 
 Decision: Keep canonical content, local images, code, and repository contracts in Git.
 

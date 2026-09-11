@@ -39,6 +39,14 @@ async function withFixture(run: (directory: string) => Promise<void>) {
       join(directory, 'node_modules'),
       'dir',
     );
+    const configPath = join(directory, 'astro.config.mjs');
+    await writeFile(
+      configPath,
+      (await readFile(configPath, 'utf8')).replace(
+        'defineConfig({',
+        "defineConfig({ cacheDir: './.astro/cache',",
+      ),
+    );
     await run(directory);
   } finally {
     await rm(directory, { recursive: true, force: true });
@@ -230,3 +238,125 @@ for (const invalid of invalidCases) {
     });
   });
 }
+
+const mediaId = 'media-0f87f1a9-7c74-4fa9-a33f-5085ef224ce0';
+const mediaRecord = {
+  id: mediaId,
+  path: `/images/${mediaId}/dvere.webp`,
+  mimeType: 'image/webp',
+  width: 1600,
+  height: 1200,
+  alt: 'Obnovené vstupní dveře.',
+  caption: 'Katalogový popisek.',
+  credit: 'Rodinný archiv',
+  sha256: 'a'.repeat(64),
+};
+const withMediaHero = sample.replace(
+  /hero:\n[\s\S]*?\n---/,
+  `hero:\n  mediaId: ${mediaId}\n---`,
+);
+
+test('removing the last media record invalidates references even with an existing content cache', async () => {
+  await withFixture(async (directory) => {
+    const path = join(directory, `src/content/media/${mediaId}.json`);
+    await writeFile(path, JSON.stringify(mediaRecord));
+    await writeFile(join(directory, samplePath), withMediaHero);
+    await build(directory);
+    await rm(path);
+    await assert.rejects(build(directory), (error: unknown) => {
+      const output = error as { stdout?: string; stderr?: string };
+      assert.match(`${output.stdout}\n${output.stderr}`, /Unknown media ID/);
+      return true;
+    });
+  });
+});
+
+test('media IDs resolve to static public images and catalog metadata without fetching image bytes', async () => {
+  await withFixture(async (directory) => {
+    await writeFile(
+      join(directory, `src/content/media/${mediaId}.json`),
+      JSON.stringify(mediaRecord),
+    );
+    await writeFile(join(directory, samplePath), withMediaHero);
+    // This fixture path intentionally has no uploaded bytes. Building must remain offline.
+    await build(directory);
+    for (const page of ['index.html', projectRoute]) {
+      const html = await readFile(join(directory, 'dist', page), 'utf8');
+      assert.ok(
+        html.includes(`src="https://media.radibydlime.cz${mediaRecord.path}"`),
+      );
+      assert.match(html, /width="1600"/);
+      assert.match(html, /height="1200"/);
+      assert.match(html, /alt="Obnovené vstupní dveře\."/);
+      assert.doesNotMatch(
+        html,
+        /<script[\s>]|<astro-island[\s>]|localhost:11434|scripts\/media/,
+      );
+    }
+    const detail = await readFile(
+      join(directory, 'dist', projectRoute),
+      'utf8',
+    );
+    assert.match(detail, /Katalogový popisek/);
+    assert.match(detail, /Rodinný archiv/);
+  });
+});
+
+for (const status of ['published', 'draft', 'archived'])
+  test(`unknown media ID fails even for ${status} Project`, async () => {
+    await withFixture(async (directory) => {
+      await writeFile(
+        join(directory, samplePath),
+        withMediaHero.replace('status: published', `status: ${status}`),
+      );
+      await assert.rejects(build(directory), (error: unknown) => {
+        const output = error as { stdout?: string; stderr?: string };
+        assert.match(
+          `${output.stdout}\n${output.stderr}`,
+          new RegExp(`Unknown media ID ${mediaId}.*project-0001`),
+        );
+        return true;
+      });
+    });
+  });
+
+for (const scenario of [
+  'unused-invalid',
+  'duplicate',
+  'filename',
+  'mixed-hero',
+])
+  test(`media build rejects ${scenario}`, async () => {
+    await withFixture(async (directory) => {
+      if (scenario === 'unused-invalid')
+        await writeFile(
+          join(directory, `src/content/media/${mediaId}.json`),
+          JSON.stringify({ ...mediaRecord, width: 0, GPSLatitude: 50 }),
+        );
+      if (scenario === 'duplicate') {
+        await writeFile(
+          join(directory, `src/content/media/${mediaId}.json`),
+          JSON.stringify(mediaRecord),
+        );
+        await writeFile(
+          join(directory, 'src/content/media/z-duplicate.json'),
+          JSON.stringify(mediaRecord),
+        );
+      }
+      if (scenario === 'filename')
+        await writeFile(
+          join(directory, 'src/content/media/wrong.json'),
+          JSON.stringify(mediaRecord),
+        );
+      if (scenario === 'mixed-hero')
+        await writeFile(
+          join(directory, samplePath),
+          sample.replace('hero:\n', `hero:\n  mediaId: ${mediaId}\n`),
+        );
+      await assert.rejects(build(directory), (error: unknown) => {
+        const output = error as { stdout?: string; stderr?: string };
+        assert.match(`${output.stdout}\n${output.stderr}`, /media|Media|hero/);
+        return true;
+      });
+    });
+  });

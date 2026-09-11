@@ -10,7 +10,7 @@ The product is a Czech-first personal/family website about estate restoration, D
 
 - Use Astro, strict TypeScript, Tailwind CSS, Astro Content Collections, and Markdoc with YAML frontmatter for narrative content.
 - Generate static pages by default. Add runtime behavior only for a concrete requirement and an explicit architectural change.
-- Git is the canonical source of truth for code, content, local images, and contracts. Content must remain portable and understandable without a proprietary service.
+- Git is the canonical source of truth for code, content, published media metadata, small authored local assets, and contracts. Bulk photographic bytes live on external static webhosting; camera originals and local working state stay outside Git. Content must remain portable and understandable without a proprietary service.
 - Czech is the primary language. Keep content identity language-neutral and distinct from localized URL slugs; defer a complete internationalization system.
 - Do not introduce a database, SSR/runtime server, CMS, authentication, commerce infrastructure, Nx, monorepo tooling, or infrastructure for hypothetical applications. A frontend framework such as React requires a demonstrated need; Astro is the default.
 - Prefer the smallest implementation meeting current requirements. Share abstractions only after multiple concrete uses establish the same underlying concept.
@@ -28,6 +28,12 @@ The production site is served from `https://www.radibydlime.cz/`. Astro sets tha
 - Components provide reusable UI; see [COMPONENTS.md](../src/components/COMPONENTS.md).
 - Layouts own presentation shells and global chrome independently of content types; see [LAYOUTS.md](../src/layouts/LAYOUTS.md).
 - Page routes assemble content and presentation at build time. Do not duplicate content records to display them in multiple contexts.
+
+## Local media authoring
+
+The optional [media CLI](../docs/media.md) separates local preparation/review (`media:process`) from explicit publishing (`media:upload`). ExifTool provides source facts, Sharp prepares one derivative, and a local-only Ollama vision model proposes editable Czech metadata. Human approval seals the exact draft and derivative; deterministic FTPS or SFTP publication verifies bytes before adding a [catalog record](../src/content/media/SPEC.md). FTPS uses verified TLS and whole-directory promotion on a verified compatible host; SFTP uses pinned SSH keys and no-replace hard links. Model/transfer implementations and credentials are machine-side authoring concerns, not website runtime dependencies.
+
+The browser fetches public images from `https://media.radibydlime.cz/images/...`; a centralized origin/path resolver preserves portable content IDs. Astro builds use catalog dimensions and metadata without fetching remote images. Existing authored local assets remain supported. Public byte availability depends on the media host; GitHub Pages delivery, the Astro static output and CI credentials are unchanged. [ADR 0005](decisions/0005-external-media-storage.md) records the deliberate storage change from local images only.
 
 ## Styling
 
@@ -49,4 +55,4 @@ The homepage and `/projekty/<slug>/` route query the same published Project reco
 
 Do not pre-build workshop or sale systems, galleries, before/after blocks, editors, authentication, commerce, or an extensive component library. Do not create implementation directories for hypothetical features.
 
-`npm run validate` runs TypeScript/Astro checks, the production build and Node integration tests, and Prettier validation. Build-time schema and query checks reject malformed metadata, missing local images, and duplicate Project IDs/slugs. Deployment checks also cover production-origin requirements and root-path output. Relationship validation remains deferred with relationship fields. No separate linter is configured. Before completing changes, run all configured validation, inspect the final diff against the contracts, and report deviations or unresolved issues.
+`npm run validate` runs TypeScript/Astro checks, focused local media tests, the production build and Node integration tests, and Prettier validation. Build-time schema and query checks reject malformed metadata, missing local images, and duplicate Project IDs/slugs. Deployment checks also cover production-origin requirements and root-path output. Build-time validation also checks all published media records and Project hero media references, including hidden content. Other relationships remain deferred. No separate linter is configured. Before completing changes, run all configured validation, inspect the final diff against the contracts, and report deviations or unresolved issues.

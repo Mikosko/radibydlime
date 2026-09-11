@@ -4,3 +4,4 @@ dist/
 package-lock.json
 INIT.md
 AGENTS.md
+.media/

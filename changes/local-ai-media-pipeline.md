@@ -6,6 +6,24 @@ Add a small, image-only local CLI for preparing and reviewing media, then explic
 
 This is a temporary desired-state specification. Follow [CHANGES.md](CHANGES.md): review and commit this specification before implementation. This change request authorizes specification creation only, not installation, implementation, media upload, or hosting changes.
 
+## Implementation handoff — 2026-09-11
+
+Subsequent user instructions authorized implementation and FTPS publication. Work is paused for other tasks while hosting configuration settles; this change is **not complete**.
+
+- At the user's explicit request, implementation, durable contracts, automated tests and this handoff are preserved together in a checkpoint commit before live acceptance. The original specification and FTPS revision are committed (`34829ad`, `3352b1c`). This checkpoint does not mark the change complete; preserve this file until the pending acceptance checks pass.
+- Last full `npm run validate` passed: 23 media tests, 19 integration tests, type checks, static build and formatting.
+- One approved image remains in `.media/ready/`, with its draft, seal and upload journal intact. FTPS publication succeeded and remote bytes matched the approved checksum. There are no processed items or published catalog JSON records yet.
+- Last public check: updated DNS points to the hosting service; its certificate validates, but the image returns **HTTP 200 / HTTPS 404**. The local system resolver also retained the previous GitHub address. Recheck actual state rather than assuming certificate issuance alone fixes this; persistent HTTPS 404 requires the host's HTTPS subdomain/document-root configuration to be corrected.
+- Transfer credentials and machine-specific settings remain outside Git. Do not copy them into this handoff.
+
+Resume checklist:
+
+1. Read this specification and the current contracts; inspect Git status and the ready item's journal before changing anything.
+2. Recheck DNS and the exact image URL from the journal over certificate-verified HTTPS. Require successful retrieval and the approved SHA-256; do not bypass TLS or substitute HTTP.
+3. Run `npm run media:upload`. It should reuse the existing uploaded bytes, create `src/content/media/<id>.json`, write a receipt and move the local bundle to `processed`. Do not regenerate metadata, reapprove, delete the journal or manually fabricate a catalog entry.
+4. Confirm the catalog/receipt and repeat upload to verify idempotency. Finish and record the remaining representative-image/local-model quality checks described below; automated fixtures alone do not certify those.
+5. Validate the resulting tree and review it against this specification. After acceptance, remove this temporary file and commit the remaining follow-up changes. Until then, keep this checklist pending.
+
 ## Current relevant state and reconnaissance
 
 - Read `AGENTS.md`, `architecture/ARCHITECTURE.md`, `changes/CHANGES.md`, `src/content/CONTENT.md`, `src/content/projects/SPEC.md`, and `src/styles/UI.md`. Read ADR `0002-git-canonical-storage.md` because external image storage deliberately changes the current local-image convention.

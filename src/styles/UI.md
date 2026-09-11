@@ -24,9 +24,9 @@ Detailed photography art direction, further page compositions, and any motion la
 - **This file** owns cross-page principles, open visual decisions, and the review workflow.
 - **[Tailwind/CSS](global.css)** owns exact token values and styling mechanics; utilities and styles implement spacing, widths, typography, and breakpoints. Do not duplicate those values here.
 - **[Components](../components/COMPONENTS.md) and [layouts](../layouts/LAYOUTS.md)** implement reusable presentation. Their local `SPEC.md` files own meaningful unit-specific behavior, accessibility obligations, and design rules, referring to shared principles rather than copying them.
-- **[Content contracts](../content/CONTENT.md)** own content meaning and image metadata, including local references, alt text, captions, and credits.
+- **[Content contracts](../content/CONTENT.md)** own content meaning and image metadata, including local assets, published media IDs, alt text, captions, and credits.
 - **Figma** holds visual alternatives, composition experiments, annotations, and review references. It does not override repository architecture or contracts.
-- **Production Astro code** delivers static pages, semantic markup, responsive behavior, and local asset rendering according to accepted repository contracts.
+- **Production Astro code** delivers static pages, semantic markup, responsive behavior, and local/published-media rendering according to accepted repository contracts.
 
 Resolve conflicts through an explicit repository change. Update lasting principles and relevant local contracts when an approved implementation changes them.
 
@@ -40,7 +40,7 @@ Resolve conflicts through an explicit repository change. Update lasting principl
 4. After approval, perform repository reconnaissance and create a temporary specification following [CHANGES.md](../../changes/CHANGES.md). Record the approved file/frame reference, an identifiable reviewed revision or snapshot where useful, and approval context. Describe accepted layout, responsive behavior, relevant states, assets, accessibility expectations, observable acceptance criteria, and needed contract updates in repository text. Resolve material gaps before dependent implementation.
 5. Review and commit that specification through the existing lifecycle before Codex implementation. Translate approved intent into Astro and Tailwind, verify the browser result, and preserve lasting decisions in repository contracts. Design approval does not bypass specification review or authorize unrelated changes.
 
-Keep the handoff understandable without live Figma access: repository text must capture accepted requirements, and production assets remain local under existing content conventions. Retain a reference image only when a concrete decision needs one; no routine export pipeline or mandatory artifact bundle is required. Routine presentation maintenance need not start a new Figma exercise.
+Keep the handoff understandable without live Figma access: repository text must capture accepted requirements, and production assets follow the content contracts: small authored assets may remain local; published photographs use Git-canonical media metadata and external static image bytes. Retain a reference image only when a concrete decision needs one; no routine export pipeline or mandatory artifact bundle is required. Routine presentation maintenance need not start a new Figma exercise.
 
 ## Progressive adoption
 

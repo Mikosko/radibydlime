@@ -54,14 +54,25 @@ const projects = await getPublishedProjects();
       </p>
     ) : (
       <ul class="space-y-12">
-        {projects.map(({ data }) => (
+        {projects.map(({ data, hero }) => (
           <li>
             <article class="grid items-center gap-7 md:grid-cols-2 md:gap-12">
-              <Image
-                src={data.hero.src}
-                alt={data.hero.alt}
-                class="aspect-4/3 w-full rounded-sm object-cover"
-              />
+              {'width' in hero ? (
+                <img
+                  src={hero.src}
+                  width={hero.width}
+                  height={hero.height}
+                  alt={hero.alt}
+                  loading="lazy"
+                  class="aspect-4/3 w-full rounded-sm object-cover"
+                />
+              ) : (
+                <Image
+                  src={hero.src}
+                  alt={hero.alt}
+                  class="aspect-4/3 w-full rounded-sm object-cover"
+                />
+              )}
               <div>
                 <p class="mb-4 text-xs font-semibold tracking-widest text-accent uppercase">
                   Z našich projektů

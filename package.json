@@ -11,7 +11,10 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "test": "npm run build && node --experimental-strip-types --test tests/integration/*.spec.ts",
+    "test": "npm run test:media && npm run build && node --experimental-strip-types --test tests/integration/*.spec.ts",
+    "test:media": "node --experimental-strip-types --test scripts/media/*.spec.ts",
+    "media:process": "node --experimental-strip-types scripts/media/cli.ts process",
+    "media:upload": "node --experimental-strip-types scripts/media/cli.ts upload",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "validate": "npm run check && npm test && npm run format:check"
@@ -25,8 +28,13 @@
   "devDependencies": {
     "@astrojs/check": "0.9.10",
     "@types/node": "22.20.2",
+    "@types/ssh2": "1.15.5",
+    "basic-ftp": "6.2.1",
     "prettier": "3.9.6",
     "prettier-plugin-astro": "1.0.0",
-    "typescript": "6.0.3"
+    "sharp": "0.35.4",
+    "ssh2": "1.17.0",
+    "typescript": "6.0.3",
+    "zod": "4.6.1"
   }
 }

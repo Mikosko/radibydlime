@@ -12,7 +12,7 @@ The separate `slug` is a lowercase, hyphenated Czech URL spelling without diacri
 
 ## Fields and visibility
 
-Required metadata: `id`, `slug`, nonempty `title` and `summary`, `status`, `publishedAt`, and `hero` with a valid local `src` and nonempty informative `alt`. Hero `caption` and `credit` are optional and shown on the detail page when supplied. Paths resolve relative to the content file. Dates are displayed in Czech using UTC so calendar dates do not shift with the build machine's timezone.
+Required metadata: `id`, `slug`, nonempty `title` and `summary`, `status`, `publishedAt`, and `hero` with a valid local `src` and nonempty informative `alt`. Hero `caption` and `credit` are optional and shown on the detail page when supplied. Alternatively, `hero: { mediaId }` references the [published media catalog](../media/SPEC.md), which owns alt text, optional caption/credit and intrinsic dimensions. These two hero forms are mutually exclusive. Local paths resolve relative to the content file. Dates are displayed in Czech using UTC so calendar dates do not shift with the build machine's timezone.
 
 - `published`: included on the homepage and emitted as a detail route.
 - `draft`: retained in source, excluded from public lists and routes.
@@ -20,10 +20,10 @@ Required metadata: `id`, `slug`, nonempty `title` and `summary`, `status`, `publ
 
 `publishedAt` is a displayed date and descending sort key, not a scheduling mechanism. All entries require it in this small schema; only an explicit `published` status makes an entry public. Equal dates sort by canonical ID. When no entries are public, the homepage shows a Czech empty state.
 
-Markdoc supplies ordinary narrative elements. Raw HTML is disabled; unsupported tags fail the build. No custom block tags, relationships, or generalized queries are implemented. Future relationship fields need canonical-ID target validation when introduced. Narrative headings start at level two because the route owns the page's level-one title.
+Markdoc supplies ordinary narrative elements. Raw HTML is disabled; unsupported tags fail the build. The hero media reference is the first implemented cross-content relationship. No custom block tags or generalized queries are implemented. Future relationship fields also need canonical-ID target validation. Narrative headings start at level two because the route owns the page's level-one title.
 
 ## Validation
 
-Schema validation covers metadata and local image references. Public collection queries reject duplicate identities and URLs. Integration tests in `tests/integration/content-build.spec.ts` exercise the actual Astro build, identity preservation under renaming, hidden content, malformed content, and output rendering in isolated temporary copies.
+Schema validation covers metadata and local image references. Public collection queries reject duplicate identities and URLs, validate the entire media catalog, and resolve all Project media IDs before visibility filtering. Both homepage and detail use the returned resolved hero. Remote derivatives render with public URLs and explicit dimensions; the build never fetches them. Integration tests in `tests/integration/content-build.spec.ts` exercise the actual Astro build, identity preservation under renaming, hidden content, malformed content, and output rendering in isolated temporary copies.
 
 `entrance-door.mdoc` and its local SVG are explicitly labeled sample content, to be replaced with real authored material.

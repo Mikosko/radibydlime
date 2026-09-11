@@ -21,6 +21,17 @@ Validation runs Astro/TypeScript checking, a production build, integration tests
 
 `npm run build` writes static output to `dist/`; `npm run preview` serves that output locally. No runtime adapter is configured.
 
+## Optional local media tooling
+
+See the [media authoring guide](docs/media.md) for machine-local ExifTool/Ollama setup, editing metadata, explicit approval, FTPS/SFTP configuration and recovery.
+
+```sh
+npm run media:process
+npm run media:upload
+```
+
+Processing uses the ignored `.media/inbox/` and never uploads. Upload publishes only approved derivatives and adds verified metadata under `src/content/media/`; it never invokes AI, commits or deploys. Projects may reference published media with `hero: { mediaId }`. Existing local assets remain supported. Builds and deployment need no local model, ExifTool, media credentials or connection to the image host. Real model/hosting setup and smoke checks remain developer-local steps.
+
 ## Optional local Figma tooling
 
 For AI-assisted visual exploration, see the [local Figma bridge guide](docs/figma-local.md). It connects Codex to a development plugin in Figma Desktop through developer-local tooling. Follow the [UI contract](src/styles/UI.md) for visual constraints and human review. The website builds and deploys independently of this optional setup.
@@ -47,6 +58,6 @@ The live setup was verified on 2026-09-10. FORPSI DNS points `www.radibydlime.cz
 
 Start with [AGENTS.md](AGENTS.md) for task-specific context. The [architecture contract](architecture/ARCHITECTURE.md) is the current source of truth.
 
-Projects live in `src/content/projects/*.mdoc`. Copy the sample structure, assign a new stable `project-0002` style ID and a unique Czech slug, and keep unfinished content in `draft`. Set `published` only when it should appear publicly. Keep local images in `src/assets/` and refer to them relative to the content file.
+Projects live in `src/content/projects/*.mdoc`. Copy the sample structure, assign a new stable `project-0002` style ID and a unique Czech slug, and keep unfinished content in `draft`. Set `published` only when it should appear publicly. Keep small authored local images in `src/assets/` and refer to them relative to the content file. For published photographs, reference a media catalog ID following the media guide; do not repeat remote URLs or commit camera originals.
 
 Read the [Project contract](src/content/projects/SPEC.md) for exact identity, metadata, visibility, and validation rules. Custom blocks, JournalEntries, workshops, sale features, translations, and content relationships are intentionally deferred until concrete requirements exist.

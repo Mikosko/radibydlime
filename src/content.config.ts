@@ -1,6 +1,25 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { mediaId, mediaSchema } from './content/media/schema';
+
+const mediaFiles = glob({
+  pattern: '*.json',
+  base: './src/content/media',
+  generateId: ({ entry }) => entry,
+});
+const media = defineCollection({
+  loader: {
+    name: 'published-media-files',
+    async load(context) {
+      // Astro's glob loader returns early on an empty directory. Clear cached records
+      // first so deleting the last catalog file cannot leave a phantom reference.
+      context.store.clear();
+      await mediaFiles.load(context);
+    },
+  },
+  schema: mediaSchema,
+});
 
 const projects = defineCollection({
   loader: glob({
@@ -25,13 +44,18 @@ const projects = defineCollection({
       summary: z.string().trim().min(1),
       status: z.enum(['draft', 'published', 'archived']),
       publishedAt: z.coerce.date(),
-      hero: z.object({
-        src: image(),
-        alt: z.string().trim().min(1),
-        caption: z.string().trim().min(1).optional(),
-        credit: z.string().trim().min(1).optional(),
-      }),
+      hero: z.union([
+        z.object({ mediaId }).strict(),
+        z
+          .object({
+            src: image(),
+            alt: z.string().trim().min(1),
+            caption: z.string().trim().min(1).optional(),
+            credit: z.string().trim().min(1).optional(),
+          })
+          .strict(),
+      ]),
     }),
 });
 
-export const collections = { projects };
+export const collections = { projects, media };
