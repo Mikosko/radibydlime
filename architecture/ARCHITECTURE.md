@@ -51,7 +51,7 @@ Temporary desired state belongs in `changes/<descriptive-name>.md` and follows [
 
 ## Implemented slice and validation
 
-The homepage and `/projekty/<slug>/` route query the same published Project records. The [Project contract](../src/content/projects/SPEC.md) defines stable identity, draft/archive visibility, metadata, and validation. The [site layout contract](../src/layouts/site/SPEC.md) defines the shared shell. The sample includes a local SVG illustration and ordinary Markdoc narrative. No JournalEntry or custom content blocks were needed to validate this slice.
+The homepage and `/projekty/<slug>/` route query the same published Project records. The [Project contract](../src/content/projects/SPEC.md) defines stable identity, draft/archive visibility, metadata, and validation. The [site layout contract](../src/layouts/site/SPEC.md) defines the shared shell. The sample uses a published media-catalog hero and ordinary Markdoc narrative; local SVG image support remains covered by build fixtures. No JournalEntry or custom content blocks were needed to validate this slice.
 
 Do not pre-build workshop or sale systems, galleries, before/after blocks, editors, authentication, commerce, or an extensive component library. Do not create implementation directories for hypothetical features.
 

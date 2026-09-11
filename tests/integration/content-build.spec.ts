@@ -6,7 +6,15 @@ import { root, withFixture, build } from '../helpers/astro-build.ts';
 
 const samplePath = 'src/content/projects/entrance-door.mdoc';
 const projectRoute = 'projekty/druhy-zivot-starych-dveri/index.html';
-const sample = await readFile(join(root, samplePath), 'utf8');
+// Keep local-image coverage independent of the image selected in authored content.
+const sample = (await readFile(join(root, samplePath), 'utf8')).replace(
+  /hero:\n[\s\S]*?\n---/,
+  `hero:
+  src: ../../assets/entrance-door.svg
+  alt: Ilustrace zelených dveří.
+  caption: Ilustrace k ukázkovému projektu.
+---`,
+);
 
 test('production site configuration uses the custom domain at the URL root', async () => {
   await withFixture(async (directory) => {
@@ -28,37 +36,44 @@ test('production site configuration uses the custom domain at the URL root', asy
 });
 
 test('published pages render Czech metadata, Markdoc, navigation, and local images without scripts', async () => {
-  const home = await readFile(join(root, 'dist/index.html'), 'utf8');
-  const project = await readFile(join(root, 'dist', projectRoute), 'utf8');
-  assert.match(home, /href="\/projekty\/druhy-zivot-starych-dveri\/"/);
-  assert.match(home, /Druhý život starých dveří/);
-  assert.match(project, /<strong>ukázkový zápis<\/strong>/);
-  assert.match(project, /<blockquote>/);
-  assert.match(project, /<h2[^>]*>.*Nejdřív poznat, potom opravovat/);
-  assert.match(project, /Ilustrace k ukázkovému projektu/);
+  await withFixture(async (directory) => {
+    await writeFile(join(directory, samplePath), sample);
+    await build(directory);
+    const home = await readFile(join(directory, 'dist/index.html'), 'utf8');
+    const project = await readFile(
+      join(directory, 'dist', projectRoute),
+      'utf8',
+    );
+    assert.match(home, /href="\/projekty\/druhy-zivot-starych-dveri\/"/);
+    assert.match(home, /Druhý život starých dveří/);
+    assert.match(project, /<strong>ukázkový zápis<\/strong>/);
+    assert.match(project, /<blockquote>/);
+    assert.match(project, /<h2[^>]*>.*Nejdřív poznat, potom opravovat/);
+    assert.match(project, /Ilustrace k ukázkovému projektu/);
 
-  for (const html of [home, project]) {
-    assert.match(html, /<html lang="cs">/);
-    assert.match(html, /<meta name="description" content="[^"]+"/);
-    assert.equal((html.match(/<h1[\s>]/g) ?? []).length, 1);
-    assert.match(html, /href="#obsah"/);
-    assert.match(html, /<main id="obsah"/);
-    assert.doesNotMatch(html, /<script[\s>]|<astro-island[\s>]/);
-    const images = [...html.matchAll(/<img\b[^>]*>/g)];
-    assert.ok(images.length > 0);
-    for (const [image] of images) {
-      assert.match(image, /alt="[^"]+"/);
-      assert.match(image, /width="\d+"/);
-      assert.match(image, /height="\d+"/);
-      const source = /src="([^"]+)"/.exec(image)?.[1];
-      assert.ok(source, 'Expected an image source');
-      assert.ok(
-        source.startsWith('/_astro/'),
-        `Expected a built local image: ${source}`,
-      );
-      assert.ok((await stat(join(root, 'dist', source))).isFile());
+    for (const html of [home, project]) {
+      assert.match(html, /<html lang="cs">/);
+      assert.match(html, /<meta name="description" content="[^"]+"/);
+      assert.equal((html.match(/<h1[\s>]/g) ?? []).length, 1);
+      assert.match(html, /href="#obsah"/);
+      assert.match(html, /<main id="obsah"/);
+      assert.doesNotMatch(html, /<script[\s>]|<astro-island[\s>]/);
+      const images = [...html.matchAll(/<img\b[^>]*>/g)];
+      assert.ok(images.length > 0);
+      for (const [image] of images) {
+        assert.match(image, /alt="[^"]+"/);
+        assert.match(image, /width="\d+"/);
+        assert.match(image, /height="\d+"/);
+        const source = /src="([^"]+)"/.exec(image)?.[1];
+        assert.ok(source, 'Expected an image source');
+        assert.ok(
+          source.startsWith('/_astro/'),
+          `Expected a built local image: ${source}`,
+        );
+        assert.ok((await stat(join(directory, 'dist', source))).isFile());
+      }
     }
-  }
+  });
 });
 
 test('renaming the file and localized slug preserves the canonical collection identity', async () => {
