@@ -42,8 +42,16 @@ const projects = defineCollection({
         ),
       title: z.string().trim().min(1),
       summary: z.string().trim().min(1),
+      topic: z.string().trim().min(1).max(60),
       status: z.enum(['draft', 'published', 'archived']),
       publishedAt: z.coerce.date(),
+      sidebarPoster: z
+        .object({
+          illustration: image(),
+          quote: z.string().trim().min(1),
+        })
+        .strict()
+        .optional(),
       hero: z.union([
         z.object({ mediaId }).strict(),
         z

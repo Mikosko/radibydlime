@@ -11,7 +11,7 @@ npm ci
 npm run dev
 ```
 
-Open the local address printed by Astro (normally `http://localhost:4321`). The sample detail page is `/projekty/druhy-zivot-starych-dveri/`.
+Open the local address printed by Astro (normally `http://localhost:4321`). The sample detail page is `/projekty/jak-zacala-obnova-naseho-domu/`.
 
 ```sh
 npm run validate

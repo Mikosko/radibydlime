@@ -10,3 +10,9 @@
 A unit with such a contract may use `src/components/workshop-card/WorkshopCard.astro`, `WorkshopCard.spec.ts`, and `SPEC.md`. This illustrates colocation only; it is not an instruction to create a workshop card.
 
 Render published media IDs through [MediaImage](media-image/SPEC.md), supplying a validated catalog from route/assembly code. It owns native image semantics and resolution; consumers own contextual presentation, captions and credits. Local authored assets continue using Astro's `Image`.
+
+The shared site shell composes [TopNavigation](top-navigation/SPEC.md). It owns the canonical logo link, current primary destination and responsive header composition without client JavaScript.
+
+[BrandMark](brand-mark/SPEC.md) owns the reusable live wordmark, heart, and botanical relationship used by the shared header and illustrated footer. Its consumers own links, supporting taglines, and surrounding composition.
+
+[ArticleActions](article-actions/SPEC.md) provides the progressively enhanced favorite and share controls used by article pages. Favorites remain a browser-local preference keyed by stable content ID; the component introduces no account or runtime service.

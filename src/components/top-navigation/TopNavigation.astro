@@ -1,0 +1,80 @@
+---
+import { Image } from 'astro:assets';
+import houseLogo from '../../assets/images/logo-house.png';
+import navigationHop from '../../assets/decor/navigation-hop.png';
+import BrandMark from '../brand-mark/BrandMark.astro';
+
+const pathname = Astro.url.pathname;
+const isHome = pathname === '/';
+const isProject = pathname.startsWith('/projekty/');
+
+const links = [
+  { label: 'Úvod', href: '/', current: isHome },
+  { label: 'Náš příběh', href: '#' },
+  { label: 'Kapitoly', href: '/#projekty', current: isProject },
+  { label: 'Zápisky', href: '#' },
+  { label: 'Dílny', href: '#' },
+  { label: 'Inzerce', href: '#' },
+  { label: 'Kontakt', href: '#' },
+];
+---
+
+<header class="mx-auto w-full max-w-[92rem] px-5 pt-5.5 sm:px-8">
+  <div class="grid items-center gap-x-2 gap-y-5 pb-8 sm:grid-cols-[auto_1fr] lg:grid-cols-[29rem_1fr_17rem] lg:pb-4">
+    <a
+      href="/"
+      aria-label="Rádi bydlíme — úvod"
+      class="inline-flex w-fit items-center gap-2 sm:gap-3"
+    >
+      <!-- <Image
+        src={houseLogo}
+        alt=""
+        aria-hidden="true"
+        width={200}
+        loading="eager"
+        class="h-auto w-32 sm:w-36 lg:w-50"
+      /> -->
+      <span class="block">
+        <BrandMark loading="eager" />
+        <p class="mt-2 ml-5 text-[0.48rem] font-semibold tracking-[0.15em] text-muted uppercase sm:mt-3 sm:text-[0.65rem] sm:tracking-[0.2em]">
+          dům · dílna · zahrada · rodina
+        </p>
+      </span>
+    </a>
+
+    <nav
+      aria-label="Hlavní navigace"
+      class="flex flex-wrap items-center gap-x-5 gap-y-1 text-[0.7rem] font-semibold tracking-[0.06em] uppercase sm:justify-end lg:justify-center xl:gap-x-7 xl:text-[0.74rem]"
+    >
+      {links.map(({ label, href, current }) => (
+        <a
+          href={href}
+          aria-current={current ? 'page' : undefined}
+          class:list={[
+            'border-b py-2 transition-colors hover:text-accent',
+            current ? 'border-accent text-accent' : 'border-transparent',
+          ]}
+        >
+          {label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="hidden items-center justify-end gap-3 lg:flex">
+      <p class="text-right font-annotation mt-3 text-3xl leading-[0.9] text-accent -rotate-12">
+        Dobré věci
+        <br />
+        rostou pomalu.
+      </p>
+      <Image
+        src={navigationHop}
+        alt=""
+        aria-hidden="true"
+        width={82}
+        loading="eager"
+        class="h-auto w-20 opacity-90"
+      />
+    </div>
+  </div>
+  <div class="h-px bg-line"></div>
+</header>

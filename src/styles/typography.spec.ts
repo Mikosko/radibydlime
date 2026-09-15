@@ -117,7 +117,7 @@ import SiteLayout from '../layouts/site/SiteLayout.astro';
     assert.match(html, /class="font-body" data-note-fallback/);
     for (const page of [
       'index.html',
-      'projekty/druhy-zivot-starych-dveri/index.html',
+      'projekty/jak-zacala-obnova-naseho-domu/index.html',
       'typography/index.html',
     ]) {
       const output = await readFile(join(directory, 'dist', page), 'utf8');

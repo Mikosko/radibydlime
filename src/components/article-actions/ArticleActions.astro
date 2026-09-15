@@ -1,0 +1,238 @@
+---
+interface Props {
+  articleId: string;
+  title: string;
+}
+
+const { articleId, title } = Astro.props;
+---
+
+<section
+  data-article-actions
+  data-article-id={articleId}
+  data-article-title={title}
+  aria-label="Práce s článkem"
+  class="pb-1"
+  hidden
+>
+  <p class="font-editorial-note text-[0.65rem] tracking-[0.12em] text-muted uppercase">
+    Uložit a sdílet
+  </p>
+  <div class="mt-3 flex items-center gap-2.5">
+    <button
+      type="button"
+      data-favorite-button
+      aria-pressed="false"
+      title="Přidat k oblíbeným"
+      class="group inline-grid size-11 place-items-center rounded-full border border-line bg-paper/50 transition-colors hover:border-accent hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        class="size-4 fill-transparent stroke-current stroke-2 transition-colors group-data-[active=true]:fill-accent group-data-[active=true]:stroke-accent"
+      >
+        <path d="M12 20.5 4.6 13.6A5.3 5.3 0 0 1 12 6a5.3 5.3 0 0 1 7.4 7.6Z"></path>
+      </svg>
+      <span class="sr-only" data-favorite-label>
+        Přidat k oblíbeným
+      </span>
+    </button>
+    <button
+      type="button"
+      data-share-button
+      title="Sdílet článek"
+      class="inline-grid size-11 place-items-center rounded-full border border-line bg-paper/50 transition-colors hover:border-accent hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        class="size-4 fill-none stroke-current stroke-2"
+      >
+        <circle cx="18" cy="5" r="2.5"></circle>
+        <circle cx="6" cy="12" r="2.5"></circle>
+        <circle cx="18" cy="19" r="2.5"></circle>
+        <path d="m8.2 10.8 7.6-4.6M8.2 13.2l7.6 4.6"></path>
+      </svg>
+      <span class="sr-only" data-share-label>
+        Sdílet článek
+      </span>
+    </button>
+    <button
+      type="button"
+      data-read-later-button
+      aria-pressed="false"
+      title="Uložit na později"
+      class="group inline-grid size-11 place-items-center rounded-full border border-line bg-paper/50 transition-colors hover:border-accent hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        class="size-4 fill-transparent stroke-current stroke-2 transition-colors group-data-[active=true]:fill-accent group-data-[active=true]:stroke-accent"
+      >
+        <path d="M6.5 4.5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v17L12 18l-5.5 3.5Z"></path>
+      </svg>
+      <span class="sr-only" data-read-later-label>
+        Uložit na později
+      </span>
+    </button>
+  </div>
+  <p data-action-status class="sr-only" aria-live="polite"></p>
+</section>
+
+<script>
+  const storageKey = 'radibydlime:article-preferences';
+
+  interface ArticlePreference {
+    favorite?: boolean;
+    readLater?: boolean;
+  }
+
+  type ArticlePreferences = Record<string, ArticlePreference>;
+
+  function readPreferences(): ArticlePreferences {
+    try {
+      const value: unknown = JSON.parse(
+        localStorage.getItem(storageKey) ?? '{}',
+      );
+      return value && typeof value === 'object' && !Array.isArray(value)
+        ? (value as ArticlePreferences)
+        : {};
+    } catch {
+      return {};
+    }
+  }
+
+  function writePreferences(preferences: ArticlePreferences): boolean {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(preferences));
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function initializeArticleActions(root: HTMLElement) {
+    if (root.dataset.initialized === 'true') return;
+    root.dataset.initialized = 'true';
+
+    const articleId = root.dataset.articleId;
+    const title = root.dataset.articleTitle;
+    const favoriteButton = root.querySelector<HTMLButtonElement>(
+      '[data-favorite-button]',
+    );
+    const favoriteLabel = root.querySelector<HTMLElement>(
+      '[data-favorite-label]',
+    );
+    const shareButton = root.querySelector<HTMLButtonElement>(
+      '[data-share-button]',
+    );
+    const readLaterButton = root.querySelector<HTMLButtonElement>(
+      '[data-read-later-button]',
+    );
+    const readLaterLabel = root.querySelector<HTMLElement>(
+      '[data-read-later-label]',
+    );
+    const status = root.querySelector<HTMLElement>('[data-action-status]');
+
+    if (
+      !articleId ||
+      !title ||
+      !favoriteButton ||
+      !favoriteLabel ||
+      !shareButton ||
+      !readLaterButton ||
+      !readLaterLabel ||
+      !status
+    ) {
+      return;
+    }
+
+    const showPreferences = () => {
+      const preference = readPreferences()[articleId] ?? {};
+      const favorite = Boolean(preference.favorite);
+      favoriteButton.ariaPressed = String(favorite);
+      favoriteButton.dataset.active = String(favorite);
+      favoriteButton.title = favorite
+        ? 'Odebrat z oblíbených'
+        : 'Přidat k oblíbeným';
+      favoriteLabel.textContent = favoriteButton.title;
+
+      const readLater = Boolean(preference.readLater);
+      readLaterButton.ariaPressed = String(readLater);
+      readLaterButton.dataset.active = String(readLater);
+      readLaterButton.title = readLater
+        ? 'Odebrat ze seznamu na později'
+        : 'Uložit na později';
+      readLaterLabel.textContent = readLaterButton.title;
+    };
+
+    const togglePreference = (key: keyof ArticlePreference) => {
+      const preferences = readPreferences();
+      const preference = preferences[articleId] ?? {};
+      const enabled = !preference[key];
+      preferences[articleId] = { ...preference, [key]: enabled };
+      return writePreferences(preferences) ? enabled : null;
+    };
+
+    showPreferences();
+    root.hidden = false;
+
+    favoriteButton.addEventListener('click', () => {
+      const enabled = togglePreference('favorite');
+      if (enabled === null) {
+        status.textContent =
+          'Oblíbené se nepodařilo uložit v tomto prohlížeči.';
+        return;
+      }
+      showPreferences();
+      status.textContent = enabled
+        ? 'Článek je přidaný k oblíbeným.'
+        : 'Článek už není v oblíbených.';
+    });
+
+    readLaterButton.addEventListener('click', () => {
+      const enabled = togglePreference('readLater');
+      if (enabled === null) {
+        status.textContent = 'Článek se nepodařilo uložit na později.';
+        return;
+      }
+      showPreferences();
+      status.textContent = enabled
+        ? 'Článek je uložený na později.'
+        : 'Článek už není uložený na později.';
+    });
+
+    shareButton.addEventListener('click', async () => {
+      const shareData = { title, url: window.location.href };
+      if (navigator.share) {
+        try {
+          await navigator.share(shareData);
+          status.textContent = 'Nabídka sdílení byla otevřena.';
+        } catch (error) {
+          if (error instanceof DOMException && error.name === 'AbortError')
+            return;
+          status.textContent = 'Článek se nepodařilo sdílet.';
+        }
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(shareData.url);
+        status.textContent = 'Odkaz na článek je zkopírovaný.';
+      } catch {
+        status.textContent = 'Odkaz se nepodařilo zkopírovat.';
+      }
+    });
+
+    window.addEventListener('storage', showPreferences);
+  }
+
+  document
+    .querySelectorAll<HTMLElement>('[data-article-actions]')
+    .forEach(initializeArticleActions);
+  document.addEventListener('astro:page-load', () => {
+    document
+      .querySelectorAll<HTMLElement>('[data-article-actions]')
+      .forEach(initializeArticleActions);
+  });
+</script>

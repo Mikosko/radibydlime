@@ -5,7 +5,7 @@ import { test } from 'node:test';
 import { root, withFixture, build } from '../helpers/astro-build.ts';
 
 const samplePath = 'src/content/projects/entrance-door.mdoc';
-const projectRoute = 'projekty/druhy-zivot-starych-dveri/index.html';
+const projectRoute = 'projekty/jak-zacala-obnova-naseho-domu/index.html';
 // Keep local-image coverage independent of the image selected in authored content.
 const sample = (await readFile(join(root, samplePath), 'utf8')).replace(
   /hero:\n[\s\S]*?\n---/,
@@ -29,13 +29,13 @@ test('production site configuration uses the custom domain at the URL root', asy
       'https://www.radibydlime.cz/',
     );
     const home = await readFile(join(directory, 'dist/index.html'), 'utf8');
-    assert.match(home, /href="\/projekty\/druhy-zivot-starych-dveri\/"/);
+    assert.match(home, /href="\/projekty\/jak-zacala-obnova-naseho-domu\/"/);
     assert.match(home, /(?:href|src)="\/_astro\//);
     assert.doesNotMatch(home, /\/radibydlime\//);
   });
 });
 
-test('published pages render Czech metadata, Markdoc, navigation, and local images without scripts', async () => {
+test('published pages render Czech metadata, Markdoc, navigation, and local images', async () => {
   await withFixture(async (directory) => {
     await writeFile(join(directory, samplePath), sample);
     await build(directory);
@@ -44,12 +44,38 @@ test('published pages render Czech metadata, Markdoc, navigation, and local imag
       join(directory, 'dist', projectRoute),
       'utf8',
     );
-    assert.match(home, /href="\/projekty\/druhy-zivot-starych-dveri\/"/);
-    assert.match(home, /Druhý život starých dveří/);
-    assert.match(project, /<strong>ukázkový zápis<\/strong>/);
+    assert.match(home, /href="\/projekty\/jak-zacala-obnova-naseho-domu\/"/);
+    assert.match(home, /Jak začala obnova našeho domu/);
+    assert.match(project, /<strong>Tento ukázkový zápis<\/strong>/);
     assert.match(project, /<blockquote>/);
-    assert.match(project, /<h2[^>]*>.*Nejdřív poznat, potom opravovat/);
+    assert.match(project, /<h2[^>]*>.*Nejdřív naslouchat domu/);
+    assert.match(project, /aria-label="Obsah článku"/);
+    assert.match(project, /href="#nejdřív-naslouchat-domu"/);
+    assert.match(project, />Kapitoly<\/span>/);
+    assert.match(project, /Obnova domu/);
+    assert.match(project, /aria-label="Práce s článkem"/);
+    assert.match(project, /data-article-id="project-0001"/);
+    assert.match(project, /data-favorite-button/);
+    assert.match(project, /aria-pressed="false"/);
+    assert.match(project, /data-share-button/);
+    assert.match(project, /data-read-later-button/);
     assert.match(project, /Ilustrace k ukázkovému projektu/);
+    assert.match(project, /Krajina je náš domov/);
+    assert.match(project, /aria-label="Další projekty"/);
+    assert.match(
+      project,
+      /href="\/projekty\/oprava-starych-stropnich-tramu\/"/,
+    );
+    const gardenProject = await readFile(
+      join(directory, 'dist/projekty/prvni-rok-kuchynske-zahrady/index.html'),
+      'utf8',
+    );
+    assert.match(gardenProject, /Zahrada/);
+
+    assert.doesNotMatch(home, /<script[\s>]|<astro-island[\s>]/);
+    assert.match(project, /<script type="module">/);
+    assert.match(project, /radibydlime:article-preferences/);
+    assert.doesNotMatch(project, /<astro-island[\s>]/);
 
     for (const html of [home, project]) {
       assert.match(html, /<html lang="cs">/);
@@ -57,11 +83,47 @@ test('published pages render Czech metadata, Markdoc, navigation, and local imag
       assert.equal((html.match(/<h1[\s>]/g) ?? []).length, 1);
       assert.match(html, /href="#obsah"/);
       assert.match(html, /<main id="obsah"/);
-      assert.doesNotMatch(html, /<script[\s>]|<astro-island[\s>]/);
+      assert.match(html, /<nav aria-label="Hlavní navigace"/);
+      for (const label of [
+        'Úvod',
+        'Náš příběh',
+        'Kapitoly',
+        'Zápisky',
+        'Dílny',
+        'Inzerce',
+        'Kontakt',
+      ]) {
+        assert.match(html, new RegExp(`>${label}<`));
+      }
+      assert.match(html, /aria-label="Rádi bydlíme — úvod"/);
+      assert.match(html, /data-brand-mark="stacked"/);
+      assert.match(html, /data-brand-mark="inline"/);
+      assert.match(html, /aria-labelledby="co-u-nas-najdete"/);
+      assert.match(html, /Co u nás najdete\?/);
+      assert.match(html, /© \d{4} Rádi bydlíme/);
+      assert.match(html, /<nav aria-label="Navigace v zápatí"/);
+      for (const social of [
+        'Instagram',
+        'Facebook',
+        'TikTok',
+        'Pinterest',
+        'YouTube',
+      ]) {
+        assert.match(
+          html,
+          new RegExp(`aria-label="${social} — odkaz připravujeme"`),
+        );
+      }
       const images = [...html.matchAll(/<img\b[^>]*>/g)];
       assert.ok(images.length > 0);
       for (const [image] of images) {
-        assert.match(image, /alt="[^"]+"/);
+        const alt = /\salt(?:="([^"]*)")?(?=\s|>)/.exec(image);
+        assert.ok(alt, 'Expected an explicit alt attribute');
+        if (/\saria-hidden="true"/.test(image)) {
+          assert.equal(alt[1] ?? '', '');
+        } else {
+          assert.ok(alt[1], 'Expected informative images to have alt text');
+        }
         assert.match(image, /width="\d+"/);
         assert.match(image, /height="\d+"/);
         const source = /src="([^"]+)"/.exec(image)?.[1];
@@ -80,7 +142,10 @@ test('renaming the file and localized slug preserves the canonical collection id
   await withFixture(async (directory) => {
     await writeFile(
       join(directory, samplePath),
-      sample.replace('slug: druhy-zivot-starych-dveri', 'slug: obnova-dveri'),
+      sample.replace(
+        'slug: jak-zacala-obnova-naseho-domu',
+        'slug: obnova-domu',
+      ),
     );
     await rename(
       join(directory, samplePath),
@@ -89,7 +154,7 @@ test('renaming the file and localized slug preserves the canonical collection id
     // A fixture-only endpoint observes the real typed collection, not a copy of its parser.
     await writeFile(
       join(directory, 'src/pages/identity.txt.ts'),
-      "import { getCollection } from 'astro:content';\nexport async function GET() { return new Response((await getCollection('projects'))[0].data.id); }\n",
+      "import { getCollection } from 'astro:content';\nexport async function GET() { const projects = await getCollection('projects'); const renamed = projects.find(({ data }) => data.slug === 'obnova-domu'); return new Response(renamed?.data.id ?? 'missing'); }\n",
     );
     await build(directory);
     assert.equal(
@@ -97,10 +162,10 @@ test('renaming the file and localized slug preserves the canonical collection id
       'project-0001',
     );
     const home = await readFile(join(directory, 'dist/index.html'), 'utf8');
-    assert.match(home, /href="\/projekty\/obnova-dveri\/"/);
+    assert.match(home, /href="\/projekty\/obnova-domu\/"/);
     assert.ok(
       (
-        await stat(join(directory, 'dist/projekty/obnova-dveri/index.html'))
+        await stat(join(directory, 'dist/projekty/obnova-domu/index.html'))
       ).isFile(),
     );
     await assert.rejects(stat(join(directory, 'dist', projectRoute)), {
@@ -118,16 +183,18 @@ test('draft and archived Projects have no public listing, narrative, or detail r
     await writeFile(
       join(directory, 'src/content/projects/archived.mdoc'),
       sample
-        .replace('project-0001', 'project-0002')
-        .replace('slug: druhy-zivot-starych-dveri', 'slug: archivovany-projekt')
+        .replace('project-0001', 'project-9999')
+        .replace(
+          'slug: jak-zacala-obnova-naseho-domu',
+          'slug: archivovany-projekt',
+        )
         .replace('status: published', 'status: archived'),
     );
     await build(directory);
     const home = await readFile(join(directory, 'dist/index.html'), 'utf8');
-    assert.match(home, /První příběhy právě chystáme/);
     assert.doesNotMatch(
       home,
-      /Druhý život starých dveří|Nejdřív poznat|archivovany-projekt/,
+      /Jak začala obnova našeho domu|Nejdřív naslouchat|archivovany-projekt/,
     );
     await assert.rejects(stat(join(directory, 'dist', projectRoute)), {
       code: 'ENOENT',
@@ -144,20 +211,23 @@ const invalidCases = [
     name: 'duplicate canonical IDs even when the second entry is a draft',
     path: 'src/content/projects/duplicate.mdoc',
     content: sample
-      .replace('slug: druhy-zivot-starych-dveri', 'slug: jiny-projekt')
+      .replace('slug: jak-zacala-obnova-naseho-domu', 'slug: jiny-projekt')
       .replace('status: published', 'status: draft'),
     diagnostic: /Duplicate Project ID: project-0001/,
   },
   {
     name: 'duplicate localized slugs',
     path: 'src/content/projects/duplicate.mdoc',
-    content: sample.replace('project-0001', 'project-0002'),
-    diagnostic: /Duplicate Project slug: druhy-zivot-starych-dveri/,
+    content: sample.replace('project-0001', 'project-9998'),
+    diagnostic: /Duplicate Project slug: jak-zacala-obnova-naseho-domu/,
   },
   {
     name: 'malformed required metadata',
     path: samplePath,
-    content: sample.replace('title: Druhý život starých dveří', 'title: ""'),
+    content: sample.replace(
+      'title: Jak začala obnova našeho domu',
+      'title: ""',
+    ),
     diagnostic: /title/,
   },
   {
@@ -252,14 +322,19 @@ test('media IDs resolve to static public images and catalog metadata without fet
         html,
         page === 'index.html'
           ? /class="aspect-4\/3 w-full rounded-sm object-cover"/
-          : /class="max-h-144 w-full rounded-sm object-cover"/,
+          : /class="aspect-\[16\/8\.5\] w-full object-cover"/,
       );
       assert.match(html, /height="1200"/);
       assert.match(html, /alt="Obnovené vstupní dveře\."/);
       assert.doesNotMatch(
         html,
-        /<script[\s>]|<astro-island[\s>]|localhost:11434|scripts\/media/,
+        /<astro-island[\s>]|localhost:11434|scripts\/media/,
       );
+      if (page === 'index.html') {
+        assert.doesNotMatch(html, /<script[\s>]/);
+      } else {
+        assert.match(html, /radibydlime:article-preferences/);
+      }
     }
     const detail = await readFile(
       join(directory, 'dist', projectRoute),

@@ -1,0 +1,76 @@
+---
+import { Image } from 'astro:assets';
+import brandBotanical from '../../assets/decor/brand-botanical.png';
+
+interface Props {
+  class?: string;
+  loading?: 'eager' | 'lazy';
+  size?: 'compact' | 'large';
+  variant?: 'stacked' | 'inline';
+}
+
+const {
+  class: className,
+  loading = 'lazy',
+  size = 'compact',
+  variant = 'stacked',
+} = Astro.props;
+
+const textSize =
+  size === 'large'
+    ? 'text-[1.75rem] sm:text-[2.15rem]'
+    : 'text-[2.05rem] sm:text-[2.3rem]';
+---
+
+<span
+  data-brand-mark={variant}
+  class:list={['relative inline-block pr-4 pl-5', className]}
+>
+  <span
+    class="absolute -top-2 left-0 text-xl leading-none text-accent sm:text-2xl"
+    aria-hidden="true"
+  >
+    ♥
+  </span>
+  <span
+    class:list={[
+      'block font-body font-semibold leading-[0.78] tracking-[-0.045em] text-ink',
+      textSize,
+    ]}
+  >
+    {variant === 'stacked' ? (
+      <>
+        <span class="block">Rádi</span>
+        <span class="block">
+          Bydl
+          <span class="relative inline-block">
+            íme
+            <Image
+              src={brandBotanical}
+              alt=""
+              aria-hidden="true"
+              width={42}
+              loading={loading}
+              class="absolute right-[-0.45em] bottom-[0.62em] h-auto w-[1.05em] opacity-90"
+            />
+          </span>
+        </span>
+      </>
+    ) : (
+      <span class="block whitespace-nowrap">
+        Rádi Bydl
+        <span class="relative inline-block">
+          íme
+          <Image
+            src={brandBotanical}
+            alt=""
+            aria-hidden="true"
+            width={42}
+            loading={loading}
+            class="absolute right-[-0.45em] bottom-[0.62em] h-auto w-[1.05em] opacity-90"
+          />
+        </span>
+      </span>
+    )}
+  </span>
+</span>

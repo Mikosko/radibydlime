@@ -68,9 +68,8 @@ test('renders only a native image with canonical escaped metadata and native def
       decoding: 'async',
     });
     const assets = await readdir(join(directory, 'dist/_astro'));
-    assert.ok(
-      assets.every((name) => !name.endsWith('.webp') && !name.endsWith('.js')),
-    );
+    assert.ok(assets.every((name) => !name.includes('dvere')));
+    assert.ok(assets.every((name) => !name.endsWith('.js')));
   });
 });
 

@@ -10,7 +10,7 @@ The current site provides an evolving baseline, not a finalized brand system:
 - **Typography:** Cormorant Garamond gives major headings their editorial character; Source Serif 4 provides readable body text and long-form prose. Preserve Czech readability and comfortable line spacing. Accent faces are occasional, explicit choices as defined below.
 - **Spacing/layout:** consistent rhythm and generous separation should express content grouping. Prefer simple, content-driven composition.
 - **Content widths:** use a bounded page shell and a narrower reading measure for prose; extra screen space should not produce excessively long lines.
-- **Imagery/photo treatment:** support the real subject, preserve important details when cropping, and avoid distortion. Retain meaningful captions and credits. The sample illustration does not establish a photographic style.
+- **Imagery/photo treatment:** support the real subject, preserve important details when cropping, and avoid distortion. Retain meaningful captions and credits. Botanical line drawings, small illustrated marks, and ornamented dividers may quietly reinforce hierarchy and the site's personal editorial character; keep them subordinate, non-semantic, and sparse enough that content remains primary.
 - **Color:** use warm paper surfaces, dark green primary text, muted secondary text, quiet borders, and restrained earthy accents as the baseline. Communicate meaning through more than color alone.
 - **Responsive behavior:** begin with narrow screens; let navigation and content reflow while preserving reading order and hierarchy. Design for intermediate widths and zoom as well as representative Figma frames.
 - **Interaction/motion:** favor clear native interactions and visible feedback. Motion is optional and purposeful; respect reduced-motion preferences when introducing it. Essential content must not depend on hover or animation.
@@ -23,7 +23,7 @@ Detailed photography art direction, further page compositions, and any motion la
 
 Use the semantic roles established in Tailwind/CSS rather than choosing font families independently in components:
 
-- **Display (`font-display`): Cormorant Garamond.** Major headings, editorial titles and the existing text site name. Keep small supporting text and long passages in the body role; an actual brand-logo asset is not replaced with typography.
+- **Display (`font-display`): Cormorant Garamond.** Major headings and editorial titles. The shared header's compact brand lockup may use the real semibold body face when it needs a sturdier wordmark beside authored illustrations. Keep small supporting text and long passages in the body role.
 - **Body (`font-body`): Source Serif 4.** Default text, long-form reading, navigation, controls, captions, ordinary dates/labels, and supporting text. Quotations and emphasis use intentional body italic/semibold styles. Preserve a comfortable reading measure and clear heading hierarchy.
 - **Annotation (`font-annotation`): Allura.** Short personal notes, handwritten annotations or signature-like accents, used sparingly. Never normal body copy, navigation, controls or long passages.
 - **Editorial note (`font-editorial-note`): Special Elite.** Occasional short stamps, dates, torn-paper notes or editorial labels in a deliberately selected context. Never a general body or heading face, and not automatically every date or label.
