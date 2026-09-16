@@ -43,6 +43,9 @@ const projects = defineCollection({
       title: z.string().trim().min(1),
       summary: z.string().trim().min(1),
       topic: z.string().trim().min(1).max(60),
+      authorId: z
+        .string()
+        .regex(/^author-[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Use a stable author ID.'),
       status: z.enum(['draft', 'published', 'archived']),
       publishedAt: z.coerce.date(),
       sidebarPoster: z
@@ -63,6 +66,23 @@ const projects = defineCollection({
           })
           .strict(),
       ]),
+      gallery: z
+        .array(
+          z.union([
+            z.object({ mediaId }).strict(),
+            z
+              .object({
+                src: image(),
+                alt: z.string().trim().min(1),
+                caption: z.string().trim().min(1).optional(),
+                credit: z.string().trim().min(1).optional(),
+              })
+              .strict(),
+          ]),
+        )
+        .min(1)
+        .max(8)
+        .optional(),
     }),
 });
 

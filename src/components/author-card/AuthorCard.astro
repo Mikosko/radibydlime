@@ -1,0 +1,48 @@
+---
+import { Image } from 'astro:assets';
+import type { AuthorProfile } from '../../content/authors/registry';
+
+interface Props {
+  author: AuthorProfile;
+}
+
+const { author } = Astro.props;
+const headingId = `author-${author.id}`;
+---
+
+<section
+  class="relative min-h-80 overflow-hidden border border-line bg-white/25 p-6"
+  aria-labelledby={headingId}
+>
+  <h2
+    id={headingId}
+    class="font-editorial-note text-xs tracking-[0.14em] uppercase"
+  >
+    {author.heading}
+  </h2>
+  <Image
+    src={author.portrait}
+    alt={author.portraitAlt}
+    loading="lazy"
+    class="mt-5 size-28 rounded-full object-cover"
+  />
+  <h3 class="mt-4 font-display text-2xl font-semibold">{author.name}</h3>
+  <p class="mt-2 max-w-48 text-sm leading-relaxed text-muted">{author.bio}</p>
+  {author.aboutHref && (
+    <a
+      href={author.aboutHref}
+      class="mt-4 inline-flex items-center gap-2 text-xs font-semibold tracking-[0.1em] text-accent uppercase hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+    >
+      Více o mně <span aria-hidden="true">→</span>
+    </a>
+  )}
+  {author.decoration && (
+    <Image
+      src={author.decoration}
+      alt=""
+      aria-hidden="true"
+      loading="lazy"
+      class="pointer-events-none absolute -right-9 -bottom-10 h-auto w-48 opacity-45 mix-blend-multiply"
+    />
+  )}
+</section>

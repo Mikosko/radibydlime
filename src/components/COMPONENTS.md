@@ -16,3 +16,9 @@ The shared site shell composes [TopNavigation](top-navigation/SPEC.md). It owns 
 [BrandMark](brand-mark/SPEC.md) owns the reusable live wordmark, heart, and botanical relationship used by the shared header and illustrated footer. Its consumers own links, supporting taglines, and surrounding composition.
 
 [ArticleActions](article-actions/SPEC.md) provides the progressively enhanced favorite and share controls used by article pages. Favorites remain a browser-local preference keyed by stable content ID; the component introduces no account or runtime service.
+
+[AuthorCard](author-card/SPEC.md) renders a reusable author widget from a profile resolved by route assembly. Article content references stable author IDs, while the profile owns its Czech heading, identity, biography, portrait, optional decoration, and optional real profile link.
+
+[FigureCaption](figure-caption/SPEC.md) presents canonical image captions and credits beneath article figures without owning or rewriting their content.
+
+[ArticleGallery](article-gallery/SPEC.md) renders an article's optional, ordered image diary from resolved Project gallery items.

@@ -1,0 +1,7 @@
+# Article gallery
+
+`ArticleGallery.astro` renders an optional Project image gallery after its Markdoc narrative and before adjacent-article navigation. Routes supply the resolved items and validated media catalog. An empty gallery renders nothing.
+
+Items retain authored order and may reference a published media ID or a small local authored image. The media catalog owns public URLs, alternative text, dimensions, captions, and credits for published items; local items supply those fields in Project frontmatter. The gallery uses [MediaImage](../media-image/SPEC.md) or Astro `Image` accordingly and shares [FigureCaption](../figure-caption/SPEC.md). It does not fetch image bytes at build time.
+
+The gallery reads as a horizontally scrollable image diary at all widths. Thumbnails retain authored order and have a visible position indicator. Selecting a thumbnail opens its uncropped, full-size image and caption (or alt text when no caption exists) in a native modal dialog. Previous/next arrows sit over the sides of the image and appear on image hover, keyboard focus, or non-hover devices. Left/Right Arrow keys also move through authored order; navigation stops at the first and last image. A close button, Escape key, and backdrop click dismiss the dialog; native focus management keeps keyboard interaction within the open dialog and returns users to the strip on dismissal. The small browser script only manages these dialogs. Decorative framing does not replace informative alt text.

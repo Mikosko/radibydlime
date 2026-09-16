@@ -4,12 +4,14 @@ import { Image } from 'astro:assets';
 import botanicalStem from '../../assets/decor/botanical-stem.png';
 import floralDivider from '../../assets/decor/floral-divider.png';
 import hopDivider from '../../assets/decor/hop-divider.png';
-import authorPortrait from '../../assets/editorial/sample-author.webp';
 import gardenPhoto from '../../assets/editorial/sample-kitchen-garden.webp';
 import restorationPhoto from '../../assets/editorial/sample-restoration-hero.webp';
 import timberPhoto from '../../assets/editorial/sample-timber-joint.webp';
 import houseLandscape from '../../assets/images/center-image.png';
 import ArticleActions from '../../components/article-actions/ArticleActions.astro';
+import ArticleGallery from '../../components/article-gallery/ArticleGallery.astro';
+import AuthorCard from '../../components/author-card/AuthorCard.astro';
+import FigureCaption from '../../components/figure-caption/FigureCaption.astro';
 import MediaImage from '../../components/media-image/MediaImage.astro';
 import { getMediaCatalog } from '../../content/media/query';
 import { getPublishedProjects } from '../../content/projects/query';
@@ -41,7 +43,7 @@ interface Props {
 }
 
 const { project, catalog, newerProject, olderProject } = Astro.props;
-const { data, hero } = project;
+const { data, hero, author, gallery } = project;
 const { Content, headings } = await render(project);
 const articleHeadings = headings.filter(({ depth }) => depth === 2);
 const formattedDate = data.publishedAt.toLocaleDateString('cs-CZ', {
@@ -55,14 +57,14 @@ const formattedDate = data.publishedAt.toLocaleDateString('cs-CZ', {
 <SiteLayout title={data.title} description={data.summary}>
   <div class="py-7 sm:py-10">
     <a
-      href="/#projekty"
+      href="/kapitoly/"
       class="inline-flex items-center gap-3 py-2 text-xs tracking-[0.12em] text-muted uppercase hover:text-accent xl:hidden"
     >
-      <span aria-hidden="true">←</span> Zpět na projekty
+      <span aria-hidden="true">←</span> na projekty
     </a>
 
     <div class="mt-5 grid grid-cols-[minmax(0,1fr)] gap-x-8 gap-y-12 xl:grid-cols-[18rem_minmax(0,1fr)_22rem] 2xl:grid-cols-[13rem_minmax(0,1fr)_24rem]">
-      <article class="min-w-0 xl:col-start-2 xl:row-start-1">
+      <article class="min-w-0 xl:col-start-2 xl:row-start-1 pt-1.75">
         <header>
           <p class="font-editorial-note text-xs tracking-[0.12em] text-muted uppercase">
             <span class="text-accent">Kapitoly</span>
@@ -85,14 +87,14 @@ const formattedDate = data.publishedAt.toLocaleDateString('cs-CZ', {
           </p>
         </header>
 
-        <figure class="relative mt-7 bg-line">
+        <figure class="relative mt-7">
           {'width' in hero ? (
             <MediaImage
               mediaId={hero.id}
               catalog={catalog}
               loading="eager"
               fetchpriority="high"
-              class="aspect-[16/8.5] w-full object-cover"
+              class="aspect-[16/8.5] w-full bg-line object-cover"
             />
           ) : (
             <Image
@@ -100,7 +102,7 @@ const formattedDate = data.publishedAt.toLocaleDateString('cs-CZ', {
               alt={hero.alt}
               loading="eager"
               fetchpriority="high"
-              class="aspect-[16/8.5] w-full object-cover"
+              class="aspect-[16/8.5] w-full bg-line object-cover"
             />
           )}
           <p
@@ -109,12 +111,7 @@ const formattedDate = data.publishedAt.toLocaleDateString('cs-CZ', {
           >
             Dům roste s námi.
           </p>
-          {(hero.caption || hero.credit) && (
-            <figcaption class="mt-2 text-xs leading-relaxed text-muted">
-              {hero.caption}
-              {hero.credit && <span> Autor: {hero.credit}</span>}
-            </figcaption>
-          )}
+          <FigureCaption caption={hero.caption} credit={hero.credit} />
         </figure>
 
         <div class="narrative article-narrative mt-8">
@@ -129,22 +126,7 @@ const formattedDate = data.publishedAt.toLocaleDateString('cs-CZ', {
           class="mx-auto mt-10 h-auto w-full max-w-50 opacity-85"
         />
 
-        <figure class="mt-8 grid gap-5 md:grid-cols-[1.35fr_1fr] md:items-center">
-          <Image
-            src={timberPhoto}
-            alt="Ruce opravují tradiční spoj ve starém dřevěném trámu."
-            loading="lazy"
-            class="aspect-[4/3] w-full object-cover"
-          />
-          <figcaption class="text-base leading-relaxed text-muted">
-            <span class="mb-3 block font-display text-3xl text-ink">
-              Co chceme zachovat
-            </span>
-            Stopy ruční práce, poctivé dřevo a řešení, která už jednou obstála.
-            Ukázkové fotografie pomáhají posoudit rytmus stránky; později je
-            nahradí skutečný obrazový materiál.
-          </figcaption>
-        </figure>
+        <ArticleGallery items={gallery} catalog={catalog} />
 
         {(newerProject || olderProject) && (
           <nav
@@ -192,10 +174,10 @@ const formattedDate = data.publishedAt.toLocaleDateString('cs-CZ', {
       >
         <div class="sticky top-8">
           <a
-            href="/#projekty"
+            href="/kapitoly/"
             class="inline-flex w-full items-center gap-3 border-line pb-5 text-xs tracking-[0.12em] text-muted uppercase hover:text-accent"
           >
-            <span aria-hidden="true">←</span> Zpět na projekty
+            <span aria-hidden="true">←</span> Zpět na Kapitoly
           </a>
 
           <h2
@@ -252,39 +234,11 @@ const formattedDate = data.publishedAt.toLocaleDateString('cs-CZ', {
 
       <aside
         class="min-w-0 space-y-5 xl:col-start-3 xl:row-start-1"
-        aria-label="O autorce a další témata"
+        aria-label="Informace k článku"
       >
         <ArticleActions articleId={data.id} title={data.title} />
 
-        <section class="relative min-h-80 overflow-hidden border border-line bg-white/25 p-6">
-          <h2 class="font-editorial-note text-xs tracking-[0.14em] uppercase">
-            O autorce
-          </h2>
-          <Image
-            src={authorPortrait}
-            alt="Ukázkový portrét autorky rodinného deníku."
-            loading="lazy"
-            class="mt-5 size-28 rounded-full object-cover"
-          />
-          <h3 class="mt-4 font-display text-2xl font-semibold">Anna Novotná</h3>
-          <p class="mt-2 max-w-48 text-sm leading-relaxed text-muted">
-            Píšu o našem životě na venkově, o zahradě, zvířatech a o tom, jak se
-            dá žít blíž k přírodě. Jméno i portrét jsou zatím ukázkové.
-          </p>
-          <a
-            href="#"
-            class="mt-4 inline-flex items-center gap-2 text-xs font-semibold tracking-[0.1em] text-accent uppercase hover:underline"
-          >
-            Více o mně <span aria-hidden="true">→</span>
-          </a>
-          <Image
-            src={botanicalStem}
-            alt=""
-            aria-hidden="true"
-            loading="lazy"
-            class="pointer-events-none absolute -right-5 -bottom-7 h-auto w-28 opacity-45"
-          />
-        </section>
+        <AuthorCard author={author} />
 
         <section class="border border-line bg-white/20 p-6">
           <h2 class="font-editorial-note text-xs tracking-[0.14em] uppercase">

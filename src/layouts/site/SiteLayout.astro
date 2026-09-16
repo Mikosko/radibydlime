@@ -9,18 +9,9 @@ import footerLandscape from '../../assets/decor/footer-landscape.png';
 import diyIcon from '../../assets/decor/icon-diy.png';
 import gardenIcon from '../../assets/decor/icon-garden.png';
 import houseIcon from '../../assets/decor/icon-house.png';
-import facebookIcon from '../../assets/decor/social-facebook.png';
-import facebookHoverIcon from '../../assets/decor/social-facebook-hover.png';
-import instagramIcon from '../../assets/decor/social-instagram.png';
-import instagramHoverIcon from '../../assets/decor/social-instagram-hover.png';
-import pinterestIcon from '../../assets/decor/social-pinterest.png';
-import pinterestHoverIcon from '../../assets/decor/social-pinterest-hover.png';
-import tiktokIcon from '../../assets/decor/social-tiktok.png';
-import tiktokHoverIcon from '../../assets/decor/social-tiktok-hover.png';
-import youtubeIcon from '../../assets/decor/social-youtube.png';
-import youtubeHoverIcon from '../../assets/decor/social-youtube-hover.png';
 import tornPaper from '../../assets/decor/torn-paper.png';
 import BrandMark from '../../components/brand-mark/BrandMark.astro';
+import SocialIcon from '../../components/social-icon/SocialIcon.astro';
 import TopNavigation from '../../components/top-navigation/TopNavigation.astro';
 
 interface Props {
@@ -34,51 +25,56 @@ const currentYear = new Date().getUTCFullYear();
 const footerLinks = [
   { label: 'Úvod', href: '/' },
   { label: 'Náš příběh', href: '#' },
-  { label: 'Kapitoly', href: '/#projekty' },
+  { label: 'Kapitoly', href: '/kapitoly/' },
   { label: 'Zápisky', href: '#' },
   { label: 'Dílny', href: '#' },
   { label: 'Inzerce', href: '#' },
-  { label: 'Kontakt', href: '#' },
+  { label: 'Kontakt', href: '/kontakt/' },
 ];
 
 const socialLinks = [
   {
     label: 'Instagram',
     href: '#',
-    icon: instagramIcon,
-    hoverIcon: instagramHoverIcon,
+    platform: 'instagram',
+    hoverClass:
+      'hover:border-[#c13584] hover:bg-[#c13584]/5 hover:text-[#c13584]',
   },
   {
     label: 'Facebook',
     href: '#',
-    icon: facebookIcon,
-    hoverIcon: facebookHoverIcon,
+    platform: 'facebook',
+    hoverClass:
+      'hover:border-[#1877f2] hover:bg-[#1877f2]/5 hover:text-[#1877f2]',
   },
   {
     label: 'TikTok',
     href: '#',
-    icon: tiktokIcon,
-    hoverIcon: tiktokHoverIcon,
+    platform: 'tiktok',
+    hoverClass:
+      'hover:border-[#fe2c55] hover:bg-[#fe2c55]/5 hover:text-[#fe2c55]',
   },
   {
     label: 'Pinterest',
     href: '#',
-    icon: pinterestIcon,
-    hoverIcon: pinterestHoverIcon,
+    platform: 'pinterest',
+    hoverClass:
+      'hover:border-[#e60023] hover:bg-[#e60023]/5 hover:text-[#e60023]',
   },
   {
     label: 'YouTube',
     href: '#',
-    icon: youtubeIcon,
-    hoverIcon: youtubeHoverIcon,
+    platform: 'youtube',
+    hoverClass:
+      'hover:border-[#ff0000] hover:bg-[#ff0000]/5 hover:text-[#ff0000]',
   },
-];
+] as const;
 
 const discoveryLinks = [
   {
     title: 'Projekty a stavby',
     description: 'Opravujeme a učíme se',
-    href: '/#projekty',
+    href: '/kapitoly/',
     icon: diyIcon,
   },
   {
@@ -133,83 +129,85 @@ const discoveryLinks = [
     >
       <slot />
     </main>
-    <aside
-      aria-labelledby="co-u-nas-najdete"
-      class="mx-auto mt-20 w-full max-w-[92rem] px-5 sm:mt-24 sm:px-8"
-    >
-      <div class="grid items-stretch border-y border-line lg:grid-cols-[1.7fr_1.8fr_3fr]">
-        <blockquote class="relative isolate m-3 min-h-44 px-7 py-7 pl-35 drop-shadow-sm sm:min-h-48">
-          <Image
-            src={tornPaper}
-            alt=""
-            aria-hidden="true"
-            loading="lazy"
-            class="pointer-events-none absolute inset-0 -z-20 size-full object-fill"
-          />
-          <Image
-            src={botanicalStem}
-            alt=""
-            aria-hidden="true"
-            loading="lazy"
-            class="pointer-events-none absolute bottom-1 left-3 -z-10 h-auto w-20 opacity-75 sm:left-5 sm:w-24"
-          />
-          <p class="font-annotation text-2xl leading-snug sm:text-3xl">
-            „Domov není jen místo, ale způsob, jak žít.“
-          </p>
-        </blockquote>
+    <slot name="footer-intro">
+      <aside
+        aria-labelledby="co-u-nas-najdete"
+        class="mx-auto mt-20 w-full max-w-[92rem] px-5 sm:mt-24 sm:px-8"
+      >
+        <div class="grid items-stretch border-y border-line lg:grid-cols-[1.7fr_1.8fr_3fr]">
+          <blockquote class="relative isolate m-3 min-h-44 px-7 py-7 pl-35 drop-shadow-sm sm:min-h-48">
+            <Image
+              src={tornPaper}
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              class="pointer-events-none absolute inset-0 -z-20 size-full object-fill"
+            />
+            <Image
+              src={botanicalStem}
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              class="pointer-events-none absolute bottom-1 left-3 -z-10 h-auto w-20 opacity-75 sm:left-5 sm:w-24"
+            />
+            <p class="font-annotation text-2xl leading-snug sm:text-3xl">
+              „Domov není jen místo, ale způsob, jak žít.“
+            </p>
+          </blockquote>
 
-        <section class="flex flex-col justify-center px-6 py-8 lg:border-l lg:border-line lg:px-9">
-          <h2
-            id="co-u-nas-najdete"
-            class="font-display text-3xl font-semibold leading-tight"
-          >
-            Co u nás najdete?
-          </h2>
-          <p class="mt-3 max-w-md text-sm leading-relaxed text-muted sm:text-base">
-            Od obnovy domu přes práci v dílně až po zahradu a obyčejné rodinné
-            dny. Sdílíme zkušenosti, které vznikají při skutečné práci.
-          </p>
-          <a
-            href="/#projekty"
-            class="mt-5 inline-flex w-fit items-center gap-2 text-xs font-semibold tracking-[0.1em] text-accent uppercase hover:underline"
-          >
-            Prohlédnout kapitoly <span aria-hidden="true">→</span>
-          </a>
-        </section>
-
-        <nav
-          aria-label="Objevte témata"
-          class="grid border-t border-line sm:grid-cols-3 lg:border-t-0 lg:border-l"
-        >
-          {discoveryLinks.map(({ title, description, href, icon }, index) => (
-            <a
-              href={href}
-              aria-label={
-                href === '#' ? `${title} — stránku připravujeme` : undefined
-              }
-              class:list={[
-                'group grid min-h-44 grid-rows-[3.5rem_auto_1fr] content-start justify-items-center px-5 py-15 text-center hover:bg-white/25 focus-visible:z-10 sm:min-h-48',
-                index > 0 && 'border-t border-line sm:border-t-0 sm:border-l',
-              ]}
+          <section class="flex flex-col justify-center px-6 py-8 lg:border-l lg:border-line lg:px-9">
+            <h2
+              id="co-u-nas-najdete"
+              class="font-display text-3xl font-semibold leading-tight"
             >
-              <Image
-                src={icon}
-                alt=""
-                aria-hidden="true"
-                loading="lazy"
-                class="size-14 object-contain opacity-85 transition-transform group-hover:-translate-y-1"
-              />
-              <span class="mt-3 font-editorial-note text-xs leading-snug tracking-[0.08em] uppercase">
-                {title}
-              </span>
-              <span class="mt-2 max-w-32 text-xs leading-relaxed text-muted">
-                {description}
-              </span>
+              Co u nás najdete?
+            </h2>
+            <p class="mt-3 max-w-md text-sm leading-relaxed text-muted sm:text-base">
+              Od obnovy domu přes práci v dílně až po zahradu a obyčejné rodinné
+              dny. Sdílíme zkušenosti, které vznikají při skutečné práci.
+            </p>
+            <a
+              href="/kapitoly/"
+              class="mt-5 inline-flex w-fit items-center gap-2 text-xs font-semibold tracking-[0.1em] text-accent uppercase hover:underline"
+            >
+              Prohlédnout kapitoly <span aria-hidden="true">→</span>
             </a>
-          ))}
-        </nav>
-      </div>
-    </aside>
+          </section>
+
+          <nav
+            aria-label="Objevte témata"
+            class="grid border-t border-line sm:grid-cols-3 lg:border-t-0 lg:border-l"
+          >
+            {discoveryLinks.map(({ title, description, href, icon }, index) => (
+              <a
+                href={href}
+                aria-label={
+                  href === '#' ? `${title} — stránku připravujeme` : undefined
+                }
+                class:list={[
+                  'group grid min-h-44 grid-rows-[3.5rem_auto_1fr] content-start justify-items-center px-5 py-15 text-center hover:bg-white/25 focus-visible:z-10 sm:min-h-48',
+                  index > 0 && 'border-t border-line sm:border-t-0 sm:border-l',
+                ]}
+              >
+                <Image
+                  src={icon}
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                  class="size-14 object-contain opacity-85 transition-transform group-hover:-translate-y-1"
+                />
+                <span class="mt-3 font-editorial-note text-xs leading-snug tracking-[0.08em] uppercase">
+                  {title}
+                </span>
+                <span class="mt-2 max-w-32 text-xs leading-relaxed text-muted">
+                  {description}
+                </span>
+              </a>
+            ))}
+          </nav>
+        </div>
+      </aside>
+    </slot>
 
     <footer class="mt-16 w-full overflow-x-clip" aria-label="Rádi bydlíme">
       <div class="mx-auto w-full max-w-[92rem] px-5 sm:px-8">
@@ -273,28 +271,18 @@ const discoveryLinks = [
               Sledujte každodenní práci, nápady a malé radosti ze statku.
             </p>
             <ul class="mt-5 flex items-center gap-3">
-              {socialLinks.map(({ label, href, icon, hoverIcon }) => (
+              {socialLinks.map(({ label, href, platform, hoverClass }) => (
                 <li>
                   <a
                     href={href}
                     aria-label={`${label} — odkaz připravujeme`}
                     title={`${label} — odkaz připravujeme`}
-                    class="group relative block size-12 rounded-full focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-accent"
+                    class:list={[
+                      'inline-grid size-11 place-items-center rounded-full border border-line bg-paper/50 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent',
+                      hoverClass,
+                    ]}
                   >
-                    <Image
-                      src={icon}
-                      alt=""
-                      aria-hidden="true"
-                      width={48}
-                      class="block size-full transition-opacity duration-200 group-hover:opacity-0 group-focus-visible:opacity-0 motion-reduce:transition-none"
-                    />
-                    <Image
-                      src={hoverIcon}
-                      alt=""
-                      aria-hidden="true"
-                      width={48}
-                      class="absolute inset-0 block size-full opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none"
-                    />
+                    <SocialIcon platform={platform} />
                   </a>
                 </li>
               ))}

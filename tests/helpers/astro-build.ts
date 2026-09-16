@@ -21,6 +21,7 @@ export async function withFixture(run: (directory: string) => Promise<void>) {
     for (const path of [
       'src',
       'astro.config.mjs',
+      'markdoc.config.mjs',
       'tsconfig.json',
       'package.json',
     ]) {

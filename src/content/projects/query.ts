@@ -1,4 +1,5 @@
 import { getCollection } from 'astro:content';
+import { resolveAuthor } from '../authors/registry';
 import { resolveMedia, type Media } from '../media/schema';
 import { getMediaCatalog } from '../media/query';
 
@@ -19,7 +20,11 @@ export async function getPublishedProjects(
     }
     ids.add(data.id);
     slugs.add(data.slug);
+    resolveAuthor(data.authorId, data.id);
     if ('mediaId' in data.hero) resolveMedia(data.hero.mediaId, media, data.id);
+    for (const item of data.gallery ?? []) {
+      if ('mediaId' in item) resolveMedia(item.mediaId, media, data.id);
+    }
   }
 
   return projects
@@ -31,9 +36,15 @@ export async function getPublishedProjects(
     )
     .map((project) => ({
       ...project,
+      author: resolveAuthor(project.data.authorId, project.data.id),
       hero:
         'mediaId' in project.data.hero
           ? resolveMedia(project.data.hero.mediaId, media, project.data.id)
           : project.data.hero,
+      gallery: (project.data.gallery ?? []).map((item) =>
+        'mediaId' in item
+          ? resolveMedia(item.mediaId, media, project.data.id)
+          : item,
+      ),
     }));
 }

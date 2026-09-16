@@ -1,0 +1,23 @@
+---
+import MediaImage from '../../components/media-image/MediaImage.astro';
+import FigureCaption from '../../components/figure-caption/FigureCaption.astro';
+import { getMediaCatalog } from '../../content/media/query';
+
+interface Props {
+  mediaId: string;
+}
+
+const { mediaId } = Astro.props;
+const catalog = await getMediaCatalog();
+const media = catalog.get(mediaId);
+---
+
+<figure class="my-8">
+  <MediaImage
+    mediaId={mediaId}
+    catalog={catalog}
+    loading="lazy"
+    class="h-auto w-full"
+  />
+  <FigureCaption caption={media?.caption} credit={media?.credit} />
+</figure>

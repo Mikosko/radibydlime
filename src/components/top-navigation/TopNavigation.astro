@@ -6,16 +6,17 @@ import BrandMark from '../brand-mark/BrandMark.astro';
 
 const pathname = Astro.url.pathname;
 const isHome = pathname === '/';
-const isProject = pathname.startsWith('/projekty/');
+const isProject =
+  pathname === '/kapitoly/' || pathname.startsWith('/projekty/');
 
 const links = [
   { label: 'Úvod', href: '/', current: isHome },
   { label: 'Náš příběh', href: '#' },
-  { label: 'Kapitoly', href: '/#projekty', current: isProject },
+  { label: 'Kapitoly', href: '/kapitoly/', current: isProject },
   { label: 'Zápisky', href: '#' },
   { label: 'Dílny', href: '#' },
   { label: 'Inzerce', href: '#' },
-  { label: 'Kontakt', href: '#' },
+  { label: 'Kontakt', href: '/kontakt/', current: pathname === '/kontakt/' },
 ];
 ---
 

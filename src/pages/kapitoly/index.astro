@@ -1,0 +1,243 @@
+---
+import { Image } from 'astro:assets';
+import botanicalDaisies from '../../assets/decor/botanical-daisies.png';
+import floralDivider from '../../assets/decor/floral-divider.png';
+import MediaImage from '../../components/media-image/MediaImage.astro';
+import { getMediaCatalog } from '../../content/media/query';
+import { getPublishedProjects } from '../../content/projects/query';
+import SiteLayout from '../../layouts/site/SiteLayout.astro';
+
+const catalog = await getMediaCatalog();
+const projects = await getPublishedProjects(catalog);
+const featured = projects[0];
+const otherProjects = projects.slice(1);
+const formatDate = (date: Date) =>
+  date.toLocaleDateString('cs-CZ', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+---
+
+<SiteLayout
+  title="Kapitoly"
+  description="Příběhy obnovy našeho domu, práce v dílně a života na zahradě."
+>
+  <div class="mx-auto max-w-[78rem] pb-8">
+    <header class="grid gap-8 border-b border-line pt-12 pb-12 sm:pt-16 sm:pb-16 lg:grid-cols-[minmax(0,1fr)_17rem] lg:items-end lg:gap-16">
+      <div>
+        <p class="font-editorial-note text-xs tracking-[0.16em] text-accent uppercase">
+          Dům · dílna · zahrada
+        </p>
+        <h1 class="mt-5 font-display text-6xl leading-[0.9] sm:text-7xl lg:text-[6.5rem]">
+          Kapitoly
+        </h1>
+        <p class="mt-7 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl">
+          Starý dům se neobnoví v jediném příběhu. Tady si ukládáme práci,
+          objevy i rozhodnutí, která nás postupně vedou dál.
+        </p>
+      </div>
+      <div class="relative hidden min-h-44 border-l border-line pl-8 lg:block">
+        <Image
+          src={botanicalDaisies}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          class="pointer-events-none absolute -right-5 -bottom-5 h-40 w-auto opacity-55"
+        />
+        <p class="relative max-w-44 font-annotation text-3xl leading-tight text-accent -rotate-3">
+          Po kouscích se rodí domov.
+        </p>
+      </div>
+    </header>
+
+    {featured ? (
+      <section aria-labelledby="nejnovejsi-kapitola" class="pt-8 sm:pt-10">
+        <div class="mb-6 flex items-center gap-5">
+          <h2
+            id="nejnovejsi-kapitola"
+            class="font-editorial-note text-xs tracking-[0.14em] text-accent uppercase"
+          >
+            Nejnovější kapitola
+          </h2>
+          <span class="h-px flex-1 bg-line" aria-hidden="true"></span>
+        </div>
+
+        <article class="grid items-center lg:grid-cols-[minmax(0,1.3fr)_minmax(21rem,0.85fr)]">
+          <a
+            href={`/projekty/${featured.data.slug}/`}
+            aria-label={`Otevřít kapitolu: ${featured.data.title}`}
+            class="group block min-w-0 overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+          >
+            {'width' in featured.hero ? (
+              <MediaImage
+                mediaId={featured.hero.id}
+                catalog={catalog}
+                loading="eager"
+                fetchpriority="high"
+                class="aspect-[3/2] w-full bg-line object-cover transition-transform duration-500 motion-safe:group-hover:scale-[1.02]"
+              />
+            ) : (
+              <Image
+                src={featured.hero.src}
+                alt={featured.hero.alt}
+                loading="eager"
+                fetchpriority="high"
+                class="aspect-[3/2] w-full bg-line object-cover transition-transform duration-500 motion-safe:group-hover:scale-[1.02]"
+              />
+            )}
+          </a>
+          <div class="relative border border-line bg-paper px-6 py-8 sm:px-9 sm:py-10 lg:-ml-14 lg:px-10 lg:py-12">
+            <p class="font-editorial-note text-xs tracking-[0.1em] text-accent uppercase">
+              {featured.data.topic}
+            </p>
+            <h3 class="mt-5 font-display text-4xl leading-[1.02] sm:text-5xl">
+              <a
+                href={`/projekty/${featured.data.slug}/`}
+                class="hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+              >
+                {featured.data.title}
+              </a>
+            </h3>
+            <p class="mt-5 text-base leading-relaxed text-muted">
+              {featured.data.summary}
+            </p>
+            <div class="mt-5 flex items-center gap-3 border-t border-line pt-4 text-sm text-muted">
+              <Image
+                src={featured.author.portrait}
+                alt=""
+                aria-hidden="true"
+                width={40}
+                loading="lazy"
+                class="size-9 shrink-0 rounded-full object-cover"
+              />
+              <span class="text-ink">{featured.author.name}</span>
+              <span aria-hidden="true">·</span>
+              <time datetime={featured.data.publishedAt.toISOString()}>
+                {formatDate(featured.data.publishedAt)}
+              </time>
+            </div>
+            <a
+              href={`/projekty/${featured.data.slug}/`}
+              aria-label={`Číst kapitolu: ${featured.data.title}`}
+              class="mt-7 inline-flex items-center gap-3 border-b border-accent pb-1 text-sm font-semibold text-accent transition-colors hover:border-ink hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+            >
+              Číst kapitolu <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </article>
+      </section>
+    ) : (
+      <p class="py-16 text-lg text-muted">
+        První kapitolu právě chystáme. Brzy tu bude mít své místo.
+      </p>
+    )}
+
+    {otherProjects.length > 0 && (
+      <section aria-labelledby="dalsi-kapitoly" class="pt-16 sm:pt-20">
+        <Image
+          src={floralDivider}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          class="mx-auto mb-12 h-auto w-48 sm:mb-16"
+        />
+        <div class="mb-7 flex items-end gap-6">
+          <div>
+            <p class="font-editorial-note text-xs tracking-[0.14em] text-accent uppercase">
+              Ze života u nás
+            </p>
+            <h2
+              id="dalsi-kapitoly"
+              class="mt-2 font-display text-4xl leading-none sm:text-5xl"
+            >
+              Další kapitoly
+            </h2>
+          </div>
+          <span class="mb-1 h-px flex-1 bg-line" aria-hidden="true"></span>
+        </div>
+
+        <ul>
+          {otherProjects.map(({ data, hero, author }, index) => (
+            <li class="border-t border-line py-9 sm:py-12">
+              <article class="grid items-center gap-7 md:grid-cols-2 md:gap-12 lg:gap-16">
+                <a
+                  href={`/projekty/${data.slug}/`}
+                  aria-label={`Otevřít kapitolu: ${data.title}`}
+                  class:list={[
+                    'group block min-w-0 overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent',
+                    index % 2 === 1 && 'md:order-2',
+                  ]}
+                >
+                  {'width' in hero ? (
+                    <MediaImage
+                      mediaId={hero.id}
+                      catalog={catalog}
+                      loading="lazy"
+                      class="aspect-[4/3] w-full bg-line object-cover transition-transform duration-500 motion-safe:group-hover:scale-[1.02]"
+                    />
+                  ) : (
+                    <Image
+                      src={hero.src}
+                      alt={hero.alt}
+                      loading="lazy"
+                      class="aspect-[4/3] w-full bg-line object-cover transition-transform duration-500 motion-safe:group-hover:scale-[1.02]"
+                    />
+                  )}
+                </a>
+                <div class:list={[index % 2 === 1 && 'md:order-1']}>
+                  <p class="font-editorial-note text-xs tracking-[0.12em] text-accent uppercase">
+                    {data.topic}
+                  </p>
+                  <h3 class="mt-4 max-w-lg font-display text-3xl leading-[1.05] sm:text-4xl">
+                    <a
+                      href={`/projekty/${data.slug}/`}
+                      class="hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                    >
+                      {data.title}
+                    </a>
+                  </h3>
+                  <p class="mt-4 max-w-lg leading-relaxed text-muted">
+                    {data.summary}
+                  </p>
+                  <div class="mt-5 flex items-center gap-3 text-sm text-muted">
+                    <Image
+                      src={author.portrait}
+                      alt=""
+                      aria-hidden="true"
+                      width={40}
+                      loading="lazy"
+                      class="size-8 shrink-0 rounded-full object-cover"
+                    />
+                    <span class="text-ink">{author.name}</span>
+                    <span aria-hidden="true">·</span>
+                    <time datetime={data.publishedAt.toISOString()}>
+                      {formatDate(data.publishedAt)}
+                    </time>
+                  </div>
+                  <a
+                    href={`/projekty/${data.slug}/`}
+                    aria-label={`Číst kapitolu: ${data.title}`}
+                    class="mt-5 inline-flex items-center gap-3 text-sm font-semibold text-accent hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                  >
+                    Číst kapitolu <span aria-hidden="true">→</span>
+                  </a>
+                </div>
+              </article>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <div class="flex items-center justify-between gap-6 border-t border-line pt-6">
+      <p class="font-annotation text-2xl text-accent sm:text-3xl">
+        Pokračování píšeme za pochodu.
+      </p>
+      <span class="text-xl text-accent" aria-hidden="true">
+        ♥
+      </span>
+    </div>
+  </div>
+</SiteLayout>

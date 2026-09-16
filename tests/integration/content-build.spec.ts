@@ -8,12 +8,12 @@ const samplePath = 'src/content/projects/entrance-door.mdoc';
 const projectRoute = 'projekty/jak-zacala-obnova-naseho-domu/index.html';
 // Keep local-image coverage independent of the image selected in authored content.
 const sample = (await readFile(join(root, samplePath), 'utf8')).replace(
-  /hero:\n[\s\S]*?\n---/,
+  /hero:\n(?:  .+\n)+(?=gallery:|---)/,
   `hero:
   src: ../../assets/entrance-door.svg
   alt: Ilustrace zelených dveří.
   caption: Ilustrace k ukázkovému projektu.
----`,
+`,
 );
 
 test('production site configuration uses the custom domain at the URL root', async () => {
@@ -37,15 +37,50 @@ test('production site configuration uses the custom domain at the URL root', asy
 
 test('published pages render Czech metadata, Markdoc, navigation, and local images', async () => {
   await withFixture(async (directory) => {
-    await writeFile(join(directory, samplePath), sample);
+    await writeFile(
+      join(directory, samplePath),
+      `${sample}
+
+{% article-image mediaId="media-308b7c8b-113d-4fa8-9351-f3bd8d32292c" /%}
+
+{% article-section mediaId="media-308b7c8b-113d-4fa8-9351-f3bd8d32292c" side="left" %}
+Text beside a photograph.
+{% /article-section %}
+
+{% article-section decoration="construction-hammer" side="right" %}
+Text beside an ornament.
+{% /article-section %}
+`,
+    );
     await build(directory);
     const home = await readFile(join(directory, 'dist/index.html'), 'utf8');
+    const chapters = await readFile(
+      join(directory, 'dist/kapitoly/index.html'),
+      'utf8',
+    );
     const project = await readFile(
       join(directory, 'dist', projectRoute),
       'utf8',
     );
+    assert.match(home, /href="\/kapitoly\/"/);
     assert.match(home, /href="\/projekty\/jak-zacala-obnova-naseho-domu\/"/);
     assert.match(home, /Jak začala obnova našeho domu/);
+    assert.match(chapters, /<h1[^>]*>\s*Kapitoly\s*<\/h1>/);
+    assert.match(chapters, /href="\/kapitoly\/" aria-current="page"/);
+    assert.match(chapters, /Anna Novotná/);
+    assert.match(chapters, /Jan Novotný/);
+    for (const slug of [
+      'jak-zacala-obnova-naseho-domu',
+      'oprava-starych-stropnich-tramu',
+      'prvni-rok-kuchynske-zahrady',
+    ]) {
+      assert.match(chapters, new RegExp(`href="/projekty/${slug}/"`));
+    }
+    assert.ok(
+      chapters.indexOf('Jak začala obnova našeho domu') <
+        chapters.indexOf('Jak jsme opravili staré stropní trámy'),
+    );
+    assert.match(project, /href="\/kapitoly\/"/);
     assert.match(project, /<strong>Tento ukázkový zápis<\/strong>/);
     assert.match(project, /<blockquote>/);
     assert.match(project, /<h2[^>]*>.*Nejdřív naslouchat domu/);
@@ -59,7 +94,27 @@ test('published pages render Czech metadata, Markdoc, navigation, and local imag
     assert.match(project, /aria-pressed="false"/);
     assert.match(project, /data-share-button/);
     assert.match(project, /data-read-later-button/);
+    assert.match(project, /aria-labelledby="author-author-sample"/);
+    assert.match(project, /id="author-author-sample"/);
+    assert.match(project, /O autorce/);
+    assert.match(project, /Anna Novotná/);
+    assert.match(project, /article-section--visual-right/);
+    assert.match(project, /Text beside a photograph/);
+    assert.match(project, /Text beside an ornament/);
+    assert.match(project, /construction-hammer\.[^" ]+\.webp/);
+    assert.match(project, /https:\/\/media\.radibydlime\.cz\/images\//);
+    assert.match(project, /author-leaf-sprig\.[^" ]+\.webp/);
+    assert.doesNotMatch(project, /construction-house\.[^" ]+\.webp/);
     assert.match(project, /Ilustrace k ukázkovému projektu/);
+    assert.match(project, /Obrazový deník/);
+    assert.match(project, /data-article-gallery/);
+    assert.match(project, /data-gallery-open="0"/);
+    assert.match(project, /data-gallery-dialog="0"/);
+    assert.match(project, /data-gallery-step="-1"/);
+    assert.match(project, /data-gallery-step="1"/);
+    assert.match(project, /Zavřít fotografii/);
+    assert.match(project, /Detail ruční práce při obnově původního dřeva/);
+    assert.match(project, /Dům a zahrada postupně dostávají nový rytmus/);
     assert.match(project, /Krajina je náš domov/);
     assert.match(project, /aria-label="Další projekty"/);
     assert.match(
@@ -71,13 +126,26 @@ test('published pages render Czech metadata, Markdoc, navigation, and local imag
       'utf8',
     );
     assert.match(gardenProject, /Zahrada/);
+    const timberProject = await readFile(
+      join(
+        directory,
+        'dist/projekty/oprava-starych-stropnich-tramu/index.html',
+      ),
+      'utf8',
+    );
+    assert.match(timberProject, /aria-labelledby="author-author-jan"/);
+    assert.match(timberProject, /O autorovi/);
+    assert.match(timberProject, />Jan Novotný<\/h3>/);
+    assert.match(timberProject, /construction-house\.[^" ]+\.webp/);
+    assert.doesNotMatch(timberProject, /author-leaf-sprig\.[^" ]+\.webp/);
 
     assert.doesNotMatch(home, /<script[\s>]|<astro-island[\s>]/);
+    assert.doesNotMatch(chapters, /<script[\s>]|<astro-island[\s>]/);
     assert.match(project, /<script type="module">/);
     assert.match(project, /radibydlime:article-preferences/);
     assert.doesNotMatch(project, /<astro-island[\s>]/);
 
-    for (const html of [home, project]) {
+    for (const html of [home, chapters, project]) {
       assert.match(html, /<html lang="cs">/);
       assert.match(html, /<meta name="description" content="[^"]+"/);
       assert.equal((html.match(/<h1[\s>]/g) ?? []).length, 1);
@@ -114,6 +182,15 @@ test('published pages render Czech metadata, Markdoc, navigation, and local imag
           new RegExp(`aria-label="${social} — odkaz připravujeme"`),
         );
       }
+      for (const platform of [
+        'instagram',
+        'facebook',
+        'tiktok',
+        'pinterest',
+        'youtube',
+      ]) {
+        assert.match(html, new RegExp(`data-social-icon="${platform}"`));
+      }
       const images = [...html.matchAll(/<img\b[^>]*>/g)];
       assert.ok(images.length > 0);
       for (const [image] of images) {
@@ -128,6 +205,9 @@ test('published pages render Czech metadata, Markdoc, navigation, and local imag
         assert.match(image, /height="\d+"/);
         const source = /src="([^"]+)"/.exec(image)?.[1];
         assert.ok(source, 'Expected an image source');
+        if (source.startsWith('https://media.radibydlime.cz/images/')) {
+          continue;
+        }
         assert.ok(
           source.startsWith('/_astro/'),
           `Expected a built local image: ${source}`,
@@ -135,6 +215,36 @@ test('published pages render Czech metadata, Markdoc, navigation, and local imag
         assert.ok((await stat(join(directory, 'dist', source))).isFile());
       }
     }
+  });
+});
+
+test('contact page offers the confirmed mailbox and separate enquiry subjects without a submission service', async () => {
+  await withFixture(async (directory) => {
+    await build(directory);
+    const html = await readFile(
+      join(directory, 'dist/kontakt/index.html'),
+      'utf8',
+    );
+    assert.equal((html.match(/<h1[\s>]/g) ?? []).length, 1);
+    assert.match(html, /href="\/kontakt\/" aria-current="page"/);
+    assert.match(html, /href="mailto:info@radibydlime.cz"/);
+    for (const subject of [
+      'Zpráva od čtenáře',
+      'Poptávka projektu',
+      'Dotaz k nabídce',
+      'Nabídka spolupráce',
+    ]) {
+      assert.ok(
+        html.includes(
+          `mailto:info@radibydlime.cz?subject=${encodeURIComponent(subject)}`,
+        ),
+      );
+    }
+    assert.match(html, /id="contact-draft"/);
+    assert.match(html, /data-email="info@radibydlime.cz"/);
+    assert.match(html, /Připravit e-mail/);
+    assert.match(html, /<noscript>/);
+    assert.doesNotMatch(html, /<astro-island[\s>]/);
   });
 });
 
@@ -163,6 +273,15 @@ test('renaming the file and localized slug preserves the canonical collection id
     );
     const home = await readFile(join(directory, 'dist/index.html'), 'utf8');
     assert.match(home, /href="\/projekty\/obnova-domu\/"/);
+    const chapters = await readFile(
+      join(directory, 'dist/kapitoly/index.html'),
+      'utf8',
+    );
+    assert.match(chapters, /href="\/projekty\/obnova-domu\/"/);
+    assert.doesNotMatch(
+      chapters,
+      /href="\/projekty\/jak-zacala-obnova-naseho-domu\/"/,
+    );
     assert.ok(
       (
         await stat(join(directory, 'dist/projekty/obnova-domu/index.html'))
@@ -192,8 +311,16 @@ test('draft and archived Projects have no public listing, narrative, or detail r
     );
     await build(directory);
     const home = await readFile(join(directory, 'dist/index.html'), 'utf8');
+    const chapters = await readFile(
+      join(directory, 'dist/kapitoly/index.html'),
+      'utf8',
+    );
     assert.doesNotMatch(
       home,
+      /Jak začala obnova našeho domu|Nejdřív naslouchat|archivovany-projekt/,
+    );
+    assert.doesNotMatch(
+      chapters,
       /Jak začala obnova našeho domu|Nejdřív naslouchat|archivovany-projekt/,
     );
     await assert.rejects(stat(join(directory, 'dist', projectRoute)), {
@@ -231,6 +358,24 @@ const invalidCases = [
     diagnostic: /title/,
   },
   {
+    name: 'unknown author references',
+    path: samplePath,
+    content: sample.replace(
+      'authorId: author-sample',
+      'authorId: author-missing',
+    ),
+    diagnostic: /Unknown author ID author-missing referenced by project-0001/,
+  },
+  {
+    name: 'unknown gallery media references',
+    path: samplePath,
+    content: sample.replace(
+      /gallery:\n  - src: [^\n]+\n    alt: [^\n]+\n    caption: [^\n]+\n/,
+      'gallery:\n  - mediaId: media-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\n',
+    ),
+    diagnostic: /Unknown media ID media-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa/,
+  },
+  {
     name: 'missing local image references',
     path: samplePath,
     content: sample.replace('entrance-door.svg', 'missing-image.svg'),
@@ -247,6 +392,14 @@ const invalidCases = [
     path: samplePath,
     content: sample + '\n{% unsupported /%}\n',
     diagnostic: /Undefined tag.*unsupported/,
+  },
+  {
+    name: 'unknown article image media IDs',
+    path: samplePath,
+    content:
+      sample +
+      '\n{% article-image mediaId="media-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa" /%}\n',
+    diagnostic: /Unknown media ID media-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa/,
   },
 ];
 
@@ -279,8 +432,8 @@ const mediaRecord = {
   sha256: 'a'.repeat(64),
 };
 const withMediaHero = sample.replace(
-  /hero:\n[\s\S]*?\n---/,
-  `hero:\n  mediaId: ${mediaId}\n---`,
+  /hero:\n(?:  .+\n)+(?=gallery:|---)/,
+  `hero:\n  mediaId: ${mediaId}\n`,
 );
 
 test('removing the last media record invalidates references even with an existing content cache', async () => {
@@ -322,7 +475,7 @@ test('media IDs resolve to static public images and catalog metadata without fet
         html,
         page === 'index.html'
           ? /class="aspect-4\/3 w-full rounded-sm object-cover"/
-          : /class="aspect-\[16\/8\.5\] w-full object-cover"/,
+          : /class="aspect-\[16\/8\.5\] w-full bg-line object-cover"/,
       );
       assert.match(html, /height="1200"/);
       assert.match(html, /alt="Obnovené vstupní dveře\."/);

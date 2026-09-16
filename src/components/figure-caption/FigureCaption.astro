@@ -1,0 +1,30 @@
+---
+interface Props {
+  caption?: string;
+  credit?: string;
+}
+
+const { caption, credit } = Astro.props;
+---
+
+{(caption || credit) && (
+  <figcaption class="flex gap-3 px-0.5 py-3.5 text-sm leading-relaxed text-muted sm:gap-4 sm:py-4">
+    <span
+      class="mt-[0.7em] h-px w-7 shrink-0 bg-accent/75 sm:w-9"
+      aria-hidden="true"
+    ></span>
+    <span class="min-w-0">
+      {caption && <span class="block">{caption}</span>}
+      {credit && (
+        <span
+          class:list={[
+            'block text-xs tracking-[0.03em] text-muted',
+            caption && 'mt-1',
+          ]}
+        >
+          Autor: {credit}
+        </span>
+      )}
+    </span>
+  </figcaption>
+)}

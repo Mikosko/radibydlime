@@ -1,0 +1,74 @@
+---
+import { Image } from 'astro:assets';
+import constructionHammer from '../../assets/decor/construction-hammer.png';
+import constructionHouse from '../../assets/decor/construction-house.png';
+import constructionTrowel from '../../assets/decor/construction-trowel.png';
+import authorLeafSprig from '../../assets/decor/author-leaf-sprig.png';
+import MediaImage from '../../components/media-image/MediaImage.astro';
+import { getMediaCatalog } from '../../content/media/query';
+
+interface Props {
+  mediaId?: string;
+  decoration?: string;
+  side: 'left' | 'right';
+}
+
+const { mediaId, decoration, side } = Astro.props;
+if (Boolean(mediaId) === Boolean(decoration)) {
+  throw new Error(
+    'article-section requires exactly one mediaId or decoration.',
+  );
+}
+const decorations = {
+  'leaf-sprig': authorLeafSprig,
+  'construction-hammer': constructionHammer,
+  'construction-trowel': constructionTrowel,
+  'construction-house': constructionHouse,
+};
+const illustration = decoration
+  ? decorations[decoration as keyof typeof decorations]
+  : undefined;
+if (decoration && !illustration) {
+  throw new Error(`Unknown article decoration: ${decoration}.`);
+}
+const catalog = mediaId ? await getMediaCatalog() : undefined;
+---
+
+<div
+  class:list={[
+    'article-section my-8 grid items-center gap-6 md:grid-cols-2 md:gap-8',
+    side === 'right' && 'article-section--visual-right',
+  ]}
+>
+  <div class="article-section__visual min-w-0">
+    {mediaId && catalog ? (
+      <MediaImage
+        mediaId={mediaId}
+        catalog={catalog}
+        loading="lazy"
+        class="h-auto w-full"
+      />
+    ) : illustration ? (
+      <Image
+        src={illustration}
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        class="mx-auto h-auto max-h-56 w-auto max-w-full opacity-75 mix-blend-multiply"
+      />
+    ) : null}
+  </div>
+  <div class="article-section__text min-w-0">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .article-section--visual-right .article-section__visual {
+    order: 2;
+  }
+
+  :global(.article-section__text > * + *) {
+    margin-top: 1rem;
+  }
+</style>
