@@ -66,24 +66,50 @@ const projects = defineCollection({
           })
           .strict(),
       ]),
-      gallery: z
-        .array(
-          z.union([
-            z.object({ mediaId }).strict(),
-            z
-              .object({
-                src: image(),
-                alt: z.string().trim().min(1),
-                caption: z.string().trim().min(1).optional(),
-                credit: z.string().trim().min(1).optional(),
-              })
-              .strict(),
-          ]),
-        )
-        .min(1)
-        .max(8)
+      galleryId: z
+        .string()
+        .regex(/^album-[0-9]{4,}$/)
         .optional(),
+      gallery: z.never().optional(),
     }),
 });
 
-export const collections = { projects, media };
+const albums = defineCollection({
+  loader: glob({
+    pattern: '*.mdoc',
+    base: './src/content/albums',
+    generateId: ({ entry }) => entry,
+  }),
+  schema: ({ image }) =>
+    z
+      .object({
+        id: z.string().regex(/^album-[0-9]{4,}$/),
+        slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+        title: z.string().trim().min(1),
+        description: z.string().trim().min(1),
+        status: z.enum(['draft', 'published', 'archived']),
+        publishedAt: z.coerce.date(),
+        projectId: z
+          .string()
+          .regex(/^project-[0-9]{4,}$/)
+          .optional(),
+        images: z
+          .array(
+            z.union([
+              z.object({ mediaId }).strict(),
+              z
+                .object({
+                  src: image(),
+                  alt: z.string().trim().min(1),
+                  caption: z.string().trim().min(1).optional(),
+                  credit: z.string().trim().min(1).optional(),
+                })
+                .strict(),
+            ]),
+          )
+          .min(1),
+      })
+      .strict(),
+});
+
+export const collections = { projects, media, albums };

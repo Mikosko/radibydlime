@@ -1,4 +1,5 @@
 import { getCollection } from 'astro:content';
+import { getAlbums } from '../albums/query';
 import { resolveAuthor } from '../authors/registry';
 import { resolveMedia, type Media } from '../media/schema';
 import { getMediaCatalog } from '../media/query';
@@ -8,6 +9,9 @@ export async function getPublishedProjects(
 ) {
   const projects = await getCollection('projects');
   const media = catalog ?? (await getMediaCatalog());
+  const albums = new Map(
+    (await getAlbums(media)).map((album) => [album.data.id, album]),
+  );
   const ids = new Set<string>();
   const slugs = new Set<string>();
 
@@ -22,8 +26,17 @@ export async function getPublishedProjects(
     slugs.add(data.slug);
     resolveAuthor(data.authorId, data.id);
     if ('mediaId' in data.hero) resolveMedia(data.hero.mediaId, media, data.id);
-    for (const item of data.gallery ?? []) {
-      if ('mediaId' in item) resolveMedia(item.mediaId, media, data.id);
+    if (data.galleryId) {
+      const album = albums.get(data.galleryId);
+      if (!album)
+        throw new Error(
+          `Unknown Album ID ${data.galleryId} referenced by ${data.id}`,
+        );
+      if (data.status === 'published' && album.data.status !== 'published') {
+        throw new Error(
+          `Published Project ${data.id} references unpublished Album ${data.galleryId}`,
+        );
+      }
     }
   }
 
@@ -41,10 +54,8 @@ export async function getPublishedProjects(
         'mediaId' in project.data.hero
           ? resolveMedia(project.data.hero.mediaId, media, project.data.id)
           : project.data.hero,
-      gallery: (project.data.gallery ?? []).map((item) =>
-        'mediaId' in item
-          ? resolveMedia(item.mediaId, media, project.data.id)
-          : item,
-      ),
+      gallery: project.data.galleryId
+        ? albums.get(project.data.galleryId)!.images
+        : [],
     }));
 }

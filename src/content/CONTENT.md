@@ -4,7 +4,7 @@
 
 Use Astro Content Collections with typed schemas. Author structured metadata in YAML frontmatter and narrative/rich bodies in Markdoc. Keep content portable; small authored images may stay local, while bulk photographs use the [published media catalog](media/SPEC.md); authored content must not contain executable application code.
 
-The durable domain vocabulary is Project, JournalEntry, Workshop, SaleItem, and Page. These are domain types, not page templates. Each may combine structured metadata with a flexible narrative body. The current slice implements only Project; its concrete rules live in [projects/SPEC.md](projects/SPEC.md). Implement collections and schemas only for actual content. Do not create empty collections for the rest.
+The durable domain vocabulary is Project, JournalEntry, Workshop, SaleItem, and Page. These are domain types, not page templates. Each may combine structured metadata with a flexible narrative body. The current slice implements Project and independently authored [photo albums](albums/SPEC.md); its concrete rules live in [projects/SPEC.md](projects/SPEC.md). Implement collections and schemas only for actual content. Do not create empty collections for the rest.
 
 ## Identity, URLs, and references
 

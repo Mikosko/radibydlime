@@ -11,9 +11,17 @@ const isProject =
 
 const links = [
   { label: 'Úvod', href: '/', current: isHome },
-  { label: 'Náš příběh', href: '#' },
+  {
+    label: 'Náš příběh',
+    href: '/nas-pribeh/',
+    current: pathname === '/nas-pribeh/',
+  },
   { label: 'Kapitoly', href: '/kapitoly/', current: isProject },
-  { label: 'Zápisky', href: '#' },
+  {
+    label: 'Galerie',
+    href: '/galerie/',
+    current: pathname.startsWith('/galerie/'),
+  },
   { label: 'Dílny', href: '#' },
   { label: 'Inzerce', href: '#' },
   { label: 'Kontakt', href: '/kontakt/', current: pathname === '/kontakt/' },

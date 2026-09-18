@@ -1,0 +1,62 @@
+---
+import SiteLayout from '../../layouts/site/SiteLayout.astro';
+import ArticleGallery from '../../components/article-gallery/ArticleGallery.astro';
+import { getMediaCatalog } from '../../content/media/query';
+import { getPublishedAlbums } from '../../content/albums/query';
+
+export async function getStaticPaths() {
+  const catalog = await getMediaCatalog();
+  return (await getPublishedAlbums(catalog)).map((album) => ({
+    params: { slug: album.data.slug },
+    props: { album, catalog },
+  }));
+}
+interface Props {
+  album: Awaited<ReturnType<typeof getPublishedAlbums>>[number];
+  catalog: Awaited<ReturnType<typeof getMediaCatalog>>;
+}
+const { album, catalog } = Astro.props;
+---
+
+<SiteLayout title={album.data.title} description={album.data.description}>
+  <div class="mx-auto max-w-[78rem] py-10 sm:py-14">
+    <a
+      href="/galerie/"
+      class="inline-flex min-h-11 items-center gap-3 text-sm text-accent hover:underline"
+    >
+      <span aria-hidden="true">←</span> Všechna alba
+    </a>
+    <header class="mt-5 border-b border-line pb-8">
+      <p class="text-xs tracking-[0.18em] text-muted uppercase">
+        Galerie · {album.images.length} snímků
+      </p>
+      <h1 class="mt-4 font-display text-5xl leading-tight sm:text-6xl">
+        {album.data.title}
+      </h1>
+      <p class="mt-5 max-w-2xl text-lg leading-relaxed text-muted">
+        {album.data.description}
+      </p>
+      {album.project && (
+        <a
+          href={`/projekty/${album.project.data.slug}/`}
+          class="mt-5 inline-block text-sm text-accent hover:underline"
+        >
+          Číst související kapitolu: {album.project.data.title} →
+        </a>
+      )}
+    </header>
+    <ArticleGallery
+      items={album.images}
+      {catalog}
+      layout="grid"
+      title="Fotografie z alba"
+      eyebrow="Obrazový deník"
+    />
+    <a
+      href="/galerie/"
+      class="mt-10 inline-flex min-h-11 items-center gap-3 text-sm text-accent hover:underline"
+    >
+      <span aria-hidden="true">←</span> Zpět na všechna alba
+    </a>
+  </div>
+</SiteLayout>

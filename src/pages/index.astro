@@ -4,103 +4,388 @@ import MediaImage from '../components/media-image/MediaImage.astro';
 import { getMediaCatalog } from '../content/media/query';
 import { getPublishedProjects } from '../content/projects/query';
 import SiteLayout from '../layouts/site/SiteLayout.astro';
+import terrace from '../assets/decor/hero.png';
+import paper from '../assets/decor/torn-paper.png';
+import botanical from '../assets/decor/botanical-bellflower.png';
+import divider from '../assets/decor/floral-divider.png';
+import courtyard from '../assets/editorial/sample-gallery-courtyard.webp';
+import workbench from '../assets/editorial/sample-gallery-workbench.webp';
+import house from '../assets/images/logo-house.png';
+import hammer from '../assets/decor/construction-hammer.png';
+import garden from '../assets/decor/contact-wheelbarrow.png';
+import envelope from '../assets/decor/contact-envelope.png';
 
 const catalog = await getMediaCatalog();
-const projects = await getPublishedProjects(catalog);
+const projects = (await getPublishedProjects(catalog)).slice(0, 3);
+const formatDate = (date: Date) =>
+  date.toLocaleDateString('cs-CZ', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+const paths = [
+  {
+    title: 'Náš příběh',
+    description: 'Místo, které se stává domovem',
+    href: '/nas-pribeh/',
+    icon: house,
+  },
+  {
+    title: 'Kapitoly obnovy',
+    description: 'Práce, nápady a malé pokroky',
+    href: '/kapitoly/',
+    icon: hammer,
+  },
+  {
+    title: 'Ze zahrady',
+    description: 'Co se učíme pod širým nebem',
+    href: '#projekty',
+    icon: garden,
+  },
+  {
+    title: 'Napište nám',
+    description: 'Vaše zkušenosti i společné nápady',
+    href: '/kontakt/',
+    icon: envelope,
+  },
+];
 ---
 
 <SiteLayout
-  title="Místo, které roste s námi"
-  description="Rádi bydlíme. Rodinný prostor pro příběhy obnovy starého domu, tvoření a radosti z vlastní práce."
+  title="Starý dům. Nový příběh."
+  description="Rádi bydlíme v Tuchořicích. Příběhy obnovy starého domu, práce vlastníma rukama, zahrady a obyčejných rodinných dnů."
 >
-  <section
-    class="max-w-3xl pt-16 pb-14 sm:pt-24 sm:pb-20"
-    aria-labelledby="uvod"
-  >
-    <p class="mb-6 text-xs font-semibold tracking-widest text-accent uppercase">
-      Dům · zahrada · vlastníma rukama
-    </p>
-    <h1
-      id="uvod"
-      class="font-display text-5xl leading-tight tracking-tight sm:text-7xl"
+  <div class="mx-auto max-w-[82rem]">
+    <section
+      aria-labelledby="uvod"
+      class="relative grid items-center gap-6 pt-10 pb-8 sm:pt-14 lg:grid-cols-[0.85fr_1.5fr] lg:gap-0 lg:pb-14"
     >
-      Místo, které
-      <br />
-      roste s námi.
-    </h1>
-    <p class="mt-7 max-w-xl text-lg leading-relaxed text-muted sm:text-xl">
-      Starý dům, nové nápady a radost z každého malého pokroku. Prostor pro
-      příběhy oprav, tvoření a života mezi tím.
-    </p>
-    <a
-      href="#projekty"
-      class="mt-8 inline-flex items-center gap-3 py-2 text-sm font-semibold underline"
-    >
-      Nahlédnout do projektů <span aria-hidden="true">↓</span>
-    </a>
-  </section>
+      <div class="relative z-10 lg:pb-12">
+        <p class="text-xs font-semibold tracking-[0.2em] text-muted uppercase">
+          Rádi bydlíme · Tuchořice
+        </p>
+        <h1
+          id="uvod"
+          class="mt-5 font-display text-6xl leading-[0.95] sm:text-7xl lg:text-[5.5rem]"
+        >
+          Starý dům.
+          <br />
+          Nový příběh.
+        </h1>
+        <p class="mt-6 max-w-sm text-lg leading-relaxed text-muted">
+          Obnovujeme náš domov a objevujeme radost z vlastní práce. O domě,
+          zahradě a krásném obyčejném životě mezi tím.
+        </p>
+        <a
+          href="/nas-pribeh/"
+          class="mt-7 inline-flex min-h-12 items-center gap-8 border border-ink/50 px-6 py-3 text-xs font-semibold tracking-[0.14em] uppercase hover:bg-ink hover:text-paper"
+        >
+          Náš příběh <span aria-hidden="true">→</span>
+        </a>
+        <p class="mt-7 pl-5 font-annotation text-3xl leading-tight text-accent -rotate-3">
+          Místo, které znovu dýchá.
+        </p>
+      </div>
+      <Image
+        src={terrace}
+        alt=""
+        aria-hidden="true"
+        loading="eager"
+        fetchpriority="high"
+        widths={[480, 800, 1200]}
+        sizes="(min-width: 1024px) 800px, 95vw"
+        class="h-auto w-full"
+      />
+    </section>
 
-  <section
-    id="projekty"
-    aria-labelledby="projekty-nadpis"
-    class="scroll-mt-8 border-t border-line pt-8"
-  >
-    <div class="mb-8 flex flex-wrap items-baseline justify-between gap-3">
-      <h2 id="projekty-nadpis" class="font-display text-3xl">
-        Na čem se pracuje
-      </h2>
-      <p class="text-sm text-muted">Jeden krok za druhým</p>
-    </div>
-    {projects.length === 0 ? (
-      <p class="py-8 text-muted">
-        První příběhy právě chystáme. Brzy tu najdete víc.
-      </p>
-    ) : (
-      <ul class="space-y-12">
-        {projects.map(({ data, hero }) => (
-          <li>
-            <article class="grid items-center gap-7 md:grid-cols-2 md:gap-12">
-              {'width' in hero ? (
-                <MediaImage
-                  mediaId={hero.id}
-                  catalog={catalog}
-                  loading="lazy"
-                  class="aspect-4/3 w-full rounded-sm object-cover"
-                />
-              ) : (
-                <Image
-                  src={hero.src}
-                  alt={hero.alt}
-                  class="aspect-4/3 w-full rounded-sm object-cover"
-                />
-              )}
-              <div>
-                <p class="mb-4 text-xs font-semibold tracking-widest text-accent uppercase">
-                  Z našich projektů
+    <section
+      aria-labelledby="krok-za-krokem"
+      class="relative grid items-center gap-10 border-t border-line px-2 py-12 sm:px-5 sm:py-16 md:grid-cols-[1fr_1.1fr_1fr] md:gap-8"
+    >
+      <figure class="snapshot mx-auto w-full max-w-xs -rotate-5">
+        <Image
+          src={courtyard}
+          alt="Ilustrační dvůr venkovského domu připravený k obnově."
+          loading="lazy"
+          width={560}
+          class="aspect-[4/5] w-full object-cover"
+        />
+        <figcaption class="px-2 pt-4 pb-2 font-annotation text-3xl text-muted">
+          Každý dům má co vyprávět.
+        </figcaption>
+      </figure>
+      <div class="text-center md:text-left">
+        <p class="text-xs font-semibold tracking-[0.15em] text-muted uppercase">
+          Z našich kapitol
+        </p>
+        <h2
+          id="krok-za-krokem"
+          class="mt-4 font-display text-4xl leading-tight sm:text-5xl"
+        >
+          Rekonstrukce
+          <br />
+          krok za krokem
+        </h2>
+        <p class="mt-5 leading-relaxed text-muted">
+          Ze starých zdí zase domov. Sdílíme, co právě opravujeme, co nás
+          překvapilo a co bychom příště zkusili jinak.
+        </p>
+        <a
+          href="/kapitoly/"
+          class="mt-6 inline-flex min-h-11 items-center gap-5 border-b border-accent py-2 text-xs font-semibold tracking-[0.12em] text-accent uppercase"
+        >
+          Prohlédnout kapitoly <span aria-hidden="true">→</span>
+        </a>
+        <p class="mt-5 text-xs text-muted italic">
+          Fotografie zatím ilustrují atmosféru našeho vyprávění.
+        </p>
+      </div>
+      <figure class="snapshot mx-auto w-full max-w-xs rotate-4">
+        <Image
+          src={workbench}
+          alt="Ilustrační pracovní stůl s ručním nářadím ve venkovské dílně."
+          loading="lazy"
+          width={560}
+          class="aspect-[4/5] w-full object-cover"
+        />
+        <figcaption class="px-2 pt-4 pb-2 font-annotation text-3xl text-muted">
+          A my píšeme další kapitolu.
+        </figcaption>
+      </figure>
+    </section>
+
+    <section
+      id="projekty"
+      aria-labelledby="projekty-nadpis"
+      class="scroll-mt-8 pt-6 pb-12 sm:pb-16"
+    >
+      <div class="mb-8 flex flex-wrap items-baseline justify-between gap-4">
+        <h2 id="projekty-nadpis" class="font-display text-4xl sm:text-5xl">
+          Co u nás právě vzniká
+        </h2>
+        <a href="/kapitoly/" class="py-2 text-sm text-accent hover:underline">
+          Všechny kapitoly <span aria-hidden="true">→</span>
+        </a>
+      </div>
+      {projects.length === 0 ? (
+        <p class="py-8 text-muted">
+          První příběhy právě chystáme. Brzy tu najdete víc.
+        </p>
+      ) : (
+        <ul class="grid gap-9 md:grid-cols-3 md:gap-7">
+          {projects.map(({ data, hero, author }) => (
+            <li>
+              <article>
+                <a
+                  href={`/projekty/${data.slug}/`}
+                  aria-label={`Číst: ${data.title}`}
+                  class="block"
+                >
+                  {'width' in hero ? (
+                    <MediaImage
+                      mediaId={hero.id}
+                      catalog={catalog}
+                      loading="lazy"
+                      class="aspect-[3/2] w-full object-cover"
+                    />
+                  ) : (
+                    <Image
+                      src={hero.src}
+                      alt={hero.alt}
+                      loading="lazy"
+                      width={640}
+                      class="aspect-[3/2] w-full object-cover"
+                    />
+                  )}
+                </a>
+                <p class="mt-5 font-editorial-note text-xs tracking-[0.08em] text-accent uppercase">
+                  {data.topic}
                 </p>
-                <h3 class="font-display text-3xl leading-tight sm:text-4xl">
-                  <a href={`/projekty/${data.slug}/`} class="hover:underline">
+                <h3 class="mt-2 font-display text-3xl leading-tight">
+                  <a href={`/projekty/${data.slug}/`} class="hover:text-accent">
                     {data.title}
                   </a>
                 </h3>
-                <p class="mt-5 text-lg leading-relaxed text-muted">
+                <p class="mt-3 text-sm leading-relaxed text-muted">
                   {data.summary}
                 </p>
-                <p class="mt-6 text-sm text-muted">
+                <div class="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-3 text-xs text-muted">
+                  <span>{author.name}</span>
                   <time datetime={data.publishedAt.toISOString()}>
-                    {data.publishedAt.toLocaleDateString('cs-CZ', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric',
-                      timeZone: 'UTC',
-                    })}
+                    {formatDate(data.publishedAt)}
                   </time>
-                </p>
-              </div>
-            </article>
-          </li>
-        ))}
-      </ul>
-    )}
+                </div>
+              </article>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+
+    <nav
+      aria-label="Objevte Rádi bydlíme"
+      class="grid border-y border-line sm:grid-cols-2 lg:grid-cols-4"
+    >
+      {paths.map(({ title, description, href, icon }, index) => (
+        <a
+          href={href}
+          class:list={[
+            'flex flex-col items-center px-6 py-8 text-center hover:bg-white/25',
+            index > 0 && 'border-line lg:border-l',
+            index % 2 === 1 && 'sm:border-l',
+          ]}
+        >
+          <Image
+            src={icon}
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            width={220}
+            class="h-24 w-32 object-contain"
+          />
+          <span class="mt-4 font-display text-2xl">{title}</span>
+          <span class="mt-2 max-w-44 text-sm leading-relaxed text-muted">
+            {description}
+          </span>
+          <span aria-hidden="true" class="mt-4 text-accent">
+            →
+          </span>
+        </a>
+      ))}
+    </nav>
+
+    <blockquote class="relative isolate my-12 px-6 py-12 text-center sm:my-16 sm:px-28 sm:py-14">
+      <Image
+        src={paper}
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        class="pointer-events-none absolute inset-0 -z-10 size-full opacity-35"
+      />
+      <Image
+        src={botanical}
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        width={200}
+        class="pointer-events-none absolute bottom-3 left-0 hidden h-40 w-24 object-contain opacity-70 sm:block"
+      />
+      <p class="font-annotation text-3xl leading-snug sm:text-4xl">
+        Krásné věci nevznikají hned,
+        <br />
+        ale stojí za to si na ně počkat.
+      </p>
+      <p class="mt-5 text-xs tracking-[0.18em] text-muted uppercase">
+        Rádi bydlíme
+      </p>
+    </blockquote>
+
+    <section
+      aria-labelledby="my-jsme"
+      class="grid items-center gap-8 pb-8 md:grid-cols-[1fr_1.1fr_1fr] md:gap-10"
+    >
+      <div>
+        <p class="text-xs font-semibold tracking-[0.15em] text-muted uppercase">
+          Za příběhy jsme my
+        </p>
+        <h2 id="my-jsme" class="mt-3 font-display text-4xl">
+          My jsme Rádi bydlíme
+        </h2>
+        <p class="mt-4 leading-relaxed text-muted">
+          Obnovujeme, tvoříme, pěstujeme. A učíme se mít radost i z věcí, které
+          ještě nejsou hotové. Tady mají místo naše zkušenosti i obyčejné
+          rodinné dny.
+        </p>
+        <a
+          href="/nas-pribeh/"
+          class="mt-5 inline-flex min-h-11 items-center gap-4 text-sm text-accent hover:underline"
+        >
+          Více o nás <span aria-hidden="true">→</span>
+        </a>
+      </div>
+      <Image
+        src={house}
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        widths={[400, 640]}
+        sizes="(min-width: 768px) 400px, 90vw"
+        class="mx-auto h-auto w-full max-w-sm opacity-85"
+      />
+      <div>
+        <p class="text-xs font-semibold tracking-[0.15em] text-muted uppercase">
+          Tady jsme doma
+        </p>
+        <h2 class="mt-3 font-display text-4xl">Tuchořice</h2>
+        <p class="mt-4 leading-relaxed text-muted">
+          Náš příběh má své místo. Právě tady se potkává práce na domě, život na
+          zahradě a všechno, co nás ještě čeká.
+        </p>
+        <p class="mt-4 text-sm text-muted">Tuchořice 37 · 439 69 Tuchořice</p>
+        <a
+          href="/kontakt/"
+          class="mt-5 inline-flex min-h-11 items-center gap-4 text-sm text-accent hover:underline"
+        >
+          Buďme v kontaktu <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </section>
+    <Image
+      src={divider}
+      alt=""
+      aria-hidden="true"
+      loading="lazy"
+      width={350}
+      class="mx-auto mt-6 h-auto w-56"
+    />
+  </div>
+
+  <section
+    slot="footer-intro"
+    aria-labelledby="budte-u-toho"
+    class="mx-auto mt-12 w-full max-w-[92rem] px-5 sm:mt-16 sm:px-8"
+  >
+    <div class="grid items-center gap-6 border-y border-line bg-ink/5 px-6 py-10 sm:px-10 md:grid-cols-[1fr_auto]">
+      <div>
+        <p class="text-xs font-semibold tracking-[0.15em] text-muted uppercase">
+          Příběh pokračuje
+        </p>
+        <h2 id="budte-u-toho" class="mt-3 font-display text-4xl">
+          Buďte u toho s námi
+        </h2>
+        <p class="mt-3 max-w-xl leading-relaxed text-muted">
+          Nahlédněte do našich kapitol. A jestli máte podobný příběh, otázku
+          nebo nápad, rádi si o něm přečteme.
+        </p>
+      </div>
+      <a
+        href="/kontakt/"
+        class="inline-flex min-h-12 w-fit items-center gap-8 bg-ink px-7 py-3 text-xs font-semibold tracking-[0.12em] text-paper uppercase hover:bg-ink/90"
+      >
+        Napište nám <span aria-hidden="true">→</span>
+      </a>
+    </div>
   </section>
 </SiteLayout>
+
+<style>
+  .snapshot {
+    position: relative;
+    border: 1px solid var(--color-line);
+    padding: 0.65rem;
+    background: var(--color-paper);
+    box-shadow: 1px 2px 3px #293c3018;
+  }
+  .snapshot::before {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    top: -0.7rem;
+    left: 38%;
+    width: 27%;
+    height: 1.5rem;
+    background: #bcb59b80;
+    transform: rotate(-4deg);
+  }
+</style>

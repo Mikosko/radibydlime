@@ -2,7 +2,7 @@
 
 `SiteLayout.astro` is the only current presentation shell. Routes pass a title and description and supply page content through the default slot.
 
-An optional `footer-intro` slot replaces the entire default discovery strip when a page has a more relevant footer introduction. Kontakt supplies its enquiry topics there; other pages keep the default.
+An optional `footer-intro` slot replaces the entire default discovery strip when a page has a more relevant footer introduction. Kontakt supplies its enquiry topics there and Náš příběh and the homepage supply an invitation to contact; other pages keep the default.
 
 The header and footer both link to the static [contact page](../../pages/kontakt/SPEC.md) at `/kontakt/`.
 
@@ -17,3 +17,5 @@ The first keyboard link skips to the focusable main landmark. [TopNavigation](..
 Styling comes from `src/styles/global.css`: Tailwind tokens for paper, ink, muted text, borders, accent, the [semantic typography roles](../../styles/UI.md), and a bounded site width. Source Serif 4 supplies body text and Cormorant Garamond supplies display text. The shell preloads only their normal local WOFF2 files using the same emitted URLs as CSS. Italic and optional accents are not preloaded. Navigation reflows on small screens. There are no client scripts, third-party font requests, or required JavaScript interactions.
 
 The cross-cutting output checks live in `tests/integration/content-build.spec.ts`; no component test harness is needed for this static shell.
+
+The homepage uses an illustrated estate opening, two scrapbook-style sample photos, the three latest published Projects with canonical heroes and author/date metadata, links to implemented sections, an editorial quotation, and introductions to the family theme and Tuchořice. Its photo notes are illustrative, not a factual before/after comparison. No newsletter subscription, shop, or unimplemented destination is added by the landing-page composition.

@@ -1,0 +1,312 @@
+---
+import { Image } from 'astro:assets';
+import SiteLayout from '../../layouts/site/SiteLayout.astro';
+import courtyard from '../../assets/editorial/sample-gallery-courtyard.webp';
+import paper from '../../assets/decor/torn-paper.png';
+import storyStem from '../../assets/decor/story-botanical-stem.png';
+import leaf from '../../assets/decor/author-leaf-sprig.png';
+import hammer from '../../assets/decor/construction-hammer.png';
+import garden from '../../assets/decor/icon-garden.png';
+import house from '../../assets/decor/construction-house.png';
+import estate from '../../assets/images/logo-house.png';
+import divider from '../../assets/decor/floral-divider.png';
+
+const chapters = [
+  {
+    title: 'Místo pro život',
+    label: 'Na začátku',
+    image: leaf,
+    text: 'Touha vytvořit domov, kde je prostor pro rodinu, zahradu i práci vlastníma rukama.',
+  },
+  {
+    title: 'Práce vlastníma rukama',
+    label: 'Krok za krokem',
+    image: hammer,
+    text: 'Obnova domu, první opravy a spousta učení. Hledáme, co zachovat a čemu dát nový život.',
+  },
+  {
+    title: 'Každodenní radosti',
+    label: 'Mezi tím vším',
+    image: garden,
+    text: 'Vedle velkých projektů patří k našemu příběhu i zahrada, dílna a obyčejné rodinné dny.',
+  },
+  {
+    title: 'Příběh pokračuje',
+    label: 'Dnes a dál',
+    image: house,
+    text: 'Zapisujeme zkušenosti, malé objevy i věci, které se nepovedly. Domov roste spolu s námi.',
+  },
+];
+const values = [
+  {
+    title: 'Přirozenost',
+    text: 'Máme rádi jednoduchá řešení a věci, které dávají smysl místu i každodennímu životu.',
+    icon: 'leaf',
+  },
+  {
+    title: 'Poctivá práce',
+    text: 'Učíme se vlastníma rukama. Radost máme z práce, za kterou je vidět péče a trpělivost.',
+    icon: 'heart',
+  },
+  {
+    title: 'Sdílení zkušeností',
+    text: 'Píšeme o tom, co zkoušíme. Třeba naše zkušenost pomůže někomu na jeho vlastní cestě.',
+    icon: 'garden',
+  },
+  {
+    title: 'Domov pro nás',
+    text: 'Nejde o dokonalý obrázek. Chceme místo, kde je nám spolu dobře a kam se rádi vracíme.',
+    icon: 'sun',
+  },
+];
+---
+
+<SiteLayout
+  title="Náš příběh"
+  description="Obnovujeme náš domov, tvoříme vlastníma rukama a sdílíme příběhy, které při tom vznikají. Poznejte Rádi bydlíme."
+>
+  <div class="mx-auto max-w-[78rem] pt-10 sm:pt-14">
+    <header class="grid items-center gap-10 pb-12 lg:grid-cols-[1fr_1.1fr] lg:gap-24 lg:pb-16">
+      <div>
+        <p class="text-xs font-semibold tracking-[0.2em] uppercase">O nás</p>
+        <h1 class="mt-4 font-display text-5xl leading-none sm:text-6xl lg:text-7xl">
+          Náš příběh
+        </h1>
+        <p class="mt-5 max-w-lg font-display text-3xl leading-tight sm:text-4xl">
+          Obnovujeme, tvoříme,
+          <br />
+          pěstujeme a sdílíme.
+        </p>
+        <p class="mt-6 max-w-lg text-lg leading-relaxed text-muted">
+          Rádi bydlíme je náš zápisník z obnovy domova. O starém domě, práci v
+          dílně, zahradě i rodinném životě, který se mezi tím vším odehrává.
+        </p>
+        <p class="mt-4 max-w-lg leading-relaxed text-muted">
+          Nemáme na všechno hotový návod. Zkoušíme, učíme se a zapisujeme, co
+          nám dává smysl. Své místo tu mají velké proměny i docela malé radosti.
+        </p>
+        <div class="mt-7 flex items-center gap-5 text-accent">
+          <span aria-hidden="true" class="text-2xl">
+            ♥
+          </span>
+          <p class="font-annotation text-3xl leading-tight -rotate-3">
+            Domov není místo,
+            <br />
+            ale způsob, jak žít.
+          </p>
+        </div>
+      </div>
+      <div class="relative mx-auto w-full max-w-xl pt-5 pr-3 pl-12 sm:pr-5 sm:pl-16 lg:pl-0">
+        <figure class="border border-line bg-paper p-2 shadow-sm -rotate-2 sm:p-3">
+          <Image
+            src={courtyard}
+            alt="Ilustrační pohled do dvora starého venkovského domu."
+            loading="eager"
+            widths={[480, 800, 1200]}
+            sizes="(min-width: 1024px) 580px, 90vw"
+            class="aspect-[5/4] w-full object-cover"
+          />
+          <figcaption class="px-2 pt-3 pb-1 text-xs leading-relaxed text-muted">
+            Obnova začíná pohledem na to, co už tu je.{' '}
+            <span class="italic">Ilustrační fotografie.</span>
+          </figcaption>
+        </figure>
+        <Image
+          src={storyStem}
+          alt=""
+          aria-hidden="true"
+          width={160}
+          class="pointer-events-none absolute top-[43%] left-0 h-32 w-10 -translate-y-1/2 object-cover opacity-85 sm:h-44 sm:w-14 lg:-left-22 lg:h-48 lg:w-20"
+        />
+        <aside
+          aria-label="Malý vzkaz"
+          class="absolute -top-2 right-0 isolate w-32 px-4 py-6 text-center rotate-5 sm:w-36"
+        >
+          <Image
+            src={paper}
+            alt=""
+            aria-hidden="true"
+            class="absolute inset-0 -z-10 size-full"
+          />
+          <p class="font-annotation text-2xl leading-tight">
+            Malé kroky
+            <br />
+            dělají velké
+            <br />
+            změny.
+          </p>
+          <span aria-hidden="true" class="mt-3 block text-lg text-accent">
+            ♥
+          </span>
+        </aside>
+      </div>
+    </header>
+
+    <section
+      aria-labelledby="jak-to-zacalo"
+      class="border-t border-line pt-9 pb-10 sm:pt-12 sm:pb-14"
+    >
+      <p class="text-xs font-semibold tracking-[0.18em] uppercase">
+        Jak to všechno roste
+      </p>
+      <h2 id="jak-to-zacalo" class="mt-3 font-display text-4xl sm:text-5xl">
+        Od nápadu k příběhům
+      </h2>
+      <p class="mt-4 max-w-2xl leading-relaxed text-muted">
+        Dům se mění pomalu. S každou opravou přibývá zkušenost, s každým ročním
+        obdobím další kapitola.
+      </p>
+      <ol class="mt-9 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-0">
+        {chapters.map(({ title, label, image, text }, index) => (
+          <li class="relative px-4 text-center lg:px-7">
+            <Image
+              src={image}
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              width={240}
+              class="mx-auto h-28 w-36 object-contain"
+            />
+            {index < chapters.length - 1 && (
+              <span
+                aria-hidden="true"
+                class="absolute top-12 -right-4 hidden text-2xl text-muted lg:block"
+              >
+                ⟶
+              </span>
+            )}
+            <p class="mt-5 font-editorial-note text-xs tracking-[0.08em] text-accent uppercase">
+              {label}
+            </p>
+            <h3 class="mt-2 font-display text-2xl">{title}</h3>
+            <p class="mx-auto mt-2 max-w-60 text-sm leading-relaxed text-muted">
+              {text}
+            </p>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section
+      aria-labelledby="nase-hodnoty"
+      class="relative isolate px-5 py-12 sm:px-9 sm:py-14"
+    >
+      <Image
+        src={paper}
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        class="pointer-events-none absolute inset-0 -z-10 size-full opacity-35"
+      />
+      <p class="text-center text-xs font-semibold tracking-[0.18em] uppercase">
+        Co je pro nás důležité
+      </p>
+      <h2
+        id="nase-hodnoty"
+        class="mt-3 text-center font-display text-4xl sm:text-5xl"
+      >
+        Hodnoty, na kterých stavíme
+      </h2>
+      <ul class="mt-8 grid gap-y-7 sm:grid-cols-2 lg:grid-cols-4">
+        {values.map(({ title, text, icon }, index) => (
+          <li
+            class:list={[
+              'px-5 text-center sm:px-7',
+              index % 2 === 1 && 'sm:border-l sm:border-line',
+              index === 2 && 'lg:border-l lg:border-line',
+            ]}
+          >
+            <div class="flex h-20 items-center justify-center">
+              {icon === 'leaf' || icon === 'garden' ? (
+                <Image
+                  src={icon === 'leaf' ? leaf : garden}
+                  alt=""
+                  aria-hidden="true"
+                  loading="lazy"
+                  width={160}
+                  class="size-20 object-contain"
+                />
+              ) : (
+                <svg
+                  viewBox="0 0 64 64"
+                  aria-hidden="true"
+                  class="size-16 fill-none stroke-accent"
+                  stroke-width="1.4"
+                >
+                  {icon === 'heart' ? (
+                    <path d="M32 54S6 37 6 20C6 5 25 4 32 18 39 4 58 5 58 20 58 37 32 54 32 54Z" />
+                  ) : (
+                    <>
+                      <circle cx="32" cy="32" r="14" />
+                      <path d="M32 2v10m0 40v10M2 32h10m40 0h10M11 11l7 7m28 28 7 7M11 53l7-7m28-28 7-7M20 4l4 9m16 38 4 9M4 20l9 4m38 16 9 4M4 44l9-4m38-16 9-4M20 60l4-9m16-38 4-9" />
+                    </>
+                  )}
+                </svg>
+              )}
+            </div>
+            <h3 class="mt-4 font-display text-2xl">{title}</h3>
+            <p class="mt-3 text-sm leading-relaxed text-muted">{text}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+    <Image
+      src={divider}
+      alt=""
+      aria-hidden="true"
+      loading="lazy"
+      width={350}
+      class="mx-auto mt-9 h-auto w-56"
+    />
+  </div>
+
+  <section
+    slot="footer-intro"
+    aria-labelledby="pojdme-si-napsat"
+    class="mx-auto mt-12 w-full max-w-[92rem] px-5 sm:mt-16 sm:px-8"
+  >
+    <div class="grid items-center gap-8 border-y border-line py-8 md:grid-cols-[1fr_1.2fr] lg:grid-cols-[1fr_1.25fr_0.65fr] lg:gap-12">
+      <Image
+        src={estate}
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        widths={[400, 640]}
+        sizes="(min-width: 768px) 400px, 90vw"
+        class="mx-auto h-auto w-full max-w-sm opacity-80"
+      />
+      <div>
+        <p class="text-xs font-semibold tracking-[0.16em] uppercase">
+          Pojďme být v kontaktu
+        </p>
+        <h2 id="pojdme-si-napsat" class="mt-3 font-display text-4xl">
+          Těšíme se na vaše příběhy
+        </h2>
+        <p class="mt-4 max-w-lg leading-relaxed text-muted">
+          Máte nápad, dotaz nebo se chcete podělit o vlastní zkušenost? Ozvěte
+          se nám. Rádi si přečteme, co vzniká u vás.
+        </p>
+        <a
+          href="/kontakt/"
+          class="mt-6 inline-flex min-h-12 items-center gap-7 bg-ink px-8 py-3 text-xs font-semibold tracking-[0.12em] text-paper uppercase hover:bg-ink/90"
+        >
+          Napište nám <span aria-hidden="true">→</span>
+        </a>
+        <a
+          href="/kapitoly/"
+          class="mt-5 block w-fit text-sm text-accent hover:underline"
+        >
+          Nahlédnout do našich kapitol →
+        </a>
+      </div>
+      <p class="hidden text-center font-annotation text-3xl leading-snug text-accent -rotate-6 lg:block">
+        Každý domov
+        <br />
+        má svůj příběh.
+        <span aria-hidden="true" class="mt-4 block font-body text-xl">
+          ♥
+        </span>
+      </p>
+    </div>
+  </section>
+</SiteLayout>

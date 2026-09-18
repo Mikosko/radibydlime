@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import botanicalDaisies from '../../assets/decor/botanical-daisies.png';
+import terrace from '../../assets/decor/project.png';
 import floralDivider from '../../assets/decor/floral-divider.png';
 import MediaImage from '../../components/media-image/MediaImage.astro';
 import { getMediaCatalog } from '../../content/media/query';
@@ -25,30 +25,37 @@ const formatDate = (date: Date) =>
   description="Příběhy obnovy našeho domu, práce v dílně a života na zahradě."
 >
   <div class="mx-auto max-w-[78rem] pb-8">
-    <header class="grid gap-8 border-b border-line pt-12 pb-12 sm:pt-16 sm:pb-16 lg:grid-cols-[minmax(0,1fr)_17rem] lg:items-end lg:gap-16">
-      <div>
-        <p class="font-editorial-note text-xs tracking-[0.16em] text-accent uppercase">
+    <header class="relative grid items-center gap-5 pt-10 pb-8 sm:pt-12 lg:grid-cols-[1.2fr_1fr]">
+      <div class="relative z-10 pb-4">
+        <p class="text-xs font-semibold tracking-[0.2em] uppercase">
           Dům · dílna · zahrada
         </p>
-        <h1 class="mt-5 font-display text-6xl leading-[0.9] sm:text-7xl lg:text-[6.5rem]">
+        <h1 class="mt-4 font-display text-5xl leading-none sm:text-6xl lg:text-7xl">
           Kapitoly
         </h1>
-        <p class="mt-7 max-w-2xl text-lg leading-relaxed text-muted sm:text-xl">
+        <p class="mt-3 font-display text-3xl leading-tight sm:text-4xl">
+          Příběhy, ze kterých roste domov.
+        </p>
+        <p class="mt-5 max-w-xl leading-relaxed text-muted sm:text-lg">
           Starý dům se neobnoví v jediném příběhu. Tady si ukládáme práci,
           objevy i rozhodnutí, která nás postupně vedou dál.
         </p>
       </div>
-      <div class="relative hidden min-h-44 border-l border-line pl-8 lg:block">
+      <div class="relative mx-auto w-full max-w-lg pt-20" aria-hidden="true">
+        <p class="absolute top-0 left-5 font-annotation text-3xl leading-tight text-accent -rotate-6 sm:left-10">
+          Po kouscích
+          <br />
+          se rodí domov. <span class="ml-2 font-body text-lg">♥</span>
+        </p>
         <Image
-          src={botanicalDaisies}
+          src={terrace}
           alt=""
           aria-hidden="true"
-          loading="lazy"
-          class="pointer-events-none absolute -right-5 -bottom-5 h-40 w-auto opacity-55"
+          loading="eager"
+          widths={[480, 800]}
+          sizes="(min-width: 1024px) 520px, 90vw"
+          class="h-auto w-full opacity-85"
         />
-        <p class="relative max-w-44 font-annotation text-3xl leading-tight text-accent -rotate-3">
-          Po kouscích se rodí domov.
-        </p>
       </div>
     </header>
 
@@ -230,14 +237,5 @@ const formatDate = (date: Date) =>
         </ul>
       </section>
     )}
-
-    <div class="flex items-center justify-between gap-6 border-t border-line pt-6">
-      <p class="font-annotation text-2xl text-accent sm:text-3xl">
-        Pokračování píšeme za pochodu.
-      </p>
-      <span class="text-xl text-accent" aria-hidden="true">
-        ♥
-      </span>
-    </div>
   </div>
 </SiteLayout>

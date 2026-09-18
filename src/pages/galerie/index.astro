@@ -1,0 +1,119 @@
+---
+import { Image } from 'astro:assets';
+import MediaImage from '../../components/media-image/MediaImage.astro';
+import { getMediaCatalog } from '../../content/media/query';
+import { getPublishedAlbums } from '../../content/albums/query';
+import SiteLayout from '../../layouts/site/SiteLayout.astro';
+import botanical from '../../assets/decor/botanical-bellflower.png';
+import divider from '../../assets/decor/floral-divider.png';
+
+const catalog = await getMediaCatalog();
+const albums = await getPublishedAlbums(catalog);
+---
+
+<SiteLayout
+  title="Galerie"
+  description="Obrazový deník Rádi bydlíme. Dům, zahrada, práce vlastníma rukama a malé detaily našich kapitol."
+>
+  <div class="mx-auto max-w-[78rem] pt-10 pb-8 sm:pt-14">
+    <header class="relative border-b border-line pb-9 pr-16 sm:pr-36">
+      <p class="text-xs font-semibold tracking-[0.2em] text-muted uppercase">
+        Dům · zahrada · detaily
+      </p>
+      <h1 class="mt-4 font-display text-5xl leading-none sm:text-6xl lg:text-7xl">
+        Galerie
+      </h1>
+      <p class="mt-4 font-display text-3xl leading-tight sm:text-4xl">
+        Někdy stačí jen pohled.
+      </p>
+      <p class="mt-5 max-w-xl leading-relaxed text-muted">
+        Malé zastavení mezi našimi příběhy. Nahlédněte do domu, zahrady a dílny
+        — na místa i drobnosti, které tvoří celek.
+      </p>
+      <Image
+        src={botanical}
+        alt=""
+        aria-hidden="true"
+        loading="eager"
+        width={200}
+        class="pointer-events-none absolute right-0 bottom-5 h-36 w-14 object-contain opacity-75 sm:h-52 sm:w-28"
+      />
+    </header>
+    <p class="mt-6 text-sm leading-relaxed text-muted italic">
+      Zatím listujete alby s ukázkovými fotografiemi. Postupně je nahradí
+      skutečné snímky od nás.
+    </p>
+    {albums.length > 0 ? (
+      <ul class="mt-10 grid gap-x-7 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+        {albums.map(({ data, cover, images }) => (
+          <li>
+            <article>
+              <a
+                href={`/galerie/${data.slug}/`}
+                class="group block"
+                aria-label={`Otevřít album: ${data.title}`}
+              >
+                <div class="relative border border-line bg-paper p-2 shadow-sm">
+                  {'width' in cover ? (
+                    <MediaImage
+                      mediaId={cover.id}
+                      {catalog}
+                      class="aspect-[4/3] w-full object-cover group-hover:opacity-90"
+                    />
+                  ) : (
+                    <Image
+                      src={cover.src}
+                      alt={cover.alt}
+                      loading="lazy"
+                      width={700}
+                      class="aspect-[4/3] w-full object-cover group-hover:opacity-90"
+                    />
+                  )}
+                  <span class="absolute right-4 bottom-4 bg-paper/95 px-3 py-1 text-xs text-ink">
+                    {images.length}{' '}
+                    {images.length === 1
+                      ? 'fotografie'
+                      : images.length < 5
+                        ? 'fotografie'
+                        : 'fotografií'}
+                  </span>
+                </div>
+                <h2 class="mt-5 font-display text-3xl group-hover:text-accent">
+                  {data.title}
+                </h2>
+              </a>
+              <p class="mt-2 leading-relaxed text-muted">{data.description}</p>
+              <a
+                href={`/galerie/${data.slug}/`}
+                class="mt-4 inline-flex min-h-11 items-center gap-4 text-sm text-accent hover:underline"
+              >
+                Prohlédnout album <span aria-hidden="true">→</span>
+              </a>
+            </article>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p class="py-12 text-muted">První alba právě chystáme.</p>
+    )}
+    <div class="mt-12 text-center">
+      <Image
+        src={divider}
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        width={350}
+        class="mx-auto h-auto w-56"
+      />
+      <p class="mt-5 font-annotation text-3xl text-accent">
+        Za každou fotkou je příběh.
+      </p>
+      <a
+        href="/kapitoly/"
+        class="mt-4 inline-flex min-h-11 items-center gap-4 text-sm text-accent hover:underline"
+      >
+        Přečíst naše kapitoly <span aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+</SiteLayout>

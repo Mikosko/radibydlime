@@ -8,7 +8,7 @@ const samplePath = 'src/content/projects/entrance-door.mdoc';
 const projectRoute = 'projekty/jak-zacala-obnova-naseho-domu/index.html';
 // Keep local-image coverage independent of the image selected in authored content.
 const sample = (await readFile(join(root, samplePath), 'utf8')).replace(
-  /hero:\n(?:  .+\n)+(?=gallery:|---)/,
+  /hero:\n(?:  .+\n)+(?=galleryId:|---)/,
   `hero:
   src: ../../assets/entrance-door.svg
   alt: Ilustrace zelených dveří.
@@ -156,7 +156,7 @@ Text beside an ornament.
         'Úvod',
         'Náš příběh',
         'Kapitoly',
-        'Zápisky',
+        'Galerie',
         'Dílny',
         'Inzerce',
         'Kontakt',
@@ -166,8 +166,13 @@ Text beside an ornament.
       assert.match(html, /aria-label="Rádi bydlíme — úvod"/);
       assert.match(html, /data-brand-mark="stacked"/);
       assert.match(html, /data-brand-mark="inline"/);
-      assert.match(html, /aria-labelledby="co-u-nas-najdete"/);
-      assert.match(html, /Co u nás najdete\?/);
+      if (html === home) {
+        assert.match(html, /aria-labelledby="budte-u-toho"/);
+        assert.doesNotMatch(html, /aria-labelledby="co-u-nas-najdete"/);
+      } else {
+        assert.match(html, /aria-labelledby="co-u-nas-najdete"/);
+        assert.match(html, /Co u nás najdete\?/);
+      }
       assert.match(html, /© \d{4} Rádi bydlíme/);
       assert.match(html, /<nav aria-label="Navigace v zápatí"/);
       for (const social of [
@@ -367,13 +372,10 @@ const invalidCases = [
     diagnostic: /Unknown author ID author-missing referenced by project-0001/,
   },
   {
-    name: 'unknown gallery media references',
+    name: 'unknown album references',
     path: samplePath,
-    content: sample.replace(
-      /gallery:\n  - src: [^\n]+\n    alt: [^\n]+\n    caption: [^\n]+\n/,
-      'gallery:\n  - mediaId: media-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa\n',
-    ),
-    diagnostic: /Unknown media ID media-aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa/,
+    content: sample.replace(/galleryId: album-0001/, 'galleryId: album-9999'),
+    diagnostic: /Unknown Album ID album-9999/,
   },
   {
     name: 'missing local image references',
@@ -432,7 +434,7 @@ const mediaRecord = {
   sha256: 'a'.repeat(64),
 };
 const withMediaHero = sample.replace(
-  /hero:\n(?:  .+\n)+(?=gallery:|---)/,
+  /hero:\n(?:  .+\n)+(?=galleryId:|---)/,
   `hero:\n  mediaId: ${mediaId}\n`,
 );
 
@@ -474,7 +476,7 @@ test('media IDs resolve to static public images and catalog metadata without fet
       assert.match(
         html,
         page === 'index.html'
-          ? /class="aspect-4\/3 w-full rounded-sm object-cover"/
+          ? /class="aspect-\[3\/2\] w-full object-cover"/
           : /class="aspect-\[16\/8\.5\] w-full bg-line object-cover"/,
       );
       assert.match(html, /height="1200"/);
@@ -556,3 +558,70 @@ for (const scenario of [
       });
     });
   });
+
+test('gallery index lists albums and only published albums have photo-viewer routes', async () => {
+  await withFixture(async (directory) => {
+    const path = join(directory, 'src/content/albums/dum-a-zahrada.mdoc');
+    await writeFile(
+      path,
+      (await readFile(path, 'utf8')).replace(
+        'status: published',
+        'status: draft',
+      ),
+    );
+    await build(directory);
+    const index = await readFile(
+      join(directory, 'dist/galerie/index.html'),
+      'utf8',
+    );
+    assert.match(index, /href="\/galerie\/obnova-domu\/"/);
+    assert.doesNotMatch(index, /href="\/galerie\/dum-a-zahrada\/"/);
+    assert.doesNotMatch(index, /data-gallery-open/);
+    const detail = await readFile(
+      join(directory, 'dist/galerie/obnova-domu/index.html'),
+      'utf8',
+    );
+    assert.equal((detail.match(/data-gallery-open=/g) ?? []).length, 8);
+    assert.match(detail, /href="\/galerie\/" aria-current="page"/);
+    await assert.rejects(
+      readFile(join(directory, 'dist/galerie/dum-a-zahrada/index.html')),
+    );
+  });
+});
+
+test('article resolves shared album metadata by stable ID after album slug changes', async () => {
+  await withFixture(async (directory) => {
+    const path = join(directory, 'src/content/albums/obnova-domu.mdoc');
+    let source = await readFile(path, 'utf8');
+    source = source
+      .replace('slug: obnova-domu', 'slug: novy-nazev-alba')
+      .replace(
+        'caption: Dvůr, kde na sebe práce a zahrada přirozeně navazují.',
+        'caption: Sdílený popisek alba.',
+      );
+    await writeFile(path, source);
+    await build(directory);
+    for (const page of [projectRoute, 'galerie/novy-nazev-alba/index.html']) {
+      const html = await readFile(join(directory, 'dist', page), 'utf8');
+      assert.match(html, /Sdílený popisek alba/);
+      assert.equal((html.match(/data-gallery-open=/g) ?? []).length, 8);
+    }
+  });
+});
+
+test('published article cannot expose a draft album', async () => {
+  await withFixture(async (directory) => {
+    const path = join(directory, 'src/content/albums/obnova-domu.mdoc');
+    await writeFile(
+      path,
+      (await readFile(path, 'utf8')).replace(
+        'status: published',
+        'status: draft',
+      ),
+    );
+    await assert.rejects(build(directory), (error: unknown) => {
+      assert.match(String(error), /references unpublished Album album-0001/);
+      return true;
+    });
+  });
+});

@@ -18,7 +18,7 @@ An author's optional decorative ornament also belongs to that author profile, so
 
 An optional `sidebarPoster` gives an individual Project a short quote and local decorative illustration for its article-orientation rail. The quote is real text; the illustration is presentational and receives empty alternative text. Keeping this pair in frontmatter lets each post choose or omit its own note without coupling the layout to one message.
 
-An optional `gallery` contains one to eight images in authored order for the closing [ArticleGallery](../../components/article-gallery/SPEC.md). Each item uses either a stable published `mediaId` or a local `src` with informative `alt` and optional `caption`/`credit`. Catalog items inherit their public URL, alt text, dimensions, caption, and credit from the media catalog; do not repeat these fields in frontmatter. The gallery is omitted when absent. Its images follow the narrative and precede adjacent-article navigation.
+An optional `galleryId` references an independently authored [Album](../albums/SPEC.md), for example `galleryId: album-0001`. The album owns image order and metadata; the article renders its resolved images through [ArticleGallery](../../components/article-gallery/SPEC.md) after the narrative. Missing references fail the build, including in hidden Projects. Published Projects must reference published albums; drafts and archived albums cannot leak through articles. The old inline `gallery` field is rejected. With no galleryId the image strip is omitted. Renaming an album slug does not change the reference.
 
 - `published`: included on the homepage and emitted as a detail route.
 - `draft`: retained in source, excluded from public lists and routes.

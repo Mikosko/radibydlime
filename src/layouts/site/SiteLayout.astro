@@ -24,9 +24,9 @@ const currentYear = new Date().getUTCFullYear();
 
 const footerLinks = [
   { label: 'Úvod', href: '/' },
-  { label: 'Náš příběh', href: '#' },
+  { label: 'Náš příběh', href: '/nas-pribeh/' },
   { label: 'Kapitoly', href: '/kapitoly/' },
-  { label: 'Zápisky', href: '#' },
+  { label: 'Galerie', href: '/galerie/' },
   { label: 'Dílny', href: '#' },
   { label: 'Inzerce', href: '#' },
   { label: 'Kontakt', href: '/kontakt/' },
@@ -134,7 +134,7 @@ const discoveryLinks = [
         aria-labelledby="co-u-nas-najdete"
         class="mx-auto mt-20 w-full max-w-[92rem] px-5 sm:mt-24 sm:px-8"
       >
-        <div class="grid items-stretch border-y border-line lg:grid-cols-[1.7fr_1.8fr_3fr]">
+        <div class="grid items-stretch lg:grid-cols-[1.7fr_1.8fr_3fr]">
           <blockquote class="relative isolate m-3 min-h-44 px-7 py-7 pl-35 drop-shadow-sm sm:min-h-48">
             <Image
               src={tornPaper}
@@ -155,7 +155,7 @@ const discoveryLinks = [
             </p>
           </blockquote>
 
-          <section class="flex flex-col justify-center px-6 py-8 lg:border-l lg:border-line lg:px-9">
+          <section class="flex flex-col justify-center px-6 py-8 lg:border-line lg:px-9">
             <h2
               id="co-u-nas-najdete"
               class="font-display text-3xl font-semibold leading-tight"

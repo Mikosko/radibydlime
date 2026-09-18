@@ -11,10 +11,19 @@ type Gallery = Awaited<
 
 interface Props {
   items: Gallery;
+  layout?: 'strip' | 'grid';
+  title?: string;
+  eyebrow?: string;
   catalog: Awaited<ReturnType<typeof getMediaCatalog>>;
 }
 
-const { items, catalog } = Astro.props;
+const {
+  items,
+  catalog,
+  layout = 'strip',
+  title = 'Obrazový deník',
+  eyebrow = 'Z této kapitoly',
+} = Astro.props;
 ---
 
 {items.length > 0 && (
@@ -26,13 +35,13 @@ const { items, catalog } = Astro.props;
     <div class="mb-7 flex items-end gap-6">
       <div>
         <p class="font-editorial-note text-[0.65rem] tracking-[0.14em] text-accent uppercase">
-          Z této kapitoly
+          {eyebrow}
         </p>
         <h2
           id="obrazovy-denik"
           class="mt-2 font-display text-4xl leading-none sm:text-5xl"
         >
-          Obrazový deník
+          {title}
         </h2>
       </div>
       <span class="mb-1 h-px flex-1 bg-line" aria-hidden="true"></span>
@@ -43,11 +52,19 @@ const { items, catalog } = Astro.props;
     </p>
     <div
       role="group"
-      aria-label="Fotografie k článku"
-      class="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-4 sm:gap-4"
+      aria-label={title}
+      class:list={[
+        layout === 'grid'
+          ? 'grid gap-x-6 gap-y-9 pb-4 sm:grid-cols-2 lg:grid-cols-3'
+          : 'flex snap-x snap-mandatory gap-3 overflow-x-auto pb-4 sm:gap-4',
+      ]}
     >
       {items.map((item, index) => (
-        <div class="w-44 shrink-0 snap-start sm:w-56 lg:w-64">
+        <div
+          class:list={[
+            layout === 'strip' && 'w-44 shrink-0 snap-start sm:w-56 lg:w-64',
+          ]}
+        >
           <button
             type="button"
             data-gallery-open={index}
@@ -73,6 +90,11 @@ const { items, catalog } = Astro.props;
               {String(index + 1).padStart(2, '0')} /{' '}
               {String(items.length).padStart(2, '0')}
             </span>
+            {layout === 'grid' && (
+              <span class="mt-2 block font-display text-xl leading-snug">
+                {item.caption ?? item.alt}
+              </span>
+            )}
           </button>
         </div>
       ))}
