@@ -1,4 +1,5 @@
 ---
+import ReturnToList from '../../components/return-to-list/ReturnToList.astro';
 import { render } from 'astro:content';
 import { Image } from 'astro:assets';
 import botanicalStem from '../../assets/decor/botanical-stem.png';
@@ -58,6 +59,7 @@ const formattedDate = data.publishedAt.toLocaleDateString('cs-CZ', {
   <div class="py-7 sm:py-10">
     <a
       href="/kapitoly/"
+      data-return-to-list
       class="inline-flex items-center gap-3 py-2 text-xs tracking-[0.12em] text-muted uppercase hover:text-accent xl:hidden"
     >
       <span aria-hidden="true">←</span> na projekty
@@ -175,6 +177,7 @@ const formattedDate = data.publishedAt.toLocaleDateString('cs-CZ', {
         <div class="sticky top-8">
           <a
             href="/kapitoly/"
+            data-return-to-list
             class="inline-flex w-full items-center gap-3 border-line pb-5 text-xs tracking-[0.12em] text-muted uppercase hover:text-accent"
           >
             <span aria-hidden="true">←</span> Zpět na Kapitoly
@@ -372,4 +375,5 @@ const formattedDate = data.publishedAt.toLocaleDateString('cs-CZ', {
       </aside>
     </div>
   </div>
+  <ReturnToList />
 </SiteLayout>

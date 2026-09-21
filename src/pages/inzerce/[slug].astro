@@ -1,4 +1,5 @@
 ---
+import ReturnToList from '../../components/return-to-list/ReturnToList.astro';
 import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import SiteLayout from '../../layouts/site/SiteLayout.astro';
@@ -36,6 +37,7 @@ const canEnquire = data.sample || data.availability === 'available';
     <nav aria-label="Drobečková navigace" class="mb-7 text-sm text-muted">
       <a
         href="/inzerce/"
+        data-return-to-list
         class="inline-flex min-h-11 items-center gap-3 text-accent hover:underline"
       >
         ← Zpět na inzerci
@@ -170,9 +172,11 @@ const canEnquire = data.sample || data.availability === 'available';
     </section>
     <a
       href="/inzerce/"
+      data-return-to-list
       class="mt-10 inline-flex min-h-11 items-center gap-3 text-accent hover:underline"
     >
       ← Další věci z naší nabídky
     </a>
   </PageContainer>
+  <ReturnToList />
 </SiteLayout>

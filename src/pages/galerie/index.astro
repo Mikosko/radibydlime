@@ -62,19 +62,19 @@ const albums = await getPublishedAlbums(catalog);
       </div>
     </PageHeader>
     {albums.length > 0 ? (
-      <ul class="mt-8 divide-y divide-line border-b border-line">
+      <ul class="mt-8 lg:divide-y lg:divide-line lg:border-b lg:border-line">
         {albums.map(({ data, images }, albumIndex) => {
           const preview = images.slice(0, 5);
           const remaining = images.length - preview.length;
           return (
             <li class="py-7 first:pt-0 sm:py-9">
-              <article class="grid items-start gap-6 lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-8">
-                <div class="pt-1">
-                  <p class="font-editorial-note text-xs tracking-[0.14em] text-muted">
+              <article class="grid items-start rounded-sm border border-line bg-white/25 lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-8 lg:rounded-none lg:border-0 lg:bg-transparent">
+                <div class="order-2 min-w-0 px-5 pt-5 pb-6 sm:px-6 lg:order-1 lg:px-0 lg:pt-1 lg:pb-0">
+                  <p class="hidden font-editorial-note text-xs tracking-[0.14em] text-muted lg:block">
                     {images.length}{' '}
                     {images.length < 5 ? 'fotografie' : 'fotografií'}
                   </p>
-                  <h2 class="mt-3 font-display text-3xl leading-tight sm:text-4xl">
+                  <h2 class="mt-3 hidden font-display text-3xl leading-tight sm:text-4xl lg:block">
                     <a
                       href={`/galerie/${data.slug}/`}
                       class="hover:text-accent"
@@ -82,18 +82,20 @@ const albums = await getPublishedAlbums(catalog);
                       {data.title}
                     </a>
                   </h2>
-                  <p class="mt-3 text-sm leading-relaxed text-muted">
+                  <p class="text-sm leading-relaxed text-muted lg:mt-3">
                     {data.description}
                   </p>
-                  <EditorialLink href={`/galerie/${data.slug}/`} class="mt-4">
-                    Prohlédnout album
-                  </EditorialLink>
+                  <div class="flex justify-end lg:justify-start">
+                    <EditorialLink href={`/galerie/${data.slug}/`} class="mt-4">
+                      Prohlédnout album
+                    </EditorialLink>
+                  </div>
                 </div>
                 <a
                   href={`/galerie/${data.slug}/`}
                   aria-label={`Otevřít album: ${data.title}, ${images.length} fotografií`}
                   class:list={[
-                    'album-mosaic group min-w-0',
+                    'album-mosaic group order-1 min-w-0 lg:order-2',
                     `composition-${albumIndex % 3}`,
                     preview.length === 1 && 'single-photo',
                   ]}
@@ -114,6 +116,15 @@ const albums = await getPublishedAlbums(catalog);
                         class="size-full object-cover group-hover:opacity-90"
                       />
                     )}
+                    <div class="album-photo-title relative flex min-h-64 flex-col justify-end px-5 pt-28 pb-6 text-paper sm:px-6 lg:hidden">
+                      <p class="text-xs font-semibold tracking-[0.12em] uppercase">
+                        {images.length}{' '}
+                        {images.length < 5 ? 'fotografie' : 'fotografií'}
+                      </p>
+                      <h2 class="mt-2 font-display text-4xl leading-tight">
+                        {data.title}
+                      </h2>
+                    </div>
                     <CalendarBadge
                       date={data.publishedAt}
                       labelPrefix="Zveřejněno"
@@ -194,6 +205,30 @@ const albums = await getPublishedAlbums(catalog);
 </SiteLayout>
 
 <style>
+  .album-photo-title {
+    background: linear-gradient(
+      to bottom,
+      transparent 20%,
+      rgb(0 0 0 / 35%) 55%,
+      rgb(0 0 0 / 75%) 100%
+    );
+    text-shadow:
+      0 2px 4px rgb(0 0 0 / 85%),
+      0 4px 18px rgb(0 0 0 / 65%);
+  }
+  @media (max-width: 1023px) {
+    .album-mosaic .album-cover {
+      display: grid;
+      aspect-ratio: auto;
+    }
+    .album-cover :global(img) {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
   .album-mosaic {
     display: grid;
     gap: 0.6rem;

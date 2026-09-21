@@ -1,0 +1,35 @@
+<script>
+  document.addEventListener('click', (event) => {
+    if (
+      event.defaultPrevented ||
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    )
+      return;
+    const link =
+      event.target instanceof Element
+        ? event.target.closest<HTMLAnchorElement>('a[data-return-to-list]')
+        : null;
+    if (
+      !link ||
+      link.hasAttribute('download') ||
+      (link.target && link.target !== '_self') ||
+      history.length < 2 ||
+      !document.referrer
+    )
+      return;
+    const previous = new URL(document.referrer);
+    const destination = new URL(link.href);
+    if (
+      previous.origin !== location.origin ||
+      previous.pathname !== destination.pathname ||
+      previous.search !== destination.search
+    )
+      return;
+    event.preventDefault();
+    history.back();
+  });
+</script>

@@ -1,4 +1,5 @@
 ---
+import ReturnToList from '../../components/return-to-list/ReturnToList.astro';
 import SiteLayout from '../../layouts/site/SiteLayout.astro';
 import ArticleGallery from '../../components/article-gallery/ArticleGallery.astro';
 import { getMediaCatalog } from '../../content/media/query';
@@ -22,6 +23,7 @@ const { album, catalog } = Astro.props;
   <div class="mx-auto max-w-[78rem] py-10 sm:py-14">
     <a
       href="/galerie/"
+      data-return-to-list
       class="inline-flex min-h-11 items-center gap-3 text-sm text-accent hover:underline"
     >
       <span aria-hidden="true">←</span> Všechna alba
@@ -54,9 +56,11 @@ const { album, catalog } = Astro.props;
     />
     <a
       href="/galerie/"
+      data-return-to-list
       class="mt-10 inline-flex min-h-11 items-center gap-3 text-sm text-accent hover:underline"
     >
       <span aria-hidden="true">←</span> Zpět na všechna alba
     </a>
   </div>
+  <ReturnToList />
 </SiteLayout>

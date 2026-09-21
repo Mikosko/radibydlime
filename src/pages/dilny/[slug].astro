@@ -1,4 +1,5 @@
 ---
+import ReturnToList from '../../components/return-to-list/ReturnToList.astro';
 import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import SiteLayout from '../../layouts/site/SiteLayout.astro';
@@ -31,6 +32,7 @@ const ended = data.event.state === 'ended';
   <PageContainer>
     <a
       href="/dilny/"
+      data-return-to-list
       class="inline-flex min-h-11 items-center gap-3 text-sm text-accent hover:underline"
     >
       ← Všechny dílny
@@ -116,9 +118,11 @@ const ended = data.event.state === 'ended';
     </div>
     <a
       href="/dilny/"
+      data-return-to-list
       class="mt-12 inline-flex min-h-11 items-center gap-4 text-accent hover:underline"
     >
       ← Zpět na přehled dílen
     </a>
   </PageContainer>
+  <ReturnToList />
 </SiteLayout>
