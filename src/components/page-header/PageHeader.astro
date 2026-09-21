@@ -1,0 +1,40 @@
+---
+interface Props {
+  eyebrow: string;
+  title: string;
+  intro: string;
+  description?: string;
+  class?: string;
+}
+const { eyebrow, title, intro, description, class: className } = Astro.props;
+const hasArtwork = Astro.slots.has('artwork');
+---
+
+<header
+  class:list={[
+    'relative grid gap-10 pb-12 items-start',
+    hasArtwork && 'lg:grid-cols-[1fr_1.1fr] lg:gap-20',
+    className,
+  ]}
+>
+  <div class="relative z-10 min-w-0 self-start">
+    <p class="text-xs font-semibold tracking-[0.2em] uppercase">{eyebrow}</p>
+    <h1 class="mt-5 font-display text-5xl leading-none text-balance sm:text-6xl lg:text-7xl">
+      {title}
+    </h1>
+    <p class="mt-6 max-w-lg font-body text-lg leading-relaxed text-muted">
+      {intro}
+    </p>
+    {description && (
+      <p class="mt-4 max-w-lg font-body text-base leading-relaxed text-muted">
+        {description}
+      </p>
+    )}
+    <slot name="annotation" />
+  </div>
+  {hasArtwork && (
+    <div class="min-w-0">
+      <slot name="artwork" />
+    </div>
+  )}
+</header>

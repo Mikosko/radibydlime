@@ -1,0 +1,7 @@
+# Sale items
+
+Owner-authored `*.mdoc` records form the `saleItems` collection. Stable `sale-0001` IDs are separate from unique Czech URL slugs. Both are checked across all records. Only published records produce cards and `/inzerce/<slug>/` routes; draft and archived entries are excluded. Reserved and sold published records remain visible with explicit availability and no enquiry CTA. No public submissions or checkout exist.
+
+Each record owns title, summary, category, condition, handover, availability and optional nonnegative integer priceCzk (absent means by agreement; zero is valid). Its Markdoc body describes the item. The ordered, nonempty images array owns the cover as its first item and all gallery images. Entries accept mediaId references resolved through the canonical catalog or existing small authored local images with informative alt and optional caption. Unknown media references and duplicate photos fail the build, including hidden entries. Remote bytes are never fetched at build time.
+
+`sample: true` visibly identifies illustrative records and suppresses factual price/stock claims on both index and detail. Replace the sample copy and photography with verified item information before switching this off. Current local sample photographs include context scenes, clearly labelled as such, not multiple views of a real sale object. Authors set real availability manually in Git; emails never automatically reserve stock.

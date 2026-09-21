@@ -1,0 +1,48 @@
+---
+interface Props {
+  href: string;
+  class?: string;
+  'aria-label'?: string;
+}
+const { href, class: className, 'aria-label': ariaLabel } = Astro.props;
+---
+
+<a
+  {href}
+  aria-label={ariaLabel}
+  class:list={[
+    'editorial-link relative inline-flex min-h-11 items-center gap-4 text-xs tracking-[0.1em] text-accent uppercase',
+    className,
+  ]}
+>
+  <slot /> <span aria-hidden="true">→</span>
+</a>
+
+<style>
+  .editorial-link::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: 5px;
+    height: 3px;
+    background: currentColor;
+    opacity: 0;
+    transform: rotate(-0.7deg);
+    clip-path: polygon(
+      0 45%,
+      18% 30%,
+      43% 40%,
+      70% 15%,
+      100% 30%,
+      98% 65%,
+      72% 60%,
+      44% 88%,
+      17% 70%,
+      1% 85%
+    );
+  }
+  .editorial-link:hover::after,
+  .editorial-link:focus-visible::after {
+    opacity: 1;
+  }
+</style>

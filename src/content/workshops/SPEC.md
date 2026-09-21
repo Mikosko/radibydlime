@@ -1,0 +1,9 @@
+# Workshops
+
+Owner-authored Markdoc records in the workshops Content Collection are canonical for both `/dilny/` and `/dilny/<slug>/`. Each has stable workshop-NNNN identity, unique localized slug, title/category/summary, hero, lifecycle status and event state. Draft/archived records have neither listing nor route. Published ended events remain accessible as past workshops. Hero supports local authored assets or mediaId resolved through the catalog; remote bytes are not downloaded at build time.
+
+Event state is preparing, open, full or ended. Scheduled states require offset-qualified ISO start/end timestamps, location, positive integer capacity and nonnegative reserved count. End must follow start, reservations cannot exceed capacity, and open/full must agree with the derived free count. Validation includes hidden records. Dates render in Europe/Prague, duration is derived. IDs and slugs are unique across all records. Upcoming events sort chronologically and ended events newest first within their section. Event states and reservations are manually maintained in Git; deployment does not provide live inventory or automatically mark events ended.
+
+The current six records and their dates, capacity and narrative are owner-requested demonstration content. Confirm or replace before real publication. No assumed price, included materials, named instructor or event gallery is supplied. Body content describes the topic and practical preparation. Stable IDs survive file/slug changes. No visitors can publish workshops; no hosted booking service, checkout, database or runtime API exists.
+
+Each workshop requires one or two distinct hostIds referencing the existing author registry. Query assembly resolves hosts for all entries, including hidden ones; unknown profile IDs fail the build. Both index and detail reuse canonical names/portraits through WorkshopHosts. Current assignments are demonstration data.

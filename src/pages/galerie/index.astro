@@ -1,10 +1,15 @@
 ---
 import { Image } from 'astro:assets';
+import EditorialLink from '../../components/editorial-link/EditorialLink.astro';
+import CalendarBadge from '../../components/calendar-badge/CalendarBadge.astro';
 import MediaImage from '../../components/media-image/MediaImage.astro';
 import { getMediaCatalog } from '../../content/media/query';
 import { getPublishedAlbums } from '../../content/albums/query';
+import PageContainer from '../../components/page-container/PageContainer.astro';
+import PageHeader from '../../components/page-header/PageHeader.astro';
 import SiteLayout from '../../layouts/site/SiteLayout.astro';
-import botanical from '../../assets/decor/botanical-bellflower.png';
+import galleryArtwork from '../../assets/decor/header-image-gallery.png';
+import paper from '../../assets/decor/torn-paper.png';
 import divider from '../../assets/decor/floral-divider.png';
 
 const catalog = await getMediaCatalog();
@@ -15,83 +20,153 @@ const albums = await getPublishedAlbums(catalog);
   title="Galerie"
   description="Obrazový deník Rádi bydlíme. Dům, zahrada, práce vlastníma rukama a malé detaily našich kapitol."
 >
-  <div class="mx-auto max-w-[78rem] pt-10 pb-8 sm:pt-14">
-    <header class="relative border-b border-line pb-9 pr-16 sm:pr-36">
-      <p class="text-xs font-semibold tracking-[0.2em] text-muted uppercase">
-        Dům · zahrada · detaily
-      </p>
-      <h1 class="mt-4 font-display text-5xl leading-none sm:text-6xl lg:text-7xl">
-        Galerie
-      </h1>
-      <p class="mt-4 font-display text-3xl leading-tight sm:text-4xl">
-        Někdy stačí jen pohled.
-      </p>
-      <p class="mt-5 max-w-xl leading-relaxed text-muted">
-        Malé zastavení mezi našimi příběhy. Nahlédněte do domu, zahrady a dílny
-        — na místa i drobnosti, které tvoří celek.
-      </p>
-      <Image
-        src={botanical}
-        alt=""
-        aria-hidden="true"
-        loading="eager"
-        width={200}
-        class="pointer-events-none absolute right-0 bottom-5 h-36 w-14 object-contain opacity-75 sm:h-52 sm:w-28"
-      />
-    </header>
-    <p class="mt-6 text-sm leading-relaxed text-muted italic">
-      Zatím listujete alby s ukázkovými fotografiemi. Postupně je nahradí
-      skutečné snímky od nás.
-    </p>
+  <PageContainer>
+    <PageHeader
+      eyebrow="Dům · zahrada · detaily"
+      title="Galerie"
+      intro="Někdy stačí jen pohled."
+      description="Malé zastavení mezi našimi příběhy. Nahlédněte do domu, zahrady a dílny — na místa i drobnosti, které tvoří celek."
+      class="border-b border-line"
+    >
+      <div slot="artwork" class="mx-auto flex w-full max-w-xl items-center">
+        <Image
+          src={galleryArtwork}
+          alt=""
+          aria-hidden="true"
+          loading="eager"
+          widths={[360, 690]}
+          sizes="(min-width: 640px) 345px, 60vw"
+          class="pointer-events-none h-auto max-h-[300px] min-w-0 flex-1 object-contain"
+        />
+        <aside
+          aria-label="Malý vzkaz"
+          class="relative z-10 isolate -ml-6 w-28 shrink-0 px-3 py-6 text-center rotate-5 sm:w-32"
+        >
+          <Image
+            src={paper}
+            alt=""
+            aria-hidden="true"
+            class="pointer-events-none absolute inset-0 -z-10 size-full"
+          />
+          <p class="font-annotation text-2xl leading-tight">
+            Malé chvíle.
+            <br />
+            Velké
+            <br />
+            vzpomínky.
+          </p>
+          <span aria-hidden="true" class="mt-3 block text-lg text-accent">
+            ♥
+          </span>
+        </aside>
+      </div>
+    </PageHeader>
     {albums.length > 0 ? (
-      <ul class="mt-10 grid gap-x-7 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-        {albums.map(({ data, cover, images }) => (
-          <li>
-            <article>
-              <a
-                href={`/galerie/${data.slug}/`}
-                class="group block"
-                aria-label={`Otevřít album: ${data.title}`}
-              >
-                <div class="relative border border-line bg-paper p-2 shadow-sm">
-                  {'width' in cover ? (
-                    <MediaImage
-                      mediaId={cover.id}
-                      {catalog}
-                      class="aspect-[4/3] w-full object-cover group-hover:opacity-90"
-                    />
-                  ) : (
-                    <Image
-                      src={cover.src}
-                      alt={cover.alt}
-                      loading="lazy"
-                      width={700}
-                      class="aspect-[4/3] w-full object-cover group-hover:opacity-90"
-                    />
-                  )}
-                  <span class="absolute right-4 bottom-4 bg-paper/95 px-3 py-1 text-xs text-ink">
+      <ul class="mt-8 divide-y divide-line border-b border-line">
+        {albums.map(({ data, images }, albumIndex) => {
+          const preview = images.slice(0, 5);
+          const remaining = images.length - preview.length;
+          return (
+            <li class="py-7 first:pt-0 sm:py-9">
+              <article class="grid items-start gap-6 lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-8">
+                <div class="pt-1">
+                  <p class="font-editorial-note text-xs tracking-[0.14em] text-muted">
                     {images.length}{' '}
-                    {images.length === 1
-                      ? 'fotografie'
-                      : images.length < 5
-                        ? 'fotografie'
-                        : 'fotografií'}
-                  </span>
+                    {images.length < 5 ? 'fotografie' : 'fotografií'}
+                  </p>
+                  <h2 class="mt-3 font-display text-3xl leading-tight sm:text-4xl">
+                    <a
+                      href={`/galerie/${data.slug}/`}
+                      class="hover:text-accent"
+                    >
+                      {data.title}
+                    </a>
+                  </h2>
+                  <p class="mt-3 text-sm leading-relaxed text-muted">
+                    {data.description}
+                  </p>
+                  <EditorialLink href={`/galerie/${data.slug}/`} class="mt-4">
+                    Prohlédnout album
+                  </EditorialLink>
                 </div>
-                <h2 class="mt-5 font-display text-3xl group-hover:text-accent">
-                  {data.title}
-                </h2>
-              </a>
-              <p class="mt-2 leading-relaxed text-muted">{data.description}</p>
-              <a
-                href={`/galerie/${data.slug}/`}
-                class="mt-4 inline-flex min-h-11 items-center gap-4 text-sm text-accent hover:underline"
-              >
-                Prohlédnout album <span aria-hidden="true">→</span>
-              </a>
-            </article>
-          </li>
-        ))}
+                <a
+                  href={`/galerie/${data.slug}/`}
+                  aria-label={`Otevřít album: ${data.title}, ${images.length} fotografií`}
+                  class:list={[
+                    'album-mosaic group min-w-0',
+                    `composition-${albumIndex % 3}`,
+                    preview.length === 1 && 'single-photo',
+                  ]}
+                >
+                  <div class="album-cover relative overflow-hidden bg-line/30">
+                    {'width' in preview[0]! ? (
+                      <MediaImage
+                        mediaId={preview[0]!.id}
+                        {catalog}
+                        class="size-full object-cover group-hover:opacity-90"
+                      />
+                    ) : (
+                      <Image
+                        src={preview[0]!.src}
+                        alt={preview[0]!.alt}
+                        widths={[480, 800]}
+                        sizes="(min-width:1024px) 480px, 90vw"
+                        class="size-full object-cover group-hover:opacity-90"
+                      />
+                    )}
+                    <CalendarBadge
+                      date={data.publishedAt}
+                      labelPrefix="Zveřejněno"
+                      class="absolute top-3 left-3"
+                    />
+                  </div>
+                  {preview.length > 1 && (
+                    <div
+                      class:list={[
+                        'album-previews',
+                        `preview-count-${preview.length - 1}`,
+                        remaining > 0 && 'has-more',
+                      ]}
+                    >
+                      {preview.slice(1).map((photo, index) => (
+                        <div
+                          class={`preview-${index} min-h-0 min-w-0 overflow-hidden bg-line/30`}
+                        >
+                          {'width' in photo ? (
+                            <MediaImage
+                              mediaId={photo.id}
+                              {catalog}
+                              class="size-full object-cover group-hover:opacity-90"
+                            />
+                          ) : (
+                            <Image
+                              src={photo.src}
+                              alt={photo.alt}
+                              loading="lazy"
+                              widths={[240, 480]}
+                              sizes="(min-width:1024px) 240px, 45vw"
+                              class="size-full object-cover group-hover:opacity-90"
+                            />
+                          )}
+                        </div>
+                      ))}
+                      {remaining > 0 && (
+                        <div class="more-photos flex flex-col items-center justify-center gap-2 bg-line/30 p-2 text-center">
+                          <span class="font-display text-3xl sm:text-4xl">
+                            +{remaining}
+                          </span>
+                          <span class="text-[0.6rem] tracking-[0.12em] uppercase">
+                            Další fotografie
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </a>
+              </article>
+            </li>
+          );
+        })}
       </ul>
     ) : (
       <p class="py-12 text-muted">První alba právě chystáme.</p>
@@ -115,5 +190,79 @@ const albums = await getPublishedAlbums(catalog);
         Přečíst naše kapitoly <span aria-hidden="true">→</span>
       </a>
     </div>
-  </div>
+  </PageContainer>
 </SiteLayout>
+
+<style>
+  .album-mosaic {
+    display: grid;
+    gap: 0.6rem;
+  }
+  .album-cover {
+    aspect-ratio: 3 / 2;
+  }
+  .album-previews {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-auto-rows: 6rem;
+    gap: 0.6rem;
+  }
+  .album-previews > div {
+    grid-column: span 3;
+  }
+  .album-cover,
+  .album-previews > div {
+    border-radius: 4px;
+  }
+  .has-more > :nth-child(n + 3) {
+    grid-column: span 2;
+  }
+  .preview-count-1 > div {
+    grid-column: 1 / -1;
+  }
+  .preview-count-3 > :first-child {
+    grid-column: 1 / -1;
+  }
+  @media (min-width: 640px) {
+    .album-mosaic {
+      grid-template-rows: minmax(0, 1fr);
+      grid-template-columns: 1fr 1fr;
+      height: 18rem;
+    }
+    .album-cover {
+      aspect-ratio: auto;
+      min-height: 0;
+    }
+    .album-previews {
+      min-height: 0;
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+      grid-auto-rows: auto;
+    }
+    .preview-count-1 > div {
+      grid-row: 1 / -1;
+    }
+    .preview-count-2 > div {
+      grid-column: 1 / -1;
+    }
+    .single-photo {
+      grid-template-columns: 1fr;
+    }
+    .composition-1 .has-more > .preview-0 {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+    .composition-1 .has-more > .preview-1 {
+      grid-column: span 2;
+    }
+    .composition-2 .has-more > .preview-0 {
+      grid-column: span 2;
+    }
+    .composition-2 .has-more > .preview-1 {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+    .composition-2 .has-more > .preview-2 {
+      grid-column: span 2;
+    }
+  }
+</style>

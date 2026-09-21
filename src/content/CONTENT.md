@@ -4,7 +4,7 @@
 
 Use Astro Content Collections with typed schemas. Author structured metadata in YAML frontmatter and narrative/rich bodies in Markdoc. Keep content portable; small authored images may stay local, while bulk photographs use the [published media catalog](media/SPEC.md); authored content must not contain executable application code.
 
-The durable domain vocabulary is Project, JournalEntry, Workshop, SaleItem, and Page. These are domain types, not page templates. Each may combine structured metadata with a flexible narrative body. The current slice implements Project and independently authored [photo albums](albums/SPEC.md); its concrete rules live in [projects/SPEC.md](projects/SPEC.md). Implement collections and schemas only for actual content. Do not create empty collections for the rest.
+The durable domain vocabulary is Project, JournalEntry, Workshop, SaleItem, and Page. These are domain types, not page templates. Each may combine structured metadata with a flexible narrative body. The current slice implements Project, independently authored [photo albums](albums/SPEC.md), owner-authored [sale items](sale-items/SPEC.md), and [workshops](workshops/SPEC.md); its concrete rules live in [projects/SPEC.md](projects/SPEC.md). Implement collections and schemas only for actual content. Do not create empty collections for the rest.
 
 ## Identity, URLs, and references
 
@@ -25,7 +25,7 @@ Image metadata includes alt text, with optional caption and credit where useful.
 
 ## Reuse and validation
 
-Query the same Content Collection object for every display context instead of duplicating records. A homepage's latest journal entries and a project's related entries can draw from the same collection. Upcoming workshops and available sale items are future use cases, not required implementations.
+Query the same Content Collection object for every display context instead of duplicating records. A homepage's latest journal entries and a project's related entries can draw from the same collection. Workshop listings and details query the same Workshop records. Sale item cards and detail pages query the same records.
 
 Use direct, typed collection queries for current needs. Do not build a generalized feed/query engine.
 

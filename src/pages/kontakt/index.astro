@@ -8,6 +8,8 @@ import leaf from '../../assets/decor/contact-bouquet.png';
 import garden from '../../assets/decor/contact-wheelbarrow.png';
 import diy from '../../assets/decor/contact-house.png';
 import home from '../../assets/decor/contact-envelope.png';
+import PageContainer from '../../components/page-container/PageContainer.astro';
+import PageHeader from '../../components/page-header/PageHeader.astro';
 import SiteLayout from '../../layouts/site/SiteLayout.astro';
 
 const contactEmail = 'info@radibydlime.cz';
@@ -47,22 +49,15 @@ const enquiries = [
   title="Kontakt"
   description="Ozvěte se nám. Prostor pro vaše příběhy, otázky, společné projekty a spolupráci. Napište na info@radibydlime.cz."
 >
-  <div class="contact-page mx-auto max-w-[78rem] pt-10 sm:pt-12">
-    <header class="relative grid items-center gap-5 pb-8 lg:grid-cols-[1.2fr_1fr] lg:pb-0">
-      <div class="relative z-10 pb-4">
-        <p class="text-xs font-semibold tracking-[0.2em] uppercase">Kontakt</p>
-        <h1 class="mt-4 font-display text-5xl leading-none sm:text-6xl lg:text-7xl">
-          Ozvěte se nám
-        </h1>
-        <p class="mt-3 font-display text-3xl leading-tight sm:text-4xl">
-          Rádi si s vámi popovídáme.
-        </p>
-        <p class="mt-5 max-w-xl leading-relaxed text-muted sm:text-lg">
-          Máte dotaz, nápad na spolupráci nebo se chcete jen podělit o svůj
-          příběh? Napište nám — na druhé straně jsme my.
-        </p>
-      </div>
+  <PageContainer class="contact-page">
+    <PageHeader
+      eyebrow="Kontakt"
+      title="Ozvěte se nám"
+      intro="Rádi si s vámi popovídáme."
+      description="Máte dotaz, nápad na spolupráci nebo se chcete jen podělit o svůj příběh? Napište nám — na druhé straně jsme my."
+    >
       <div
+        slot="artwork"
         class="relative mx-auto w-full max-w-lg pt-12 lg:pt-20"
         aria-hidden="true"
       >
@@ -80,7 +75,7 @@ const enquiries = [
           class="h-auto w-full opacity-85"
         />
       </div>
-    </header>
+    </PageHeader>
 
     <div class="grid items-start gap-8 lg:grid-cols-[0.85fr_1.8fr_0.7fr] lg:gap-6">
       <aside aria-label="Jak nás kontaktovat" class="pt-5">
@@ -253,7 +248,7 @@ const enquiries = [
         </p>
       </aside>
     </div>
-  </div>
+  </PageContainer>
   <section
     slot="footer-intro"
     aria-labelledby="kontakt-temata"

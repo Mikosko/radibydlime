@@ -1,0 +1,126 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import {
+  dateFormat,
+  timeFormat,
+  durationLabel,
+} from '../../content/workshops/format';
+interface Props {
+  event: CollectionEntry<'workshops'>['data']['event'];
+  columns?: boolean;
+}
+const { event: e, columns = false } = Astro.props;
+const weekdayFormat = new Intl.DateTimeFormat('cs-CZ', {
+  weekday: 'long',
+  timeZone: 'Europe/Prague',
+});
+---
+
+{e.state === 'preparing' ? (
+  <p class="text-sm text-muted">Termín a délku společně upřesníme.</p>
+) : (
+  <dl
+    class:list={[
+      'grid gap-y-3 text-sm',
+      columns ? 'grid-cols-3 gap-x-3 sm:gap-x-5' : 'gap-x-5 sm:grid-cols-2',
+    ]}
+  >
+    <div>
+      <dt
+        class:list={[
+          'flex gap-2 text-xs text-muted',
+          columns
+            ? 'flex-col items-start sm:flex-row sm:items-center'
+            : 'items-center',
+        ]}
+      >
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="size-5 shrink-0 text-accent"
+        >
+          <rect x="4" y="5" width="16" height="16" rx="2" />
+          <path d="M8 3v4m8-4v4M4 11h16" />
+        </svg>
+        Kdy
+      </dt>
+      <dd class:list={['mt-2', columns ? 'sm:pl-7' : 'pl-7']}>
+        <time datetime={e.startsAt}>
+          {dateFormat.format(new Date(e.startsAt))}
+          <span class="mt-1 block text-muted">
+            ({weekdayFormat.format(new Date(e.startsAt))})
+          </span>
+        </time>
+      </dd>
+    </div>
+    <div>
+      <dt
+        class:list={[
+          'flex gap-2 text-xs text-muted',
+          columns
+            ? 'flex-col items-start sm:flex-row sm:items-center'
+            : 'items-center',
+        ]}
+      >
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="size-5 shrink-0 text-accent"
+        >
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 7v5l3 2" />
+        </svg>
+        Čas a délka
+      </dt>
+      <dd class:list={['mt-2', columns ? 'sm:pl-7' : 'pl-7']}>
+        {timeFormat.format(new Date(e.startsAt))} –{' '}
+        {dateFormat.format(new Date(e.startsAt)) ===
+        dateFormat.format(new Date(e.endsAt))
+          ? ''
+          : dateFormat.format(new Date(e.endsAt)) + ' · '}
+        {timeFormat.format(new Date(e.endsAt))}
+        <span class="mt-1 block text-muted">
+          Délka: {durationLabel(e.startsAt, e.endsAt)}
+        </span>
+      </dd>
+    </div>
+    <div>
+      <dt
+        class:list={[
+          'flex gap-2 text-xs text-muted',
+          columns
+            ? 'flex-col items-start sm:flex-row sm:items-center'
+            : 'items-center',
+        ]}
+      >
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="size-5 shrink-0 text-accent"
+        >
+          <circle cx="9" cy="8" r="3" />
+          <path d="M3 21v-3a6 6 0 0 1 12 0v3m2-16a3 3 0 0 1 0 6m1 4a5 5 0 0 1 3 4v2" />
+        </svg>
+        Malá skupina
+      </dt>
+      <dd class:list={['mt-2', columns ? 'sm:pl-7' : 'pl-7']}>
+        Kapacita: {e.capacity} osob
+      </dd>
+    </div>
+  </dl>
+)}

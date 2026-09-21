@@ -22,3 +22,7 @@ The shared site shell composes [TopNavigation](top-navigation/SPEC.md). It owns 
 [FigureCaption](figure-caption/SPEC.md) presents canonical image captions and credits beneath article figures without owning or rewriting their content.
 
 [ArticleGallery](article-gallery/SPEC.md) renders an article's optional, ordered image diary from resolved Project gallery items.
+
+[PageHeader](page-header/SPEC.md) centralizes section-page introductory typography with a right-hand artwork slot. The landing page and detail-page editorial titles remain separate.
+
+[PageContainer](page-container/SPEC.md) owns the shared section-page content width and vertical spacing inside the site shell.

@@ -112,4 +112,85 @@ const albums = defineCollection({
       .strict(),
 });
 
-export const collections = { projects, media, albums };
+const saleItems = defineCollection({
+  loader: glob({
+    pattern: '*.mdoc',
+    base: './src/content/sale-items',
+    generateId: ({ entry }) => entry,
+  }),
+  schema: ({ image }) =>
+    z
+      .object({
+        id: z.string().regex(/^sale-[0-9]{4,}$/),
+        slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+        title: z.string().trim().min(1),
+        summary: z.string().trim().min(1),
+        category: z.string().trim().min(1),
+        status: z.enum(['draft', 'published', 'archived']),
+        sample: z.boolean().default(false),
+        availability: z.enum(['available', 'reserved', 'sold']),
+        priceCzk: z.number().int().nonnegative().optional(),
+        condition: z.string().trim().min(1),
+        handover: z.string().trim().min(1),
+        images: z
+          .array(
+            z.union([
+              z.object({ mediaId }).strict(),
+              z
+                .object({
+                  src: image(),
+                  alt: z.string().trim().min(1),
+                  caption: z.string().trim().min(1).optional(),
+                })
+                .strict(),
+            ]),
+          )
+          .min(1),
+      })
+      .strict(),
+});
+
+const workshops = defineCollection({
+  loader: glob({
+    pattern: '*.mdoc',
+    base: './src/content/workshops',
+    generateId: ({ entry }) => entry,
+  }),
+  schema: ({ image }) =>
+    z
+      .object({
+        id: z.string().regex(/^workshop-[0-9]{4,}$/),
+        slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+        status: z.enum(['draft', 'published', 'archived']),
+        title: z.string().trim().min(1),
+        category: z.string().trim().min(1),
+        summary: z.string().trim().min(1),
+        hero: z.union([
+          z.object({ mediaId }).strict(),
+          z.object({ src: image(), alt: z.string().trim().min(1) }).strict(),
+        ]),
+        hostIds: z
+          .array(z.string().regex(/^author-[a-z0-9]+(?:-[a-z0-9]+)*$/))
+          .min(1)
+          .max(2)
+          .refine(
+            (ids) => new Set(ids).size === ids.length,
+            'Workshop hosts must be distinct.',
+          ),
+        event: z.discriminatedUnion('state', [
+          z.object({ state: z.literal('preparing') }).strict(),
+          z
+            .object({
+              state: z.enum(['open', 'full', 'ended']),
+              startsAt: z.iso.datetime({ offset: true }),
+              endsAt: z.iso.datetime({ offset: true }),
+              location: z.string().trim().min(1),
+              capacity: z.number().int().positive(),
+              reserved: z.number().int().nonnegative(),
+            })
+            .strict(),
+        ]),
+      })
+      .strict(),
+});
+export const collections = { projects, media, albums, saleItems, workshops };

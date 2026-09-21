@@ -1,0 +1,7 @@
+# Inzerce
+
+The index and `/inzerce/<slug>/` detail pages share published SaleItem collection records; see [content contract](../../content/sale-items/SPEC.md). The owner-supplied September 19 listing reference and September 11 product-component reference inform the editorial cards, large product photo, paper status note, details, and photo strip. Use the shared PageContainer and index PageHeader.
+
+Cards link to real static detail routes, showing category, availability, price and photo count. Detail pages provide the uncropped cover, existing ArticleGallery viewer with captions and keyboard/chevron navigation, descriptive Markdoc, condition and handover, and a subject-specific mailto enquiry including the stable item ID. Sold and reserved items have no enquiry CTA. Sample records are conspicuously labelled on both surfaces. An empty collection produces a useful empty state.
+
+Only owners publish items in Git. No visitor submissions, accounts, carts, payments, checkout, automated reservations or runtime services. Email opens the visitor's mail client, without claiming a sale or reservation. The existing native-dialog viewer is the only new-page browser interaction. Header navigation remains active throughout the Inzerce routes. Each page has one h1, informative image alt, empty decoration alt and responsive stacked content.

@@ -1,0 +1,374 @@
+---
+import { Image } from 'astro:assets';
+import EditorialLink from '../../components/editorial-link/EditorialLink.astro';
+import CalendarBadge from '../../components/calendar-badge/CalendarBadge.astro';
+import PageContainer from '../../components/page-container/PageContainer.astro';
+import PageHeader from '../../components/page-header/PageHeader.astro';
+import SiteLayout from '../../layouts/site/SiteLayout.astro';
+import paper from '../../assets/decor/torn-paper.png';
+import estate from '../../assets/images/logo-house.png';
+import roofTiles from '../../assets/editorial/sample-gallery-roof-tiles.webp';
+import ceilingBeams from '../../assets/editorial/sample-gallery-ceiling-beams.webp';
+
+import MediaImage from '../../components/media-image/MediaImage.astro';
+import WorkshopHosts from '../../components/workshop-hosts/WorkshopHosts.astro';
+import WorkshopBooking from '../../components/workshop-booking/WorkshopBooking.astro';
+import WorkshopFacts from '../../components/workshop-facts/WorkshopFacts.astro';
+import { getMediaCatalog } from '../../content/media/query';
+import { getPublishedWorkshops } from '../../content/workshops/query';
+
+const catalog = await getMediaCatalog();
+const workshops = await getPublishedWorkshops(catalog);
+const headerPhotos = [
+  ...workshops.slice(0, 6).map(({ hero }) => hero),
+  { src: roofTiles, alt: 'Ilustrační detail starých střešních tašek.' },
+  { src: ceilingBeams, alt: 'Ilustrační pohled na dřevěné stropní trámy.' },
+];
+const sections = [
+  {
+    id: 'terminy',
+    title: 'Nejbližší setkání',
+    items: workshops.filter((w) =>
+      ['open', 'full'].includes(w.data.event.state),
+    ),
+    empty: 'Nové termíny právě chystáme.',
+  },
+  {
+    id: 'pripravujeme',
+    title: 'Co chystáme',
+    items: workshops.filter((w) => w.data.event.state === 'preparing'),
+    empty: 'Další témata brzy přidáme.',
+  },
+  {
+    id: 'probehlo',
+    title: 'Co už jsme společně zkusili',
+    items: workshops.filter((w) => w.data.event.state === 'ended'),
+    empty: 'Tady budou mít místo naše minulá setkání.',
+  },
+];
+---
+
+<SiteLayout
+  title="Dílny"
+  description="Tvoření, které má smysl. Připravujeme náměty na společné dílny o řemesle, zahradě a obnově domova v Rádi bydlíme."
+>
+  <PageContainer>
+    <PageHeader
+      eyebrow="Dílny · setkávání · vlastníma rukama"
+      title="Dílny"
+      intro="Tvoření, které má smysl."
+      description="Místo pro společné zkoušení, sdílení a radost z vlastní práce. Prohlédněte si témata, která chystáme, a napište nám, do čeho byste se rádi pustili."
+    >
+      <div
+        slot="artwork"
+        class="relative mx-auto w-full max-w-[32rem] px-2 pt-3 pb-8 sm:pt-5"
+      >
+        <div class="workshop-photo-pile">
+          {headerPhotos.map((hero) => (
+            <div class="workshop-print rounded-sm border border-line bg-paper p-1 pb-3 shadow-md sm:p-1.5 sm:pb-4">
+              {'width' in hero ? (
+                <MediaImage
+                  mediaId={hero.id}
+                  {catalog}
+                  loading="eager"
+                  class="h-full w-full rounded-sm object-cover"
+                />
+              ) : (
+                <Image
+                  src={hero.src}
+                  alt={hero.alt}
+                  loading="eager"
+                  widths={[160, 320]}
+                  sizes="(min-width:640px) 190px, 34vw"
+                  class="h-full w-full rounded-sm object-cover"
+                />
+              )}
+            </div>
+          ))}
+        </div>
+        <aside
+          aria-label="Vzkaz z dílny"
+          class="absolute -bottom-1 right-1 z-10 isolate px-6 py-4 text-center -rotate-3 sm:px-8"
+        >
+          <Image
+            src={paper}
+            alt=""
+            aria-hidden="true"
+            class="pointer-events-none absolute inset-0 -z-10 size-full"
+          />
+          <p class="font-annotation text-2xl leading-tight sm:text-3xl">
+            Vlastníma rukama. Společně.
+            <span aria-hidden="true" class="ml-2 text-base text-accent">
+              ♥
+            </span>
+          </p>
+        </aside>
+      </div>
+    </PageHeader>
+
+    <!-- <div class="flex flex-wrap gap-x-7 gap-y-2 border-b border-line py-4 text-sm text-accent">
+      <a
+        href="#terminy"
+        class="inline-flex min-h-11 items-center hover:underline"
+      >
+        Nejbližší termíny ↓
+      </a>
+      <a
+        href="#pripravujeme"
+        class="inline-flex min-h-11 items-center hover:underline"
+      >
+        Co chystáme ↓
+      </a>
+      <a
+        href="#probehlo"
+        class="inline-flex min-h-11 items-center hover:underline"
+      >
+        Proběhlé dílny ↓
+      </a>
+    </div> -->
+    {sections.map((section) => (
+      <section aria-labelledby={section.id} class="pt-10 sm:pt-14">
+        <div class="mb-7 flex items-center gap-6">
+          <h2
+            id={section.id}
+            class="scroll-mt-8 font-display text-3xl sm:text-4xl"
+          >
+            {section.title}
+          </h2>
+          <span aria-hidden="true" class="h-px flex-1 bg-line"></span>
+        </div>
+        {section.id === 'pripravujeme' && (
+          <p class="-mt-3 mb-7 max-w-2xl leading-relaxed text-muted">
+            Tato témata nám právě leží na pracovním stole. Termíny ještě ladíme
+            — napište nám, co byste si s námi rádi vyzkoušeli.
+          </p>
+        )}
+        {section.id === 'probehlo' && (
+          <p class="-mt-3 mb-7 max-w-2xl leading-relaxed text-muted">
+            Tato setkání už proběhla. Podívejte se, co jsme společně tvořili a
+            zkoušeli — třeba tu najdete inspiraci pro příště.
+          </p>
+        )}
+        {section.items.length === 0 && (
+          <p class="text-muted">{section.empty}</p>
+        )}
+        <ul class="space-y-9 sm:space-y-11">
+          {section.items.map(({ data, hero, hosts }) => {
+            const e = data.event,
+              ended = e.state === 'ended';
+            return (
+              <li>
+                <article class="grid items-start rounded-sm border border-line bg-white/25 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.4fr)] lg:gap-12 lg:rounded-none lg:border-0 lg:border-b lg:bg-transparent lg:pb-11">
+                  <div class="order-2 min-w-0 px-5 pt-6 pb-7 sm:px-6 sm:pt-7 sm:pb-8 lg:order-1 lg:p-0">
+                    <div>
+                      <p class="hidden text-xs tracking-[0.12em] text-accent uppercase lg:block">
+                        {data.category}
+                      </p>
+                      <h3 class="mt-3 hidden font-display text-4xl leading-tight sm:text-5xl lg:block">
+                        <a
+                          href={`/dilny/${data.slug}/`}
+                          class="hover:text-accent"
+                        >
+                          {data.title}
+                        </a>
+                      </h3>
+                      <p class="leading-relaxed text-muted lg:mt-4">
+                        {data.summary}
+                      </p>
+                    </div>
+                    <div>
+                      <div class="mt-5">
+                        <WorkshopHosts {hosts} compact />
+                      </div>
+                      <div class="mt-6 border-t border-line pt-5 sm:max-w-sm">
+                        {!ended && <WorkshopBooking {data} />}
+                        <div class="flex justify-end sm:justify-start">
+                          <EditorialLink
+                            href={`/dilny/${data.slug}/`}
+                            class="mt-4"
+                          >
+                            {ended
+                              ? 'Ohlédnutí za dílnou'
+                              : 'Podrobnosti dílny'}
+                          </EditorialLink>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class:list={[
+                      'order-1 grid min-w-0 border-line lg:order-2 lg:rounded-sm lg:border',
+                      ended
+                        ? 'grid-rows-[minmax(11rem,auto)_auto] sm:grid-rows-[minmax(14rem,auto)_auto]'
+                        : 'grid-rows-[minmax(13rem,auto)_auto] sm:grid-rows-[minmax(18rem,auto)_auto]',
+                    ]}
+                  >
+                    <a
+                      href={`/dilny/${data.slug}/`}
+                      aria-label={`Prohlédnout dílnu: ${data.title}`}
+                      class="relative col-start-1 row-start-1 row-span-2 block min-w-0"
+                    >
+                      {'width' in hero ? (
+                        <MediaImage
+                          mediaId={hero.id}
+                          {catalog}
+                          class={`absolute inset-0 size-full rounded-t-sm object-cover lg:rounded-sm ${ended ? 'saturate-[0.3] sepia-[0.15]' : ''}`}
+                        />
+                      ) : (
+                        <Image
+                          src={hero.src}
+                          alt={hero.alt}
+                          widths={[480, 800, 1100]}
+                          sizes="(min-width:1024px) 700px, 90vw"
+                          class={`absolute inset-0 size-full rounded-t-sm object-cover lg:rounded-sm ${ended ? 'saturate-[0.3] sepia-[0.15]' : ''}`}
+                        />
+                      )}
+                      {ended && (
+                        <span class="absolute top-5 right-4 rotate-3 border border-accent/60 bg-paper/95 px-3 py-2 font-editorial-note text-xs tracking-widest text-accent uppercase shadow-sm">
+                          Ohlédnutí
+                        </span>
+                      )}
+                      {e.state !== 'preparing' && (
+                        <CalendarBadge
+                          date={e.startsAt}
+                          timeZone="Europe/Prague"
+                          data-workshop-date
+                          class="absolute top-3 left-3"
+                        />
+                      )}
+                    </a>
+                    <div class="workshop-photo-title pointer-events-none relative col-start-1 row-start-1 flex h-full min-w-0 flex-col justify-end rounded-t-sm px-5 pt-28 pb-6 text-paper sm:px-6 sm:pb-7 lg:hidden">
+                      <p class="text-xs font-semibold tracking-[0.12em] uppercase">
+                        {data.category}
+                      </p>
+                      <h3 class="mt-2 font-display text-4xl leading-tight sm:text-5xl">
+                        <a
+                          href={`/dilny/${data.slug}/`}
+                          class="pointer-events-auto hover:underline"
+                        >
+                          {data.title}
+                        </a>
+                      </h3>
+                    </div>
+                    <div class="relative col-start-1 row-start-2 border-y border-line bg-paper/95 lg:rounded-b-sm lg:border-b-0 px-3 py-5 sm:px-6 sm:py-6">
+                      <WorkshopFacts event={e} columns />
+                    </div>
+                  </div>
+                </article>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    ))}
+  </PageContainer>
+  <section
+    slot="footer-intro"
+    aria-labelledby="vlastni-napad"
+    class="mx-auto mt-14 w-full max-w-[92rem] px-5 sm:mt-20 sm:px-8"
+  >
+    <div class="relative isolate grid items-center gap-7 px-7 py-10 md:grid-cols-[1fr_1.5fr] sm:px-10">
+      <Image
+        src={paper}
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        class="pointer-events-none absolute inset-0 -z-10 size-full opacity-40"
+      />
+      <Image
+        src={estate}
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        width={600}
+        class="mx-auto h-auto w-full max-w-sm opacity-80"
+      />
+      <div>
+        <p class="text-xs font-semibold tracking-[0.16em] uppercase">
+          Dobré nápady začínají rozhovorem
+        </p>
+        <h2 id="vlastni-napad" class="mt-3 font-display text-4xl">
+          Co byste si chtěli vyzkoušet?
+        </h2>
+        <p class="mt-4 max-w-xl leading-relaxed text-muted">
+          Máte vlastní námět, zkušenost, o kterou se chcete podělit, nebo chuť
+          něco společně vymyslet? Ozvěte se nám.
+        </p>
+        <a
+          href="/kontakt/"
+          class="mt-6 inline-flex min-h-12 items-center gap-8 bg-ink px-7 py-3 text-xs font-semibold tracking-[0.12em] text-paper uppercase hover:bg-ink/90"
+        >
+          Pojďme si napsat <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</SiteLayout>
+
+<style>
+  .workshop-photo-pile {
+    position: relative;
+    aspect-ratio: 1.9;
+    margin: 0.5rem 12% 1rem;
+  }
+  .workshop-print {
+    position: absolute;
+    width: 34%;
+    height: 58%;
+  }
+  .workshop-print:nth-child(-n + 6) {
+    z-index: 1;
+  }
+  .workshop-print:nth-child(7) {
+    left: -12%;
+    top: 25%;
+    transform: rotate(-15deg);
+  }
+  .workshop-print:nth-child(8) {
+    left: 80%;
+    top: 22%;
+    transform: rotate(14deg);
+  }
+  .workshop-print:nth-child(1) {
+    left: 2%;
+    top: 3%;
+    transform: rotate(-10deg);
+  }
+  .workshop-print:nth-child(2) {
+    left: 31%;
+    top: 0;
+    transform: rotate(7deg);
+  }
+  .workshop-print:nth-child(3) {
+    left: 62%;
+    top: 8%;
+    transform: rotate(-5deg);
+  }
+  .workshop-print:nth-child(4) {
+    left: 8%;
+    top: 39%;
+    transform: rotate(6deg);
+  }
+  .workshop-print:nth-child(5) {
+    left: 36%;
+    top: 35%;
+    transform: rotate(-8deg);
+  }
+  .workshop-print:nth-child(6) {
+    left: 62%;
+    top: 42%;
+    transform: rotate(9deg);
+  }
+
+  .workshop-photo-title {
+    background: linear-gradient(
+      to bottom,
+      transparent 20%,
+      rgb(0 0 0 / 35%) 55%,
+      rgb(0 0 0 / 75%) 100%
+    );
+    text-shadow:
+      0 2px 4px rgb(0 0 0 / 85%),
+      0 4px 18px rgb(0 0 0 / 65%);
+  }
+</style>

@@ -1,0 +1,39 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { dateFormat } from '../../content/workshops/format';
+interface Props {
+  data: CollectionEntry<'workshops'>['data'];
+}
+const { data } = Astro.props;
+const e = data.event;
+const subject = `${e.state === 'open' ? 'Rezervace dílny' : e.state === 'full' ? 'Náhradník na dílnu' : 'Zájem o dílnu'}: ${data.title} (${data.id})${e.state === 'preparing' ? '' : ' — ' + dateFormat.format(new Date(e.startsAt))}`;
+const href = `mailto:info@radibydlime.cz?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent('Dobrý den,\n\nmám zájem o dílnu ' + data.title + '.\nPočet osob: \nJméno: \n\nDěkuji.')}`;
+---
+
+{e.state !== 'ended' && (
+  <div>
+    <a
+      {href}
+      class:list={[
+        'inline-flex min-h-12 w-full items-center justify-center gap-3 rounded-sm px-4 py-3 text-center text-sm',
+        e.state === 'open'
+          ? 'bg-ink text-paper hover:bg-ink/90'
+          : 'border border-ink/40 hover:bg-line/40',
+      ]}
+    >
+      {e.state === 'open'
+        ? 'Požádat o rezervaci'
+        : e.state === 'full'
+          ? 'Zájem o náhradní místo'
+          : 'Mám zájem o termín'}{' '}
+      <span aria-hidden="true">→</span>
+    </a>
+    <p class="mt-3 text-xs leading-relaxed text-muted">
+      {e.state === 'open'
+        ? 'Místo je rezervované až po našem potvrzení e-mailem.'
+        : e.state === 'full'
+          ? 'Ozveme se, pokud se místo uvolní.'
+          : 'Napište nám, kdy by se vám setkání hodilo.'}
+    </p>
+  </div>
+)}

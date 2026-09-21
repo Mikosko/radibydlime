@@ -1,0 +1,195 @@
+---
+import { Image } from 'astro:assets';
+import PageContainer from '../../components/page-container/PageContainer.astro';
+import PageHeader from '../../components/page-header/PageHeader.astro';
+import SiteLayout from '../../layouts/site/SiteLayout.astro';
+import terrace from '../../assets/decor/chapters-terrace.png';
+import paper from '../../assets/decor/torn-paper.png';
+import divider from '../../assets/decor/floral-divider.png';
+import MediaImage from '../../components/media-image/MediaImage.astro';
+import { getMediaCatalog } from '../../content/media/query';
+import {
+  getPublishedSaleItems,
+  availabilityLabels,
+  formatPrice,
+} from '../../content/sale-items/query';
+const catalog = await getMediaCatalog();
+const items = await getPublishedSaleItems(catalog);
+---
+
+<SiteLayout
+  title="Inzerce"
+  description="Věci z našeho domu, dílny a zahrady pro další příběh. Připravujeme vlastní nabídku Rádi bydlíme."
+>
+  <PageContainer>
+    <PageHeader
+      eyebrow="Inzerce · od nás k vám"
+      title="Věci, které mají příběh"
+      intro="Při obnově domu se nám občas do rukou dostanou věci, které už u nás místo nenajdou. Rádi bychom jim pomohli najít nový domov."
+      description="Naše vlastní nabídka z domu, dílny i zahrady. U každé věci najdete podrobnosti, fotografie a možnost napsat nám přímo."
+      class="border-b border-line"
+    >
+      <p slot="annotation" class="mt-7 flex items-center gap-5 text-accent">
+        <span aria-hidden="true" class="text-2xl">
+          ♥
+        </span>
+        <span class="font-annotation text-3xl -rotate-3">
+          Další domov.
+          <br />
+          Další příběh.
+        </span>
+      </p>
+      <div
+        slot="artwork"
+        class="relative isolate mx-auto w-full max-w-xl pt-12 pr-5 sm:pr-10"
+      >
+        <Image
+          src={terrace}
+          alt=""
+          aria-hidden="true"
+          loading="eager"
+          width={900}
+          class="w-full"
+        />
+        <aside
+          aria-label="Malý vzkaz"
+          class="absolute top-0 right-1 isolate w-32 px-4 py-7 text-center rotate-6 sm:w-36"
+        >
+          <Image
+            src={paper}
+            alt=""
+            aria-hidden="true"
+            class="absolute inset-0 -z-10 size-full"
+          />
+          <p class="font-annotation text-2xl leading-tight">
+            Staré věci
+            <br />
+            mají nové
+            <br />
+            začátky.
+          </p>
+          <span aria-hidden="true" class="mt-3 block text-xl text-accent">
+            ♥
+          </span>
+        </aside>
+      </div>
+    </PageHeader>
+
+    <section aria-labelledby="nabidka" class="pt-8">
+      <div class="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-5">
+        <div>
+          <p class="text-xs tracking-widest text-accent uppercase">
+            Od nás k vám
+          </p>
+          <h2 id="nabidka" class="mt-2 font-display text-4xl sm:text-5xl">
+            Věci pro další příběh
+          </h2>
+        </div>
+        <p class="text-sm text-muted">Počet položek: {items.length}</p>
+      </div>
+      {items.some((item) => item.data.sample) && (
+        <p class="mt-5 text-sm italic text-muted">
+          Položky označené „Ukázka“ slouží k představení nabídky. Jejich
+          fotografie jsou ilustrační; nejde o aktuální inzeráty.
+        </p>
+      )}
+      <ul class="mt-7 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map(({ data, cover, images }) => (
+          <li>
+            <article class="h-full border border-line bg-white/20 shadow-sm">
+              <a
+                href={`/inzerce/${data.slug}/`}
+                class="group flex h-full flex-col"
+              >
+                <div class="relative overflow-hidden">
+                  {'width' in cover ? (
+                    <MediaImage
+                      mediaId={cover.id}
+                      {catalog}
+                      class="aspect-[4/3] w-full object-cover"
+                    />
+                  ) : (
+                    <Image
+                      src={cover.src}
+                      alt={cover.alt}
+                      widths={[400, 700]}
+                      sizes="(min-width:1024px) 400px, (min-width:640px) 45vw, 90vw"
+                      class="aspect-[4/3] w-full object-cover"
+                    />
+                  )}
+                  <span class="absolute top-3 left-3 bg-paper/95 px-3 py-2 text-xs">
+                    {data.sample
+                      ? 'Ukázka'
+                      : availabilityLabels[data.availability]}
+                  </span>
+                  <span class="absolute right-3 bottom-3 bg-paper/95 px-2 py-1 text-xs">
+                    {images.length} fotografie
+                  </span>
+                </div>
+                <div class="flex flex-1 flex-col p-5 sm:p-6">
+                  <p class="text-xs tracking-widest text-muted uppercase">
+                    {data.category}
+                  </p>
+                  <h3 class="mt-2 font-display text-3xl group-hover:text-accent">
+                    {data.title}
+                  </h3>
+                  <p class="mt-3 flex-1 text-sm leading-relaxed text-muted">
+                    {data.summary}
+                  </p>
+                  <div class="mt-5 flex items-center justify-between gap-3 border-t border-line pt-4">
+                    <span>
+                      {data.sample
+                        ? 'Ukázková položka'
+                        : formatPrice(data.priceCzk)}
+                    </span>
+                    <span class="text-sm text-accent">
+                      Prohlédnout <span aria-hidden="true">→</span>
+                    </span>
+                  </div>
+                </div>
+              </a>
+            </article>
+          </li>
+        ))}
+      </ul>
+      {items.length === 0 && (
+        <p class="py-12 text-muted">
+          Právě tu nic nenabízíme. Další věci přidáme, až budou připravené.
+        </p>
+      )}
+    </section>
+  </PageContainer>
+  <section
+    slot="footer-intro"
+    aria-labelledby="domluva"
+    class="mx-auto mt-14 w-full max-w-[78rem] px-5 text-center sm:mt-20 sm:px-8"
+  >
+    <Image
+      src={divider}
+      alt=""
+      aria-hidden="true"
+      loading="lazy"
+      width={600}
+      class="mx-auto mb-7 h-auto w-full max-w-md"
+    />
+    <p class="text-xs font-semibold tracking-[0.18em] uppercase">
+      Osobně a po domluvě
+    </p>
+    <h2 id="domluva" class="mt-3 font-display text-4xl sm:text-5xl">
+      Zaujalo vás něco? Napište nám.
+    </h2>
+    <p class="mx-auto mt-4 max-w-xl leading-relaxed text-muted">
+      Na dostupnosti, ceně i předání se vždy domluvíme přímo. Jsme v Tuchořicích
+      a nejraději začínáme obyčejným rozhovorem.
+    </p>
+    <a
+      href="mailto:info@radibydlime.cz?subject=Dotaz%20k%20inzerci"
+      class="mt-6 inline-flex min-h-12 items-center gap-6 bg-ink px-7 py-3 text-sm text-paper hover:bg-ink/90"
+    >
+      info@radibydlime.cz <span aria-hidden="true">→</span>
+    </a>
+    <p class="mt-4 text-xs text-muted">
+      E-mail je nezávazný dotaz, nikoli objednávka.
+    </p>
+  </section>
+</SiteLayout>

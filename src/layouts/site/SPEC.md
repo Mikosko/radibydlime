@@ -2,7 +2,7 @@
 
 `SiteLayout.astro` is the only current presentation shell. Routes pass a title and description and supply page content through the default slot.
 
-An optional `footer-intro` slot replaces the entire default discovery strip when a page has a more relevant footer introduction. Kontakt supplies its enquiry topics there and Náš příběh and the homepage supply an invitation to contact; other pages keep the default.
+An optional `footer-intro` slot replaces the entire default discovery strip when a page has a more relevant footer introduction. Kontakt supplies its enquiry topics there and Náš příběh, Dílny, Inzerce and the homepage supply an invitation to contact; other pages keep the default.
 
 The header and footer both link to the static [contact page](../../pages/kontakt/SPEC.md) at `/kontakt/`.
 

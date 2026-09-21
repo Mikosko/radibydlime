@@ -22,8 +22,12 @@ const links = [
     href: '/galerie/',
     current: pathname.startsWith('/galerie/'),
   },
-  { label: 'Dílny', href: '#' },
-  { label: 'Inzerce', href: '#' },
+  { label: 'Dílny', href: '/dilny/', current: pathname.startsWith('/dilny/') },
+  {
+    label: 'Inzerce',
+    href: '/inzerce/',
+    current: pathname.startsWith('/inzerce/'),
+  },
   { label: 'Kontakt', href: '/kontakt/', current: pathname === '/kontakt/' },
 ];
 ---

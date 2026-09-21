@@ -1,0 +1,46 @@
+---
+interface Props {
+  date: Date | string;
+  timeZone?: string;
+  labelPrefix?: string;
+  class?: string;
+  'data-workshop-date'?: boolean;
+}
+const {
+  date,
+  timeZone = 'UTC',
+  labelPrefix,
+  class: className,
+  'data-workshop-date': workshopDate,
+} = Astro.props;
+const value = new Date(date);
+if (!Number.isFinite(value.getTime())) {
+  throw new Error('CalendarBadge requires a valid date.');
+}
+const format = (options: Intl.DateTimeFormatOptions) =>
+  new Intl.DateTimeFormat('cs-CZ', { ...options, timeZone }).format(value);
+const fullDate = format({ day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+<time
+  datetime={value.toISOString()}
+  aria-label={labelPrefix ? `${labelPrefix} ${fullDate}` : fullDate}
+  data-workshop-date={workshopDate}
+  class:list={[
+    'min-w-16 rounded-sm bg-paper/95 px-3 py-2 text-center text-ink shadow-sm',
+    className,
+  ]}
+>
+  <span aria-hidden="true" class="block font-display text-3xl leading-none">
+    {format({ day: 'numeric' }).replace('.', '')}
+  </span>
+  <span
+    aria-hidden="true"
+    class="mt-1 block text-[0.65rem] tracking-widest uppercase"
+  >
+    {format({ month: 'short' })}
+  </span>
+  <span aria-hidden="true" class="mt-1 block text-[0.6rem] text-muted">
+    {format({ year: 'numeric' })}
+  </span>
+</time>

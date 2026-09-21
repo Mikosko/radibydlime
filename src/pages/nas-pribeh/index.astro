@@ -1,5 +1,7 @@
 ---
 import { Image } from 'astro:assets';
+import PageContainer from '../../components/page-container/PageContainer.astro';
+import PageHeader from '../../components/page-header/PageHeader.astro';
 import SiteLayout from '../../layouts/site/SiteLayout.astro';
 import courtyard from '../../assets/editorial/sample-gallery-courtyard.webp';
 import paper from '../../assets/decor/torn-paper.png';
@@ -65,38 +67,27 @@ const values = [
   title="Náš příběh"
   description="Obnovujeme náš domov, tvoříme vlastníma rukama a sdílíme příběhy, které při tom vznikají. Poznejte Rádi bydlíme."
 >
-  <div class="mx-auto max-w-[78rem] pt-10 sm:pt-14">
-    <header class="grid items-center gap-10 pb-12 lg:grid-cols-[1fr_1.1fr] lg:gap-24 lg:pb-16">
-      <div>
-        <p class="text-xs font-semibold tracking-[0.2em] uppercase">O nás</p>
-        <h1 class="mt-4 font-display text-5xl leading-none sm:text-6xl lg:text-7xl">
-          Náš příběh
-        </h1>
-        <p class="mt-5 max-w-lg font-display text-3xl leading-tight sm:text-4xl">
-          Obnovujeme, tvoříme,
+  <PageContainer>
+    <PageHeader
+      eyebrow="O nás"
+      title="Náš příběh"
+      intro="Obnovujeme, tvoříme, pěstujeme a sdílíme."
+      description="Rádi bydlíme je náš zápisník z obnovy domova. O starém domě, práci v dílně, zahradě i rodinném životě, který se mezi tím vším odehrává. Nemáme na všechno hotový návod. Zkoušíme, učíme se a zapisujeme, co nám dává smysl. Své místo tu mají velké proměny i docela malé radosti."
+    >
+      <div slot="annotation" class="mt-7 flex items-center gap-5 text-accent">
+        <span aria-hidden="true" class="text-2xl">
+          ♥
+        </span>
+        <p class="font-annotation text-3xl leading-tight -rotate-3">
+          Domov není místo,
           <br />
-          pěstujeme a sdílíme.
+          ale způsob, jak žít.
         </p>
-        <p class="mt-6 max-w-lg text-lg leading-relaxed text-muted">
-          Rádi bydlíme je náš zápisník z obnovy domova. O starém domě, práci v
-          dílně, zahradě i rodinném životě, který se mezi tím vším odehrává.
-        </p>
-        <p class="mt-4 max-w-lg leading-relaxed text-muted">
-          Nemáme na všechno hotový návod. Zkoušíme, učíme se a zapisujeme, co
-          nám dává smysl. Své místo tu mají velké proměny i docela malé radosti.
-        </p>
-        <div class="mt-7 flex items-center gap-5 text-accent">
-          <span aria-hidden="true" class="text-2xl">
-            ♥
-          </span>
-          <p class="font-annotation text-3xl leading-tight -rotate-3">
-            Domov není místo,
-            <br />
-            ale způsob, jak žít.
-          </p>
-        </div>
       </div>
-      <div class="relative mx-auto w-full max-w-xl pt-5 pr-3 pl-12 sm:pr-5 sm:pl-16 lg:pl-0">
+      <div
+        slot="artwork"
+        class="relative mx-auto w-full max-w-xl pt-5 pr-3 pl-12 sm:pr-5 sm:pl-16 lg:pl-0"
+      >
         <figure class="border border-line bg-paper p-2 shadow-sm -rotate-2 sm:p-3">
           <Image
             src={courtyard}
@@ -140,7 +131,7 @@ const values = [
           </span>
         </aside>
       </div>
-    </header>
+    </PageHeader>
 
     <section
       aria-labelledby="jak-to-zacalo"
@@ -258,7 +249,7 @@ const values = [
       width={350}
       class="mx-auto mt-9 h-auto w-56"
     />
-  </div>
+  </PageContainer>
 
   <section
     slot="footer-intro"

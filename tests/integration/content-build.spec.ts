@@ -625,3 +625,166 @@ test('published article cannot expose a draft album', async () => {
     });
   });
 });
+
+test('sale items share listing/detail data and hide unpublished entries', async () => {
+  await withFixture(async (directory) => {
+    const itemPath = join(
+      directory,
+      'src/content/sale-items/drobnosti-ze-stare-dilny.mdoc',
+    );
+    const original = await readFile(itemPath, 'utf8');
+    await writeFile(
+      itemPath,
+      original
+        .replace('sample: true', 'sample: false')
+        .replace('availability: available', 'availability: sold') +
+        '\nJedinečný detail předmětu.\n',
+    );
+    const hidden = join(
+      directory,
+      'src/content/sale-items/stare-drevene-dvere.mdoc',
+    );
+    await writeFile(
+      hidden,
+      (await readFile(hidden, 'utf8')).replace(
+        'status: published',
+        'status: draft',
+      ),
+    );
+    await build(directory);
+    const listing = await readFile(
+      join(directory, 'dist/inzerce/index.html'),
+      'utf8',
+    );
+    const detail = await readFile(
+      join(directory, 'dist/inzerce/drobnosti-ze-stare-dilny/index.html'),
+      'utf8',
+    );
+    assert.match(listing, /href="\/inzerce\/drobnosti-ze-stare-dilny\/"/);
+    assert.doesNotMatch(listing, /href="\/inzerce\/stare-drevene-dvere\/"/);
+    await assert.rejects(
+      stat(join(directory, 'dist/inzerce/stare-drevene-dvere/index.html')),
+      { code: 'ENOENT' },
+    );
+    assert.match(detail, /Jedinečný detail předmětu/);
+    assert.match(detail, /Tahle věc už našla nový domov/);
+    assert.doesNotMatch(detail, /Napsat k předmětu/);
+    assert.match(detail, /data-gallery-open="2"/);
+  });
+});
+
+test('sale item queries reject ambiguous identity', async () => {
+  await withFixture(async (directory) => {
+    const first = await readFile(
+      join(directory, 'src/content/sale-items/drobnosti-ze-stare-dilny.mdoc'),
+      'utf8',
+    );
+    await writeFile(
+      join(directory, 'src/content/sale-items/duplicate.mdoc'),
+      first.replace('slug: drobnosti-ze-stare-dilny', 'slug: jiny-predmet'),
+    );
+    await assert.rejects(build(directory), (error: unknown) => {
+      assert.match(String(error), /Duplicate SaleItem ID/);
+      return true;
+    });
+  });
+});
+
+test('workshop states render dates and only appropriate enquiry actions', async () => {
+  await withFixture(async (directory) => {
+    await build(directory);
+    const html = await readFile(
+      join(directory, 'dist/dilny/index.html'),
+      'utf8',
+    );
+    assert.match(html, /Požádat o rezervaci/);
+    assert.match(html, /Zájem o náhradní místo/);
+    assert.match(html, /10\. října 2026/);
+    assert.match(html, /Délka: 3 hodiny/);
+    assert.match(html, /data-workshop-date/);
+    assert.doesNotMatch(html, /Volná místa|3 z 8|0 z 10 míst/);
+    assert.doesNotMatch(html, /Obsazeno|Termín připravujeme/);
+    assert.match(html, /Místo je rezervované až po našem potvrzení/);
+    const ended = html.slice(html.indexOf('aria-labelledby="probehlo"'));
+    assert.doesNotMatch(ended, /Proběhlo/);
+    assert.doesNotMatch(ended.split('</section>')[0], /mailto:/);
+    assert.doesNotMatch(html, /workshop-filters|data-workshop-filter/);
+    const detail = await readFile(
+      join(directory, 'dist/dilny/prvni-kroky-se-drevem/index.html'),
+      'utf8',
+    );
+    assert.match(detail, /Co nás čeká/);
+    assert.match(detail, /Průvodce dílnou/);
+    assert.match(detail, /Jan Novotný/);
+    assert.doesNotMatch(detail, /Volná místa|3 z 8/);
+    assert.match(detail, /Požádat o rezervaci/);
+    const past = await readFile(
+      join(directory, 'dist/dilny/zahrada-kolem-domu/index.html'),
+      'utf8',
+    );
+    assert.doesNotMatch(past, /Požádat o rezervaci|Zájem o náhradní místo/);
+    assert.match(past, /Průvodci dílnou/);
+    assert.match(past, /Anna Novotná/);
+    assert.match(past, /Jan Novotný/);
+  });
+});
+
+test('draft workshops have no public listing or detail', async () => {
+  await withFixture(async (directory) => {
+    const file = join(
+      directory,
+      'src/content/workshops/prvni-kroky-se-drevem.mdoc',
+    );
+    await writeFile(
+      file,
+      (await readFile(file, 'utf8')).replace(
+        'status: published',
+        'status: draft',
+      ),
+    );
+    await build(directory);
+    const html = await readFile(
+      join(directory, 'dist/dilny/index.html'),
+      'utf8',
+    );
+    assert.doesNotMatch(html, /href="\/dilny\/prvni-kroky-se-drevem\/"/);
+    await assert.rejects(
+      stat(join(directory, 'dist/dilny/prvni-kroky-se-drevem/index.html')),
+      { code: 'ENOENT' },
+    );
+  });
+});
+
+test('workshop capacity is validated before publishing', async () => {
+  await withFixture(async (directory) => {
+    const file = join(
+      directory,
+      'src/content/workshops/prvni-kroky-se-drevem.mdoc',
+    );
+    await writeFile(
+      file,
+      (await readFile(file, 'utf8')).replace('reserved: 5', 'reserved: 9'),
+    );
+    await assert.rejects(build(directory), (error) => {
+      assert.match(String(error), /Invalid workshop capacity/);
+      return true;
+    });
+  });
+});
+
+test('workshops reject unknown host profiles', async () => {
+  await withFixture(async (directory) => {
+    const file = join(
+      directory,
+      'src/content/workshops/prvni-kroky-se-drevem.mdoc',
+    );
+    await writeFile(
+      file,
+      (await readFile(file, 'utf8')).replace('author-jan', 'author-missing'),
+    );
+    await assert.rejects(build(directory), (error) => {
+      assert.match(String(error), /Unknown author ID author-missing/);
+      return true;
+    });
+  });
+});

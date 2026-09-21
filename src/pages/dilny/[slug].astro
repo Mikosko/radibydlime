@@ -1,0 +1,124 @@
+---
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import SiteLayout from '../../layouts/site/SiteLayout.astro';
+import PageContainer from '../../components/page-container/PageContainer.astro';
+import MediaImage from '../../components/media-image/MediaImage.astro';
+import WorkshopHosts from '../../components/workshop-hosts/WorkshopHosts.astro';
+import WorkshopBooking from '../../components/workshop-booking/WorkshopBooking.astro';
+import WorkshopFacts from '../../components/workshop-facts/WorkshopFacts.astro';
+import { getMediaCatalog } from '../../content/media/query';
+import { getPublishedWorkshops } from '../../content/workshops/query';
+import botanical from '../../assets/decor/botanical-yarrow.png';
+export async function getStaticPaths() {
+  const catalog = await getMediaCatalog();
+  return (await getPublishedWorkshops(catalog)).map((workshop) => ({
+    params: { slug: workshop.data.slug },
+    props: { workshop, catalog },
+  }));
+}
+interface Props {
+  workshop: Awaited<ReturnType<typeof getPublishedWorkshops>>[number];
+  catalog: Awaited<ReturnType<typeof getMediaCatalog>>;
+}
+const { workshop, catalog } = Astro.props;
+const { data, hero, hosts } = workshop;
+const { Content } = await render(workshop);
+const ended = data.event.state === 'ended';
+---
+
+<SiteLayout title={data.title} description={data.summary}>
+  <PageContainer>
+    <a
+      href="/dilny/"
+      class="inline-flex min-h-11 items-center gap-3 text-sm text-accent hover:underline"
+    >
+      ← Všechny dílny
+    </a>
+    <header class="mt-5 grid items-center gap-8 border-b border-line pb-10 lg:grid-cols-2 lg:gap-14">
+      <div>
+        <p class="text-xs tracking-[0.16em] text-accent uppercase">
+          Dílny · {data.category}
+        </p>
+        <h1 class="mt-4 font-display text-5xl leading-tight sm:text-6xl">
+          {data.title}
+        </h1>
+        <p class="mt-5 max-w-xl text-lg leading-relaxed text-muted">
+          {data.summary}
+        </p>
+        <p class="mt-6 font-annotation text-3xl text-accent -rotate-3">
+          {ended
+            ? 'Děkujeme za společný čas.'
+            : 'Malá skupina. Čas na vlastní tvoření.'}
+        </p>
+      </div>
+      <div class="border border-line bg-paper p-2 shadow-sm -rotate-1">
+        {'width' in hero ? (
+          <MediaImage
+            mediaId={hero.id}
+            {catalog}
+            loading="eager"
+            class="aspect-[4/3] w-full object-cover"
+          />
+        ) : (
+          <Image
+            src={hero.src}
+            alt={hero.alt}
+            loading="eager"
+            widths={[480, 800, 1100]}
+            sizes="(min-width:1024px) 600px, 90vw"
+            class="aspect-[4/3] w-full object-cover"
+          />
+        )}
+      </div>
+    </header>
+    <div class="mt-10 grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_23rem] lg:gap-16">
+      <div>
+        <div class="mb-8 border-b border-line pb-7">
+          <WorkshopHosts {hosts} />
+        </div>
+        <div class="narrative max-w-2xl">
+          <Content />
+        </div>
+        <div class="mt-10 flex items-center gap-6 border-t border-line pt-6">
+          <Image
+            src={botanical}
+            alt=""
+            aria-hidden="true"
+            width={100}
+            class="h-24 w-14 object-contain"
+          />
+          <p class="font-annotation text-3xl text-accent">
+            Věci, které tvoříme rukama,
+            <br />
+            mají jinou hodnotu.
+          </p>
+        </div>
+      </div>
+      <aside
+        aria-label="Praktické informace a přihlášení"
+        class="rounded-sm border border-line bg-white/20 px-7 py-8 lg:sticky lg:top-8"
+      >
+        <h2 class="mb-6 font-display text-3xl">
+          {ended ? 'Ohlédnutí za setkáním' : 'Než se potkáme'}
+        </h2>
+        <WorkshopFacts event={data.event} />
+        <div class="mt-6 border-t border-dashed border-ink/25 pt-5">
+          <WorkshopBooking {data} />
+        </div>
+        {!ended && (
+          <p class="mt-5 text-xs leading-relaxed text-muted">
+            Cenu, materiál a vše potřebné si upřesníme e-mailem před potvrzením
+            účasti.
+          </p>
+        )}
+      </aside>
+    </div>
+    <a
+      href="/dilny/"
+      class="mt-12 inline-flex min-h-11 items-center gap-4 text-accent hover:underline"
+    >
+      ← Zpět na přehled dílen
+    </a>
+  </PageContainer>
+</SiteLayout>

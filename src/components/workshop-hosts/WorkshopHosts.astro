@@ -1,0 +1,55 @@
+---
+import { Image } from 'astro:assets';
+import type { AuthorProfile } from '../../content/authors/registry';
+interface Props {
+  hosts: AuthorProfile[];
+  compact?: boolean;
+}
+const { hosts, compact = false } = Astro.props;
+const label = hosts.length === 1 ? 'Průvodce dílnou' : 'Průvodci dílnou';
+---
+
+<div>
+  {compact ? (
+    <p class="mb-2 text-xs text-muted">{label}</p>
+  ) : (
+    <h2 class="mb-5 font-display text-3xl">{label}</h2>
+  )}
+  <ul
+    class:list={[
+      'flex flex-wrap',
+      compact ? 'gap-x-5 gap-y-3' : 'gap-6 sm:gap-10',
+    ]}
+  >
+    {hosts.map((host) => (
+      <li class="flex items-center gap-3">
+        <Image
+          src={host.portrait}
+          alt=""
+          aria-hidden="true"
+          width={compact ? 64 : 128}
+          loading="lazy"
+          class:list={[
+            'shrink-0 rounded-full object-cover',
+            compact ? 'size-8' : 'size-16',
+          ]}
+        />
+        {host.aboutHref ? (
+          <a
+            href={host.aboutHref}
+            class:list={[
+              'hover:text-accent hover:underline',
+              compact ? 'text-sm' : 'font-display text-2xl',
+            ]}
+          >
+            {host.name}
+          </a>
+        ) : (
+          <span class={compact ? 'text-sm' : 'font-display text-2xl'}>
+            {host.name}
+          </span>
+        )}
+      </li>
+    ))}
+  </ul>
+</div>
