@@ -6,6 +6,7 @@ import PageContainer from '../../components/page-container/PageContainer.astro';
 import PageHeader from '../../components/page-header/PageHeader.astro';
 import SiteLayout from '../../layouts/site/SiteLayout.astro';
 import paper from '../../assets/decor/torn-paper.png';
+import photoBackground from '../../assets/decor/bg.png';
 import estate from '../../assets/images/logo-house.png';
 import roofTiles from '../../assets/editorial/sample-gallery-roof-tiles.webp';
 import ceilingBeams from '../../assets/editorial/sample-gallery-ceiling-beams.webp';
@@ -61,8 +62,16 @@ const sections = [
     >
       <div
         slot="artwork"
-        class="relative mx-auto w-full max-w-[32rem] px-2 pt-3 pb-8 sm:pt-5"
+        class="relative isolate mx-auto w-full max-w-[32rem] px-2 pt-3 pb-8 sm:pt-5"
       >
+        <Image
+          src={photoBackground}
+          alt=""
+          aria-hidden="true"
+          widths={[480, 800, 1000]}
+          sizes="(min-width:640px) 640px, 100vw"
+          class="pointer-events-none absolute top-1/2 left-1/2 -z-10 h-[125%] w-[110%] max-w-none -translate-x-1/2 -translate-y-1/2 object-contain sm:w-[125%]"
+        />
         <div class="workshop-photo-pile">
           {headerPhotos.map((hero) => (
             <div class="workshop-print rounded-sm border border-line bg-paper p-1 pb-3 shadow-md sm:p-1.5 sm:pb-4">

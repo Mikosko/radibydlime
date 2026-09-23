@@ -128,8 +128,33 @@ const saleItems = defineCollection({
         category: z.string().trim().min(1),
         status: z.enum(['draft', 'published', 'archived']),
         sample: z.boolean().default(false),
+        imagePresentation: z.enum(['photo', 'cutout']).default('photo'),
+        unique: z.boolean().default(false),
         availability: z.enum(['available', 'reserved', 'sold']),
         priceCzk: z.number().int().nonnegative().optional(),
+        salePriceCzk: z.number().int().nonnegative().optional(),
+        variants: z
+          .array(
+            z
+              .object({
+                id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+                label: z.string().trim().min(1),
+                priceCzk: z.number().int().nonnegative(),
+                salePriceCzk: z.number().int().nonnegative().optional(),
+              })
+              .strict()
+              .refine(
+                (v) =>
+                  v.salePriceCzk === undefined || v.salePriceCzk < v.priceCzk,
+                {
+                  message:
+                    'Variant discount must be lower than its original price',
+                  path: ['salePriceCzk'],
+                },
+              ),
+          )
+          .min(1)
+          .optional(),
         condition: z.string().trim().min(1),
         handover: z.string().trim().min(1),
         images: z
@@ -147,7 +172,36 @@ const saleItems = defineCollection({
           )
           .min(1),
       })
-      .strict(),
+      .strict()
+      .refine(
+        (item) =>
+          item.salePriceCzk === undefined ||
+          (item.priceCzk !== undefined && item.salePriceCzk < item.priceCzk),
+        {
+          message:
+            'salePriceCzk requires priceCzk and must be lower than the original price',
+          path: ['salePriceCzk'],
+        },
+      )
+      .superRefine((item, ctx) => {
+        if (!item.variants) return;
+        if (item.priceCzk !== undefined || item.salePriceCzk !== undefined)
+          ctx.addIssue({
+            code: 'custom',
+            message: 'Variant products must keep prices on variants only',
+            path: ['variants'],
+          });
+        const ids = new Set<string>();
+        item.variants.forEach((variant, index) => {
+          if (ids.has(variant.id))
+            ctx.addIssue({
+              code: 'custom',
+              message: 'Duplicate variant ID',
+              path: ['variants', index, 'id'],
+            });
+          ids.add(variant.id);
+        });
+      }),
 });
 
 const workshops = defineCollection({

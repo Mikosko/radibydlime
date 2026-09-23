@@ -68,7 +68,7 @@ const formatDate = (date: Date) =>
     </PageHeader>
 
     {projects.length > 0 ? (
-      <ul class="mt-8 divide-y divide-line border-b border-line">
+      <ul class="mt-8 lg:divide-y lg:divide-line lg:border-b lg:border-line">
         {projects.map(({ data, hero, author, gallery }, index) => {
           const heroKey = 'width' in hero ? hero.id : hero.src.src;
           const details = gallery
@@ -79,9 +79,9 @@ const formatDate = (date: Date) =>
             .slice(0, 2);
           return (
             <li class="py-9 first:pt-0 sm:py-11">
-              <article class="grid items-start gap-7 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.4fr)] lg:gap-12">
-                <div class="min-w-0 pt-1">
-                  <p class="text-xs tracking-[0.14em] text-accent uppercase">
+              <article class="grid items-start rounded-sm border border-line bg-white/25 px-1 pt-1 sm:px-0 sm:pt-0 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.4fr)] lg:gap-12 lg:rounded-none lg:border-0 lg:bg-transparent">
+                <div class="order-2 min-w-0 px-5 pt-5 pb-6 sm:px-6 lg:order-1 lg:px-0 lg:pt-1 lg:pb-0">
+                  <p class="hidden text-xs tracking-[0.14em] text-accent uppercase lg:block">
                     {data.topic}
                     {index === 0 && (
                       <span class="ml-3 border-l border-line pl-3 text-muted">
@@ -89,7 +89,7 @@ const formatDate = (date: Date) =>
                       </span>
                     )}
                   </p>
-                  <h2 class="mt-4 max-w-lg font-display text-4xl leading-tight sm:text-5xl">
+                  <h2 class="mt-4 hidden max-w-lg font-display text-4xl leading-tight sm:text-5xl lg:block">
                     <a
                       href={`/projekty/${data.slug}/`}
                       class="hover:text-accent"
@@ -97,7 +97,7 @@ const formatDate = (date: Date) =>
                       {data.title}
                     </a>
                   </h2>
-                  <p class="mt-4 max-w-lg leading-relaxed text-muted">
+                  <p class="max-w-lg leading-relaxed text-muted lg:mt-4">
                     {data.summary}
                   </p>
                   <div class="mt-5 flex items-center gap-3 text-sm">
@@ -119,23 +119,25 @@ const formatDate = (date: Date) =>
                       </time>
                     </div>
                   </div>
-                  <EditorialLink
-                    href={`/projekty/${data.slug}/`}
-                    aria-label={`Číst kapitolu: ${data.title}`}
-                    class="mt-5"
-                  >
-                    Číst kapitolu
-                  </EditorialLink>
+                  <div class="flex justify-end lg:justify-start">
+                    <EditorialLink
+                      href={`/projekty/${data.slug}/`}
+                      aria-label={`Číst kapitolu: ${data.title}`}
+                      class="mt-5"
+                    >
+                      Číst kapitolu
+                    </EditorialLink>
+                  </div>
                 </div>
                 <a
                   href={`/projekty/${data.slug}/`}
                   aria-label={`Otevřít kapitolu: ${data.title}`}
                   class:list={[
-                    'chapter-photos group grid min-w-0 gap-2',
+                    'chapter-photos group order-1 grid min-w-0 gap-2 lg:order-2',
                     details.length > 0 && 'has-details',
                   ]}
                 >
-                  <div class="min-h-0 overflow-hidden rounded-sm bg-line/30">
+                  <div class="chapter-cover relative min-h-0 overflow-hidden rounded-sm bg-line/30">
                     {'width' in hero ? (
                       <MediaImage
                         mediaId={hero.id}
@@ -153,6 +155,19 @@ const formatDate = (date: Date) =>
                         class="size-full object-cover group-hover:opacity-90"
                       />
                     )}
+                    <div class="chapter-photo-title relative flex h-full flex-col justify-end px-5 pt-12 pb-6 text-paper sm:px-6 lg:hidden">
+                      <p class="text-xs font-semibold tracking-[0.14em] uppercase">
+                        {data.topic}
+                        {index === 0 && (
+                          <span class="ml-3 border-l border-paper/50 pl-3">
+                            Nejnovější
+                          </span>
+                        )}
+                      </p>
+                      <h2 class="mt-3 font-display text-4xl leading-tight sm:text-5xl">
+                        {data.title}
+                      </h2>
+                    </div>
                   </div>
                   {details.length > 0 && (
                     <div class="grid min-h-0 grid-cols-2 gap-2 sm:grid-cols-1">
@@ -193,20 +208,49 @@ const formatDate = (date: Date) =>
 </SiteLayout>
 
 <style>
+  .chapter-photo-title {
+    background: linear-gradient(
+      to bottom,
+      transparent 20%,
+      rgb(0 0 0 / 35%) 55%,
+      rgb(0 0 0 / 75%) 100%
+    );
+    text-shadow:
+      0 2px 4px rgb(0 0 0 / 85%),
+      0 4px 18px rgb(0 0 0 / 65%);
+  }
+  @media (max-width: 1023px) {
+    .chapter-cover {
+      display: grid;
+    }
+    .chapter-cover :global(img) {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
   .chapter-photos {
-    grid-template-rows: minmax(0, 15rem);
+    grid-template-rows: minmax(16rem, auto);
   }
   .chapter-photos.has-details {
-    grid-template-rows: minmax(0, 15rem) minmax(0, 7rem);
+    grid-template-rows: minmax(16rem, auto) minmax(0, 7rem);
   }
   @media (min-width: 640px) {
     .chapter-photos,
     .chapter-photos.has-details {
-      height: 22rem;
-      grid-template-rows: minmax(0, 1fr);
+      grid-template-rows: minmax(22rem, auto);
     }
     .chapter-photos.has-details {
       grid-template-columns: minmax(0, 2.4fr) minmax(0, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .chapter-photos,
+    .chapter-photos.has-details {
+      height: 22rem;
+      grid-template-rows: minmax(0, 1fr);
     }
   }
 </style>

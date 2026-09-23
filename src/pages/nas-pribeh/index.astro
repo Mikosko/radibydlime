@@ -4,6 +4,8 @@ import PageContainer from '../../components/page-container/PageContainer.astro';
 import PageHeader from '../../components/page-header/PageHeader.astro';
 import SiteLayout from '../../layouts/site/SiteLayout.astro';
 import courtyard from '../../assets/editorial/sample-gallery-courtyard.webp';
+import workbench from '../../assets/editorial/sample-gallery-workbench.webp';
+import kitchenGarden from '../../assets/editorial/sample-kitchen-garden.webp';
 import paper from '../../assets/decor/torn-paper.png';
 import storyStem from '../../assets/decor/story-botanical-stem.png';
 import leaf from '../../assets/decor/author-leaf-sprig.png';
@@ -13,6 +15,17 @@ import house from '../../assets/decor/construction-house.png';
 import estate from '../../assets/images/logo-house.png';
 import divider from '../../assets/decor/floral-divider.png';
 
+const storyPhotos = [
+  {
+    src: courtyard,
+    alt: 'Ilustrační pohled do dvora starého venkovského domu.',
+  },
+  { src: workbench, alt: 'Ilustrační hoblice s ručním nářadím a hoblinami.' },
+  {
+    src: kitchenGarden,
+    alt: 'Ilustrační zahrada se záhony u venkovského domu.',
+  },
+];
 const chapters = [
   {
     title: 'Místo pro život',
@@ -86,32 +99,34 @@ const values = [
       </div>
       <div
         slot="artwork"
-        class="relative mx-auto w-full max-w-xl pt-5 pr-3 pl-12 sm:pr-5 sm:pl-16 lg:pl-0"
+        class="relative mx-auto w-full max-w-xl px-4 pt-5 pb-5 sm:px-5"
       >
-        <figure class="border border-line bg-paper p-2 shadow-sm -rotate-2 sm:p-3">
-          <Image
-            src={courtyard}
-            alt="Ilustrační pohled do dvora starého venkovského domu."
-            loading="eager"
-            widths={[480, 800, 1200]}
-            sizes="(min-width: 1024px) 580px, 90vw"
-            class="aspect-[5/4] w-full object-cover"
-          />
-          <figcaption class="px-2 pt-3 pb-1 text-xs leading-relaxed text-muted">
-            Obnova začíná pohledem na to, co už tu je.{' '}
-            <span class="italic">Ilustrační fotografie.</span>
-          </figcaption>
+        <figure>
+          <div class="story-photos">
+            {storyPhotos.map(({ src, alt }) => (
+              <div class="story-print rounded-sm border border-line bg-paper p-1.5 pb-4 shadow-md sm:p-2 sm:pb-5">
+                <Image
+                  {src}
+                  {alt}
+                  loading="eager"
+                  widths={[320, 480, 800]}
+                  sizes="(min-width:1024px) 340px, (min-width:640px) 320px, 60vw"
+                  class="aspect-[4/3] w-full rounded-sm object-cover"
+                />
+              </div>
+            ))}
+          </div>
         </figure>
         <Image
           src={storyStem}
           alt=""
           aria-hidden="true"
           width={160}
-          class="pointer-events-none absolute top-[43%] left-0 h-32 w-10 -translate-y-1/2 object-cover opacity-85 sm:h-44 sm:w-14 lg:-left-22 lg:h-48 lg:w-20"
+          class="pointer-events-none absolute top-[52%] -left-1 z-10 h-32 w-10 -translate-y-1/2 object-contain opacity-85 sm:h-44 sm:w-14 lg:-left-5 lg:h-48 lg:w-16"
         />
         <aside
           aria-label="Malý vzkaz"
-          class="absolute -top-2 right-0 isolate w-32 px-4 py-6 text-center rotate-5 sm:w-36"
+          class="absolute right-0 bottom-0 z-10 isolate w-48 px-5 py-4 text-center -rotate-3 sm:w-64 sm:px-6"
         >
           <Image
             src={paper}
@@ -119,16 +134,12 @@ const values = [
             aria-hidden="true"
             class="absolute inset-0 -z-10 size-full"
           />
-          <p class="font-annotation text-2xl leading-tight">
-            Malé kroky
-            <br />
-            dělají velké
-            <br />
-            změny.
+          <p class="font-annotation text-2xl leading-tight sm:text-3xl">
+            Malé kroky, velké změny.
+            <span aria-hidden="true" class="ml-2 text-base text-accent">
+              ♥
+            </span>
           </p>
-          <span aria-hidden="true" class="mt-3 block text-lg text-accent">
-            ♥
-          </span>
         </aside>
       </div>
     </PageHeader>
@@ -301,3 +312,31 @@ const values = [
     </div>
   </section>
 </SiteLayout>
+
+<style>
+  .story-photos {
+    position: relative;
+    aspect-ratio: 1.2;
+  }
+  .story-print {
+    position: absolute;
+  }
+  .story-print:nth-child(1) {
+    top: 3%;
+    left: 2%;
+    width: 64%;
+    transform: rotate(-7deg);
+  }
+  .story-print:nth-child(2) {
+    top: 27%;
+    right: 0;
+    width: 54%;
+    transform: rotate(8deg);
+  }
+  .story-print:nth-child(3) {
+    top: 48%;
+    left: 9%;
+    width: 58%;
+    transform: rotate(-4deg);
+  }
+</style>

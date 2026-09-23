@@ -1,4 +1,5 @@
 ---
+import ProductVariants from '../../components/product-variants/ProductVariants.astro';
 import ReturnToList from '../../components/return-to-list/ReturnToList.astro';
 import { Image } from 'astro:assets';
 import { render } from 'astro:content';
@@ -29,7 +30,7 @@ interface Props {
 const { item, catalog } = Astro.props;
 const { data, cover, images } = item;
 const { Content } = await render(item);
-const canEnquire = data.sample || data.availability === 'available';
+const canEnquire = data.availability === 'available';
 ---
 
 <SiteLayout title={data.title} description={data.summary}>
@@ -75,9 +76,7 @@ const canEnquire = data.sample || data.availability === 'available';
               class="absolute inset-0 -z-10 size-full"
             />
             <p class="font-editorial-note text-sm">
-              {data.sample
-                ? 'Ukázka nabídky'
-                : availabilityLabels[data.availability]}
+              {availabilityLabels[data.availability]}
             </p>
             <span aria-hidden="true" class="mt-2 block text-accent">
               ♥
@@ -88,9 +87,7 @@ const canEnquire = data.sample || data.availability === 'available';
           items={images}
           {catalog}
           title="Zblízka i v detailu"
-          eyebrow={
-            data.sample ? 'Ilustrační fotografie' : 'Fotografie předmětu'
-          }
+          eyebrow="Fotografie předmětu"
         />
       </div>
       <div class="min-w-0 pt-2">
@@ -100,17 +97,40 @@ const canEnquire = data.sample || data.availability === 'available';
         <h1 class="mt-4 font-display text-5xl leading-tight sm:text-6xl">
           {data.title}
         </h1>
-        <p class="mt-5 text-2xl">
-          {data.sample ? 'Ukázková položka' : formatPrice(data.priceCzk)}
-        </p>
-        <p class="mt-5 text-lg leading-relaxed text-muted">{data.summary}</p>
-        {data.sample && (
-          <p class="mt-5 border-l-2 border-accent pl-4 text-sm leading-relaxed text-muted">
-            Toto je ukázka, nikoli aktuální nabídka k prodeji. Snímky ukazují
-            ilustrační předmět a prostředí obnovy, ne různé pohledy na skutečný
-            prodávaný kus.
+        {data.unique && (
+          <p class="mt-4 inline-block rounded-sm bg-ink/90 px-3 py-1.5 text-sm text-paper">
+            Jediný kus
           </p>
         )}
+        {data.variants ? (
+          <ProductVariants
+            variants={data.variants}
+            title={data.title}
+            productId={data.id}
+            {canEnquire}
+          />
+        ) : (
+          <div class="mt-5 flex flex-wrap items-baseline gap-3">
+            <p class="text-2xl font-semibold">
+              {formatPrice(data.salePriceCzk ?? data.priceCzk)}
+            </p>
+            {data.salePriceCzk !== undefined && (
+              <>
+                <p class="text-muted">
+                  <span class="sr-only">Původní cena: </span>
+                  <s>{formatPrice(data.priceCzk)}</s>
+                </p>
+                {data.availability === 'available' && (
+                  <span class="rounded-sm bg-accent px-3 py-1.5 text-sm text-paper">
+                    Sleva
+                  </span>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
+        <p class="mt-5 text-lg leading-relaxed text-muted">{data.summary}</p>
         <dl class="mt-7 divide-y divide-line border-y border-line text-sm">
           <div class="py-4">
             <dt class="font-semibold">Stav a podrobnosti</dt>
@@ -120,28 +140,30 @@ const canEnquire = data.sample || data.availability === 'available';
             <dt class="font-semibold">Předání</dt>
             <dd class="mt-2 leading-relaxed text-muted">{data.handover}</dd>
           </div>
-          {!data.sample && (
+          {
             <div class="py-4">
               <dt class="font-semibold">Dostupnost</dt>
               <dd class="mt-2 text-muted">
                 {availabilityLabels[data.availability]}
               </dd>
             </div>
-          )}
+          }
         </dl>
         {canEnquire ? (
-          <>
-            <a
-              href={`mailto:info@radibydlime.cz?subject=${encodeURIComponent(`Dotaz k inzerci: ${data.title} (${data.id})`)}`}
-              class="mt-7 inline-flex min-h-12 items-center gap-8 bg-ink px-6 py-3 text-paper hover:bg-ink/90"
-            >
-              Napsat k předmětu <span aria-hidden="true">→</span>
-            </a>
-            <p class="mt-3 text-xs leading-relaxed text-muted">
-              Otevře váš e-mail. Dostupnost a předání potvrdíme osobně; nejde o
-              objednávku ani rezervaci.
-            </p>
-          </>
+          data.variants ? null : (
+            <>
+              <a
+                href={`mailto:info@radibydlime.cz?subject=${encodeURIComponent(`Dotaz k inzerci: ${data.title} (${data.id})`)}`}
+                class="mt-7 inline-flex min-h-12 items-center gap-8 bg-ink px-6 py-3 text-paper hover:bg-ink/90"
+              >
+                Napsat k předmětu <span aria-hidden="true">→</span>
+              </a>
+              <p class="mt-3 text-xs leading-relaxed text-muted">
+                Otevře váš e-mail. Dostupnost a předání potvrdíme osobně; nejde
+                o objednávku ani rezervaci.
+              </p>
+            </>
+          )
         ) : (
           <p class="mt-7 border border-line px-5 py-4">
             {data.availability === 'sold'

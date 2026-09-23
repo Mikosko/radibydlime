@@ -1,9 +1,10 @@
 ---
 import { Image } from 'astro:assets';
+import { summarizePrice } from '../../content/sale-items/pricing';
 import PageContainer from '../../components/page-container/PageContainer.astro';
 import PageHeader from '../../components/page-header/PageHeader.astro';
 import SiteLayout from '../../layouts/site/SiteLayout.astro';
-import terrace from '../../assets/decor/chapters-terrace.png';
+import EditorialLink from '../../components/editorial-link/EditorialLink.astro';
 import paper from '../../assets/decor/torn-paper.png';
 import divider from '../../assets/decor/floral-divider.png';
 import MediaImage from '../../components/media-image/MediaImage.astro';
@@ -15,6 +16,13 @@ import {
 } from '../../content/sale-items/query';
 const catalog = await getMediaCatalog();
 const items = await getPublishedSaleItems(catalog);
+const cutouts = items.filter(({ data }) => data.imagePresentation === 'cutout');
+const displayItems = [
+  ...cutouts,
+  ...items.filter(({ data }) => data.imagePresentation !== 'cutout'),
+];
+const featuredItems = cutouts;
+const featured = featuredItems[0];
 ---
 
 <SiteLayout
@@ -29,7 +37,7 @@ const items = await getPublishedSaleItems(catalog);
       description="Naše vlastní nabídka z domu, dílny i zahrady. U každé věci najdete podrobnosti, fotografie a možnost napsat nám přímo."
       class="border-b border-line"
     >
-      <p slot="annotation" class="mt-7 flex items-center gap-5 text-accent">
+      <!-- <p slot="annotation" class="mt-7 flex items-center gap-5 text-accent">
         <span aria-hidden="true" class="text-2xl">
           ♥
         </span>
@@ -38,41 +46,186 @@ const items = await getPublishedSaleItems(catalog);
           <br />
           Další příběh.
         </span>
-      </p>
-      <div
-        slot="artwork"
-        class="relative isolate mx-auto w-full max-w-xl pt-12 pr-5 sm:pr-10"
-      >
-        <Image
-          src={terrace}
-          alt=""
-          aria-hidden="true"
-          loading="eager"
-          width={900}
-          class="w-full"
-        />
-        <aside
-          aria-label="Malý vzkaz"
-          class="absolute top-0 right-1 isolate w-32 px-4 py-7 text-center rotate-6 sm:w-36"
+      </p> -->
+      {featured && (
+        <sale-carousel
+          slot="artwork"
+          class="group relative block min-w-0"
+          role="region"
+          aria-roledescription="karusel"
+          aria-label="Z naší nabídky"
         >
-          <Image
-            src={paper}
-            alt=""
-            aria-hidden="true"
-            class="absolute inset-0 -z-10 size-full"
-          />
-          <p class="font-annotation text-2xl leading-tight">
-            Staré věci
-            <br />
-            mají nové
-            <br />
-            začátky.
-          </p>
-          <span aria-hidden="true" class="mt-3 block text-xl text-accent">
-            ♥
-          </span>
-        </aside>
-      </div>
+          <div class="overflow-hidden pt-2 pb-5">
+            <div data-track class="flex items-start">
+              {featuredItems.map((featured, index) => (
+                <div
+                  data-slide
+                  hidden={index > 0}
+                  role="group"
+                  aria-roledescription="snímek"
+                  aria-label={`${index + 1} z ${featuredItems.length}: ${featured.data.title}`}
+                  class="sale-still-life relative isolate w-full shrink-0 px-7 sm:px-10"
+                >
+                  <div class="relative z-10 mb-1">
+                    <p class="text-xs tracking-widest text-accent uppercase">
+                      {featured.data.category}
+                    </p>
+                    <h2 class="mt-1 font-display text-3xl leading-tight">
+                      {featured.data.title}
+                    </h2>
+                  </div>
+                  <div class="relative">
+                    <div class="absolute top-3 left-0 z-10 flex flex-wrap gap-2">
+                      {featured.data.availability === 'reserved' && (
+                        <span class="rounded-sm bg-paper/95 px-3 py-1.5 text-xs text-accent">
+                          {availabilityLabels[featured.data.availability]}
+                        </span>
+                      )}
+                      {summarizePrice(featured.data).discount !== undefined &&
+                        featured.data.availability === 'available' && (
+                          <span class="rounded-sm bg-accent px-3 py-1.5 text-xs text-paper">
+                            {summarizePrice(featured.data).discount}
+                          </span>
+                        )}
+                      {featured.data.unique && (
+                        <span class="rounded-sm bg-ink/90 px-3 py-1.5 text-xs text-paper">
+                          Jediný kus
+                        </span>
+                      )}
+                    </div>
+                    <a
+                      href={`/inzerce/${featured.data.slug}/`}
+                      class="block"
+                      aria-label={`Prohlédnout: ${featured.data.title}`}
+                    >
+                      {'width' in featured.cover ? (
+                        <MediaImage
+                          mediaId={featured.cover.id}
+                          {catalog}
+                          loading="eager"
+                          class="mx-auto h-[18rem] w-full object-contain sm:h-[20rem]"
+                        />
+                      ) : (
+                        <Image
+                          src={featured.cover.src}
+                          alt={featured.cover.alt}
+                          loading="eager"
+                          widths={[480, 800]}
+                          sizes="(min-width:1024px) 560px, 90vw"
+                          class="mx-auto h-[18rem] w-full object-contain sm:h-[20rem]"
+                        />
+                      )}
+                    </a>
+                  </div>
+                  <aside class="relative -mt-24 ml-auto w-48 max-w-full rotate-[-4deg] px-6 py-5 sm:-mt-28 sm:w-52">
+                    <Image
+                      src={paper}
+                      alt=""
+                      aria-hidden="true"
+                      class="absolute inset-0 -z-10 size-full object-fill drop-shadow-sm"
+                    />
+                    {summarizePrice(featured.data).original !== undefined && (
+                      <p class="mb-1 text-sm text-muted">
+                        <span class="sr-only">Původní cena: </span>
+                        <s>{formatPrice(featured.data.priceCzk)}</s>
+                      </p>
+                    )}
+                    <div class="relative">
+                      <p
+                        class:list={[
+                          'text-3xl font-semibold sm:text-4xl',
+                          featured.data.availability === 'sold' &&
+                            'text-muted/50',
+                        ]}
+                      >
+                        {featured.data.availability === 'sold' && (
+                          <span class="sr-only">Původní cena: </span>
+                        )}
+                        {summarizePrice(featured.data).text}
+                      </p>
+                      {featured.data.availability === 'sold' && (
+                        <span class="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-12 border-[3px] border-accent bg-paper/90 px-2 py-1 font-body text-2xl leading-none font-semibold tracking-wider whitespace-nowrap text-accent uppercase">
+                          Prodáno
+                        </span>
+                      )}
+                    </div>
+
+                    <EditorialLink
+                      href={`/inzerce/${featured.data.slug}/`}
+                      class="mt-1 text-sm"
+                    >
+                      Prohlédnout
+                    </EditorialLink>
+                  </aside>
+                </div>
+              ))}
+            </div>
+          </div>
+          {featuredItems.length > 1 && (
+            <div data-controls hidden>
+              <button
+                type="button"
+                data-prev
+                aria-label="Předchozí předmět"
+                class="sale-arrow left-1"
+              >
+                {' '}
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  class="size-5"
+                  aria-hidden="true"
+                >
+                  <path d="m15 5-7 7 7 7" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                data-next
+                aria-label="Další předmět"
+                class="sale-arrow right-1"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  class="size-5"
+                  aria-hidden="true"
+                >
+                  <path d="m9 5 7 7-7 7" />
+                </svg>
+              </button>
+              <div class="mt-2 flex flex-wrap items-center justify-center gap-2">
+                {featuredItems.map((item, index) => (
+                  <button
+                    type="button"
+                    data-dot
+                    aria-label={`Zobrazit: ${item.data.title}`}
+                    aria-current={index === 0 ? 'true' : undefined}
+                    class="slide-dot grid size-11 place-items-center"
+                  >
+                    <span class="block h-1.5 w-5 rounded-full bg-line" />
+                  </button>
+                ))}
+                <span data-count class="ml-2 text-xs tabular-nums text-muted">
+                  1 / {featuredItems.length}
+                </span>
+                <button
+                  type="button"
+                  data-pause
+                  class="ml-2 min-h-11 px-2 text-xs text-muted"
+                  aria-label="Pozastavit automatické střídání"
+                >
+                  Pozastavit
+                </button>
+              </div>
+            </div>
+          )}
+        </sale-carousel>
+      )}
     </PageHeader>
 
     <section aria-labelledby="nabidka" class="pt-8">
@@ -87,67 +240,93 @@ const items = await getPublishedSaleItems(catalog);
         </div>
         <p class="text-sm text-muted">Počet položek: {items.length}</p>
       </div>
-      {items.some((item) => item.data.sample) && (
-        <p class="mt-5 text-sm italic text-muted">
-          Položky označené „Ukázka“ slouží k představení nabídky. Jejich
-          fotografie jsou ilustrační; nejde o aktuální inzeráty.
-        </p>
-      )}
-      <ul class="mt-7 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map(({ data, cover, images }) => (
+      <ul class="mt-8 grid gap-x-7 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+        {displayItems.map(({ data, cover }) => (
           <li>
-            <article class="h-full border border-line bg-white/20 shadow-sm">
+            <article
+              data-sale-card
+              class="flex h-full flex-col overflow-hidden rounded-sm border border-line bg-white/25 p-1 lg:overflow-visible lg:border-0 lg:bg-transparent lg:p-0"
+            >
               <a
                 href={`/inzerce/${data.slug}/`}
-                class="group flex h-full flex-col"
+                aria-label={`Prohlédnout předmět: ${data.title}`}
+                class="group relative block overflow-hidden rounded-sm bg-line/20"
               >
-                <div class="relative overflow-hidden">
-                  {'width' in cover ? (
-                    <MediaImage
-                      mediaId={cover.id}
-                      {catalog}
-                      class="aspect-[4/3] w-full object-cover"
-                    />
-                  ) : (
-                    <Image
-                      src={cover.src}
-                      alt={cover.alt}
-                      widths={[400, 700]}
-                      sizes="(min-width:1024px) 400px, (min-width:640px) 45vw, 90vw"
-                      class="aspect-[4/3] w-full object-cover"
-                    />
+                {'width' in cover ? (
+                  <MediaImage
+                    mediaId={cover.id}
+                    {catalog}
+                    class:list={[
+                      'aspect-[4/3] w-full group-hover:opacity-90',
+                      data.imagePresentation === 'cutout'
+                        ? 'object-contain p-3'
+                        : 'object-cover',
+                    ]}
+                  />
+                ) : (
+                  <Image
+                    src={cover.src}
+                    alt={cover.alt}
+                    loading="lazy"
+                    widths={[400, 700]}
+                    sizes="(min-width:1024px) 400px, (min-width:640px) 45vw, 90vw"
+                    class:list={[
+                      'aspect-[4/3] w-full group-hover:opacity-90',
+                      data.imagePresentation === 'cutout'
+                        ? 'object-contain p-3'
+                        : 'object-cover',
+                    ]}
+                  />
+                )}
+                <div class="absolute top-3 right-3 left-3 flex flex-wrap items-start justify-between gap-2">
+                  <span class="rounded-sm bg-paper/95 px-3 py-1.5 text-xs">
+                    {availabilityLabels[data.availability]}
+                  </span>
+                  {summarizePrice(data).discount !== undefined &&
+                    data.availability === 'available' && (
+                      <span class="rounded-sm bg-accent px-3 py-1.5 text-xs text-paper">
+                        {summarizePrice(data).discount}
+                      </span>
+                    )}
+                  {data.unique && (
+                    <span class="rounded-sm bg-ink/90 px-3 py-1.5 text-xs text-paper">
+                      Jediný kus
+                    </span>
                   )}
-                  <span class="absolute top-3 left-3 bg-paper/95 px-3 py-2 text-xs">
-                    {data.sample
-                      ? 'Ukázka'
-                      : availabilityLabels[data.availability]}
-                  </span>
-                  <span class="absolute right-3 bottom-3 bg-paper/95 px-2 py-1 text-xs">
-                    {images.length} fotografie
-                  </span>
-                </div>
-                <div class="flex flex-1 flex-col p-5 sm:p-6">
-                  <p class="text-xs tracking-widest text-muted uppercase">
-                    {data.category}
-                  </p>
-                  <h3 class="mt-2 font-display text-3xl group-hover:text-accent">
-                    {data.title}
-                  </h3>
-                  <p class="mt-3 flex-1 text-sm leading-relaxed text-muted">
-                    {data.summary}
-                  </p>
-                  <div class="mt-5 flex items-center justify-between gap-3 border-t border-line pt-4">
-                    <span>
-                      {data.sample
-                        ? 'Ukázková položka'
-                        : formatPrice(data.priceCzk)}
-                    </span>
-                    <span class="text-sm text-accent">
-                      Prohlédnout <span aria-hidden="true">→</span>
-                    </span>
-                  </div>
                 </div>
               </a>
+              <div class="flex flex-1 flex-col px-4 pt-5 pb-4 sm:px-5 sm:pb-5 lg:px-0 lg:pb-0">
+                <p class="text-xs tracking-widest text-muted uppercase">
+                  {data.category}
+                </p>
+                <h3 class="mt-2 font-display text-3xl leading-tight">
+                  <a href={`/inzerce/${data.slug}/`} class="hover:text-accent">
+                    {data.title}
+                  </a>
+                </h3>
+                <p class="mt-3 text-sm leading-relaxed text-muted">
+                  {data.summary}
+                </p>
+                <div class="mt-auto flex flex-wrap items-center justify-between gap-3 pt-5">
+                  <div>
+                    <p class="flex flex-wrap items-baseline gap-x-2 font-semibold">
+                      <span class="text-xl">{summarizePrice(data).text}</span>
+                      {summarizePrice(data).original !== undefined && (
+                        <span class="text-sm font-normal text-muted">
+                          <span class="sr-only">Původní cena: </span>
+                          <s>{formatPrice(data.priceCzk)}</s>
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                  <EditorialLink
+                    href={`/inzerce/${data.slug}/`}
+                    class="text-sm"
+                  >
+                    Detail předmětu
+                  </EditorialLink>
+                </div>
+              </div>
             </article>
           </li>
         ))}
@@ -193,3 +372,185 @@ const items = await getPublishedSaleItems(catalog);
     </p>
   </section>
 </SiteLayout>
+
+<style>
+  [data-track] {
+    transition: transform 800ms cubic-bezier(0.22, 0.68, 0.22, 1);
+  }
+  .sale-arrow {
+    position: absolute;
+    top: 38%;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    opacity: 0;
+    transition: opacity 180ms;
+    box-shadow: 0 2px 10px #293c3014;
+  }
+  sale-carousel:hover .sale-arrow,
+  sale-carousel:focus-within .sale-arrow {
+    opacity: 1;
+  }
+  .slide-dot span {
+    position: relative;
+    overflow: hidden;
+    transition: width 250ms ease;
+  }
+  .slide-dot[aria-current='true'] span {
+    width: 2rem;
+    background: color-mix(in srgb, var(--color-accent) 25%, var(--color-paper));
+  }
+  .slide-dot[aria-current='true'] span::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--color-accent);
+    transform-origin: left;
+    transform: scaleX(var(--slide-progress, 0));
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .slide-dot span {
+      transition: none;
+    }
+    .slide-dot[aria-current='true'] span::after {
+      transform: none;
+    }
+  }
+  @media (hover: none) {
+    .sale-arrow {
+      opacity: 1;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [data-track],
+    .sale-arrow {
+      transition: none;
+    }
+  }
+</style>
+<script>
+  class SaleCarousel extends HTMLElement {
+    connectedCallback() {
+      const slides = [...this.querySelectorAll<HTMLElement>('[data-slide]')];
+      const track = this.querySelector<HTMLElement>('[data-track]')!;
+      const controls = this.querySelector<HTMLElement>('[data-controls]');
+      if (slides.length < 2 || !controls) return;
+      slides.forEach((slide) => {
+        slide.hidden = false;
+      });
+      const dots = [...this.querySelectorAll<HTMLButtonElement>('[data-dot]')];
+      const pause = this.querySelector<HTMLButtonElement>('[data-pause]')!;
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+      let current = 0;
+      let elapsed = 0;
+      let paused = reduced.matches;
+      const show = (index: number) => {
+        elapsed = 0;
+        this.style.setProperty('--slide-progress', '0');
+        current = (index + slides.length) % slides.length;
+        track.style.transform = `translateX(-${current * 100}%)`;
+        slides.forEach((slide, i) => {
+          slide.inert = i !== current;
+          slide.setAttribute('aria-hidden', String(i !== current));
+        });
+        dots.forEach((dot, i) => {
+          if (i === current) dot.setAttribute('aria-current', 'true');
+          else dot.removeAttribute('aria-current');
+        });
+        this.querySelector('[data-count]')!.textContent =
+          `${current + 1} / ${slides.length}`;
+      };
+      const label = () => {
+        pause.textContent = paused ? 'Spustit' : 'Pozastavit';
+        pause.setAttribute(
+          'aria-label',
+          paused
+            ? 'Spustit automatické střídání'
+            : 'Pozastavit automatické střídání',
+        );
+      };
+      this.querySelector('[data-prev]')!.addEventListener('click', () =>
+        show(current - 1),
+      );
+      this.querySelector('[data-next]')!.addEventListener('click', () =>
+        show(current + 1),
+      );
+      dots.forEach((dot, i) => dot.addEventListener('click', () => show(i)));
+      pause.addEventListener('click', () => {
+        paused = !paused;
+        label();
+      });
+      let lastWheel = -Infinity;
+      let wheelDistance = 0;
+      let wheelAdvanced = false;
+      const onWheel = (event: WheelEvent) => {
+        // Leave vertical scrolling and browser pinch-to-zoom untouched.
+        if (event.ctrlKey || Math.abs(event.deltaX) <= Math.abs(event.deltaY))
+          return;
+        event.preventDefault();
+        const now = performance.now();
+        if (now - lastWheel > 220) {
+          wheelDistance = 0;
+          wheelAdvanced = false;
+        }
+        lastWheel = now;
+        const unit =
+          event.deltaMode === 1
+            ? 16
+            : event.deltaMode === 2
+              ? this.clientWidth
+              : 1;
+        wheelDistance += event.deltaX * unit;
+        if (!wheelAdvanced && Math.abs(wheelDistance) >= 40) {
+          show(current + Math.sign(wheelDistance));
+          wheelAdvanced = true;
+        }
+      };
+      this.addEventListener('wheel', onWheel, { passive: false });
+      const onMotion = () => {
+        if (reduced.matches) {
+          paused = true;
+          label();
+        }
+      };
+      reduced.addEventListener('change', onMotion);
+      let last = performance.now();
+      let frame = 0;
+      const tick = (now: number) => {
+        const delta = Math.min(now - last, 100);
+        last = now;
+        if (
+          !paused &&
+          now - lastWheel > 800 &&
+          !document.hidden &&
+          !this.matches(':hover') &&
+          !this.contains(document.activeElement)
+        ) {
+          elapsed += delta;
+          if (elapsed >= 5500) show(current + 1);
+          this.style.setProperty('--slide-progress', String(elapsed / 5500));
+        }
+        frame = requestAnimationFrame(tick);
+      };
+      frame = requestAnimationFrame(tick);
+      this.cleanup = () => {
+        cancelAnimationFrame(frame);
+        this.removeEventListener('wheel', onWheel);
+        reduced.removeEventListener('change', onMotion);
+      };
+      controls.hidden = false;
+      show(0);
+      label();
+    }
+    cleanup?: () => void;
+    disconnectedCallback() {
+      this.cleanup?.();
+    }
+  }
+  if (!customElements.get('sale-carousel'))
+    customElements.define('sale-carousel', SaleCarousel);
+</script>

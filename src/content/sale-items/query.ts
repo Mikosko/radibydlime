@@ -7,14 +7,7 @@ export const availabilityLabels = {
   reserved: 'Zamluveno',
   sold: 'Prodáno',
 };
-export const formatPrice = (price?: number) =>
-  price === undefined
-    ? 'Cena dohodou'
-    : new Intl.NumberFormat('cs-CZ', {
-        style: 'currency',
-        currency: 'CZK',
-        maximumFractionDigits: 0,
-      }).format(price);
+export { formatPrice } from './pricing';
 
 export async function getPublishedSaleItems(
   catalog?: ReadonlyMap<string, Media>,

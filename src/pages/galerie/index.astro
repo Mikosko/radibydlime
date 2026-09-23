@@ -68,7 +68,7 @@ const albums = await getPublishedAlbums(catalog);
           const remaining = images.length - preview.length;
           return (
             <li class="py-7 first:pt-0 sm:py-9">
-              <article class="grid items-start rounded-sm border border-line bg-white/25 lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-8 lg:rounded-none lg:border-0 lg:bg-transparent">
+              <article class="grid items-start rounded-sm border border-line bg-white/25 px-2 pt-2 sm:px-0 sm:pt-0 lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-8 lg:rounded-none lg:border-0 lg:bg-transparent">
                 <div class="order-2 min-w-0 px-5 pt-5 pb-6 sm:px-6 lg:order-1 lg:px-0 lg:pt-1 lg:pb-0">
                   <p class="hidden font-editorial-note text-xs tracking-[0.14em] text-muted lg:block">
                     {images.length}{' '}

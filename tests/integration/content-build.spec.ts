@@ -788,3 +788,52 @@ test('workshops reject unknown host profiles', async () => {
     });
   });
 });
+
+test('variant products publish shared galleries and statically usable variant enquiries', async () => {
+  const voucher = await readFile(
+    join(root, 'dist/inzerce/darkovy-poukaz/index.html'),
+    'utf8',
+  );
+  const bouquet = await readFile(
+    join(root, 'dist/inzerce/lucni-kytice/index.html'),
+    'utf8',
+  );
+  assert.equal((voucher.match(/data-gallery-open=/g) ?? []).length, 4);
+  assert.equal((bouquet.match(/data-gallery-open=/g) ?? []).length, 3);
+  for (const id of ['value-500', 'value-1000', 'value-1500'])
+    assert.ok(voucher.includes(`data-option="${id}"`));
+  for (const id of ['small', 'medium', 'large'])
+    assert.ok(bouquet.includes(`data-option="${id}"`));
+  assert.match(bouquet, /Vyberte variantu/);
+  assert.match(bouquet, /390/);
+  assert.match(voucher, /sample-voucher-set/);
+});
+
+for (const [name, transform, expected] of [
+  [
+    'duplicate variant identity',
+    (s: string) => s.replace('id: medium', 'id: small'),
+    /Duplicate variant ID/,
+  ],
+  [
+    'invalid variant discount',
+    (s: string) => s.replace('salePriceCzk: 390', 'salePriceCzk: 590'),
+    /Variant discount must be lower/,
+  ],
+  [
+    'mixed product and variant pricing',
+    (s: string) => s.replace('variants:', 'priceCzk: 100\nvariants:'),
+    /Variant products must keep prices on variants only/,
+  ],
+] as const) {
+  test(`sale schema rejects ${name}`, async () => {
+    await withFixture(async (directory) => {
+      const path = join(directory, 'src/content/sale-items/lucni-kytice.mdoc');
+      await writeFile(path, transform(await readFile(path, 'utf8')));
+      await assert.rejects(build(directory), (error) => {
+        assert.match(String(error), expected);
+        return true;
+      });
+    });
+  });
+}

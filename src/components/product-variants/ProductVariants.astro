@@ -1,0 +1,88 @@
+---
+import {
+  formatPrice,
+  variantEnquiry,
+  type Variant,
+} from '../../content/sale-items/pricing';
+interface Props {
+  variants: Variant[];
+  title: string;
+  productId: string;
+  canEnquire: boolean;
+}
+const { variants, title, productId, canEnquire } = Astro.props;
+---
+
+<product-variants class="mt-6 block">
+  <fieldset data-selector hidden>
+    <legend class="mb-3 text-sm font-semibold">Vyberte variantu</legend>
+    <div class="flex flex-wrap gap-3">
+      {variants.map((variant, index) => (
+        <label class="cursor-pointer">
+          <input
+            type="radio"
+            name={`variant-${productId}`}
+            value={variant.id}
+            checked={index === 0}
+            class="peer sr-only"
+          />
+          <span class="block min-h-11 rounded-sm border border-line px-5 py-3 text-sm peer-checked:border-ink peer-checked:bg-ink peer-checked:text-paper peer-focus-visible:outline-2 peer-focus-visible:outline-offset-4 peer-focus-visible:outline-accent">
+            {variant.label}
+          </span>
+        </label>
+      ))}
+    </div>
+  </fieldset>
+  <div aria-live="polite" aria-atomic="true">
+    {variants.map((variant) => (
+      <div data-option={variant.id} class="mt-5">
+        <p class="text-sm text-muted">{variant.label}</p>
+        <div class="mt-2 flex flex-wrap items-baseline gap-3">
+          <p class="text-3xl font-semibold">
+            {formatPrice(variant.salePriceCzk ?? variant.priceCzk)}
+          </p>
+          {variant.salePriceCzk !== undefined && (
+            <>
+              <p class="text-muted">
+                <span class="sr-only">Původní cena: </span>
+                <s>{formatPrice(variant.priceCzk)}</s>
+              </p>
+              <span class="rounded-sm bg-accent px-3 py-1.5 text-sm text-paper">
+                Sleva
+              </span>
+            </>
+          )}
+        </div>
+        {canEnquire && (
+          <a
+            href={variantEnquiry(title, productId, variant)}
+            class="mt-5 inline-flex min-h-12 items-center gap-8 bg-ink px-6 py-3 text-paper hover:bg-ink/90"
+          >
+            Napsat k variantě <span aria-hidden="true">→</span>
+          </a>
+        )}
+      </div>
+    ))}
+  </div>
+</product-variants>
+<script>
+  class ProductVariants extends HTMLElement {
+    connectedCallback() {
+      const inputs = [
+        ...this.querySelectorAll<HTMLInputElement>('input[type="radio"]'),
+      ];
+      const panels = [...this.querySelectorAll<HTMLElement>('[data-option]')];
+      const update = () => {
+        const selected = inputs.find((input) => input.checked)?.value;
+        panels.forEach((panel) => {
+          panel.hidden = panel.dataset.option !== selected;
+        });
+      };
+      this.querySelector<HTMLElement>('[data-selector]')!.hidden = false;
+      inputs.forEach((input) => input.addEventListener('change', update));
+      update();
+    }
+  }
+  if (!customElements.get('product-variants'))
+    customElements.define('product-variants', ProductVariants);
+</script>
