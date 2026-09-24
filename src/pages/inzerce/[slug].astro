@@ -1,4 +1,7 @@
 ---
+import SaleCard from '../../components/sale-card/SaleCard.astro';
+import EditorialLink from '../../components/editorial-link/EditorialLink.astro';
+import { relatedSaleItems } from '../../content/sale-items/related';
 import ProductVariants from '../../components/product-variants/ProductVariants.astro';
 import ReturnToList from '../../components/return-to-list/ReturnToList.astro';
 import { Image } from 'astro:assets';
@@ -18,16 +21,18 @@ import botanical from '../../assets/decor/botanical-daisies.png';
 
 export async function getStaticPaths() {
   const catalog = await getMediaCatalog();
-  return (await getPublishedSaleItems(catalog)).map((item) => ({
+  const items = await getPublishedSaleItems(catalog);
+  return items.map((item) => ({
     params: { slug: item.data.slug },
-    props: { item, catalog },
+    props: { item, catalog, related: relatedSaleItems(items, item.data.id) },
   }));
 }
 interface Props {
+  related: Awaited<ReturnType<typeof getPublishedSaleItems>>;
   item: Awaited<ReturnType<typeof getPublishedSaleItems>>[number];
   catalog: Awaited<ReturnType<typeof getMediaCatalog>>;
 }
-const { item, catalog } = Astro.props;
+const { item, catalog, related } = Astro.props;
 const { data, cover, images } = item;
 const { Content } = await render(item);
 const canEnquire = data.availability === 'available';
@@ -192,6 +197,34 @@ const canEnquire = data.availability === 'available';
         class="mx-auto hidden max-h-64 w-auto opacity-80 md:block"
       />
     </section>
+    {related.length > 0 && (
+      <section
+        aria-labelledby="related-items"
+        class="mt-14 border-t border-line pt-8 sm:mt-20 sm:pt-10"
+      >
+        <div class="mb-7 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p class="text-xs tracking-widest text-accent uppercase">
+              Ještě něco pro radost
+            </p>
+            <h2
+              id="related-items"
+              class="mt-2 font-display text-4xl sm:text-5xl"
+            >
+              Mohlo by se vám líbit
+            </h2>
+          </div>
+          <EditorialLink href="/inzerce/">Celá nabídka</EditorialLink>
+        </div>
+        <ul class="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+          {related.map((item) => (
+            <li>
+              <SaleCard {item} {catalog} />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
     <a
       href="/inzerce/"
       data-return-to-list

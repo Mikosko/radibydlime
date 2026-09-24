@@ -1,4 +1,5 @@
 ---
+import SaleCard from '../../components/sale-card/SaleCard.astro';
 import { Image } from 'astro:assets';
 import { summarizePrice } from '../../content/sale-items/pricing';
 import PageContainer from '../../components/page-container/PageContainer.astro';
@@ -35,7 +36,6 @@ const featured = featuredItems[0];
       title="Věci, které mají příběh"
       intro="Při obnově domu se nám občas do rukou dostanou věci, které už u nás místo nenajdou. Rádi bychom jim pomohli najít nový domov."
       description="Naše vlastní nabídka z domu, dílny i zahrady. U každé věci najdete podrobnosti, fotografie a možnost napsat nám přímo."
-      class="border-b border-line"
     >
       <!-- <p slot="annotation" class="mt-7 flex items-center gap-5 text-accent">
         <span aria-hidden="true" class="text-2xl">
@@ -241,93 +241,9 @@ const featured = featuredItems[0];
         <p class="text-sm text-muted">Počet položek: {items.length}</p>
       </div>
       <ul class="mt-8 grid gap-x-7 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-        {displayItems.map(({ data, cover }) => (
+        {displayItems.map((item) => (
           <li>
-            <article
-              data-sale-card
-              class="flex h-full flex-col overflow-hidden rounded-sm border border-line bg-white/25 p-1 lg:overflow-visible lg:border-0 lg:bg-transparent lg:p-0"
-            >
-              <a
-                href={`/inzerce/${data.slug}/`}
-                aria-label={`Prohlédnout předmět: ${data.title}`}
-                class="group relative block overflow-hidden rounded-sm bg-line/20"
-              >
-                {'width' in cover ? (
-                  <MediaImage
-                    mediaId={cover.id}
-                    {catalog}
-                    class:list={[
-                      'aspect-[4/3] w-full group-hover:opacity-90',
-                      data.imagePresentation === 'cutout'
-                        ? 'object-contain p-3'
-                        : 'object-cover',
-                    ]}
-                  />
-                ) : (
-                  <Image
-                    src={cover.src}
-                    alt={cover.alt}
-                    loading="lazy"
-                    widths={[400, 700]}
-                    sizes="(min-width:1024px) 400px, (min-width:640px) 45vw, 90vw"
-                    class:list={[
-                      'aspect-[4/3] w-full group-hover:opacity-90',
-                      data.imagePresentation === 'cutout'
-                        ? 'object-contain p-3'
-                        : 'object-cover',
-                    ]}
-                  />
-                )}
-                <div class="absolute top-3 right-3 left-3 flex flex-wrap items-start justify-between gap-2">
-                  <span class="rounded-sm bg-paper/95 px-3 py-1.5 text-xs">
-                    {availabilityLabels[data.availability]}
-                  </span>
-                  {summarizePrice(data).discount !== undefined &&
-                    data.availability === 'available' && (
-                      <span class="rounded-sm bg-accent px-3 py-1.5 text-xs text-paper">
-                        {summarizePrice(data).discount}
-                      </span>
-                    )}
-                  {data.unique && (
-                    <span class="rounded-sm bg-ink/90 px-3 py-1.5 text-xs text-paper">
-                      Jediný kus
-                    </span>
-                  )}
-                </div>
-              </a>
-              <div class="flex flex-1 flex-col px-4 pt-5 pb-4 sm:px-5 sm:pb-5 lg:px-0 lg:pb-0">
-                <p class="text-xs tracking-widest text-muted uppercase">
-                  {data.category}
-                </p>
-                <h3 class="mt-2 font-display text-3xl leading-tight">
-                  <a href={`/inzerce/${data.slug}/`} class="hover:text-accent">
-                    {data.title}
-                  </a>
-                </h3>
-                <p class="mt-3 text-sm leading-relaxed text-muted">
-                  {data.summary}
-                </p>
-                <div class="mt-auto flex flex-wrap items-center justify-between gap-3 pt-5">
-                  <div>
-                    <p class="flex flex-wrap items-baseline gap-x-2 font-semibold">
-                      <span class="text-xl">{summarizePrice(data).text}</span>
-                      {summarizePrice(data).original !== undefined && (
-                        <span class="text-sm font-normal text-muted">
-                          <span class="sr-only">Původní cena: </span>
-                          <s>{formatPrice(data.priceCzk)}</s>
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                  <EditorialLink
-                    href={`/inzerce/${data.slug}/`}
-                    class="text-sm"
-                  >
-                    Detail předmětu
-                  </EditorialLink>
-                </div>
-              </div>
-            </article>
+            <SaleCard {item} {catalog} />
           </li>
         ))}
       </ul>
