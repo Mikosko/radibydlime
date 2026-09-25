@@ -11,7 +11,7 @@ A unit with such a contract may use `src/components/workshop-card/WorkshopCard.a
 
 Render published media IDs through [MediaImage](media-image/SPEC.md), supplying a validated catalog from route/assembly code. It owns native image semantics and resolution; consumers own contextual presentation, captions and credits. Local authored assets continue using Astro's `Image`.
 
-The shared site shell composes [TopNavigation](top-navigation/SPEC.md). It owns the canonical logo link, current primary destination and responsive header composition without client JavaScript.
+The shared site shell composes [TopNavigation](top-navigation/SPEC.md). It owns the canonical logo link, current primary destination and responsive header composition, with a small native-dialog enhancement for the mobile menu.
 
 [BrandMark](brand-mark/SPEC.md) owns the reusable live wordmark, heart, and botanical relationship used by the shared header and illustrated footer. Its consumers own links, supporting taglines, and surrounding composition.
 

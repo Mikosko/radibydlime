@@ -16,7 +16,6 @@ import {
   availabilityLabels,
   formatPrice,
 } from '../../content/sale-items/query';
-import paper from '../../assets/decor/torn-paper.png';
 import botanical from '../../assets/decor/botanical-daisies.png';
 
 export async function getStaticPaths() {
@@ -73,20 +72,6 @@ const canEnquire = data.availability === 'available';
               class="max-h-[38rem] w-full object-contain"
             />
           )}
-          <div class="absolute top-5 left-5 isolate px-5 py-6 text-center">
-            <Image
-              src={paper}
-              alt=""
-              aria-hidden="true"
-              class="absolute inset-0 -z-10 size-full"
-            />
-            <p class="font-editorial-note text-sm">
-              {availabilityLabels[data.availability]}
-            </p>
-            <span aria-hidden="true" class="mt-2 block text-accent">
-              ♥
-            </span>
-          </div>
         </div>
         <ArticleGallery
           items={images}

@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import houseLogo from '../../assets/images/logo-house.png';
+import menuBotanical from '../../assets/decor/botanical-yarrow.png';
 import navigationHop from '../../assets/decor/navigation-hop.png';
 import BrandMark from '../brand-mark/BrandMark.astro';
 
@@ -32,62 +32,277 @@ const links = [
 ];
 ---
 
-<header class="mx-auto w-full max-w-[92rem] px-5 pt-5.5 sm:px-8">
-  <div class="grid items-center gap-x-2 gap-y-5 pb-8 sm:grid-cols-[auto_1fr] lg:grid-cols-[29rem_1fr_17rem] lg:pb-4">
-    <a
-      href="/"
-      aria-label="Rádi bydlíme — úvod"
-      class="inline-flex w-fit items-center gap-2 sm:gap-3"
-    >
-      <!-- <Image
-        src={houseLogo}
-        alt=""
-        aria-hidden="true"
-        width={200}
-        loading="eager"
-        class="h-auto w-32 sm:w-36 lg:w-50"
-      /> -->
-      <span class="block">
-        <BrandMark loading="eager" />
-        <p class="mt-2 ml-5 text-[0.48rem] font-semibold tracking-[0.15em] text-muted uppercase sm:mt-3 sm:text-[0.65rem] sm:tracking-[0.2em]">
+<site-navigation class="block">
+  <header class="mx-auto w-full max-w-[92rem] px-5 pt-5.5 sm:px-8">
+    <div class="grid grid-cols-[1fr_auto] items-center gap-x-2 gap-y-5 pb-5 lg:grid-cols-[29rem_1fr_17rem] lg:pb-4">
+      <a
+        href="/"
+        aria-label="Rádi bydlíme — úvod"
+        class="inline-flex w-fit items-center gap-2 sm:gap-3"
+      >
+        <span class="block">
+          <BrandMark loading="eager" />
+          <p class="mt-2 ml-5 text-[0.48rem] font-semibold tracking-[0.15em] text-muted uppercase sm:mt-3 sm:text-[0.65rem] sm:tracking-[0.2em]">
+            dům · dílna · zahrada · rodina
+          </p>
+        </span>
+      </a>
+
+      <div class="flex items-center gap-3 lg:hidden">
+        <Image
+          src={navigationHop}
+          alt=""
+          aria-hidden="true"
+          width={60}
+          class="h-16 w-12 object-contain sm:h-20 sm:w-16"
+        />
+        <button
+          data-menu-open
+          hidden
+          type="button"
+          aria-label="Otevřít menu"
+          aria-controls="mobile-menu"
+          aria-expanded="false"
+          class="size-12 items-center justify-center text-ink"
+        >
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 32 32"
+            class="size-8"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+          >
+            <path d="M4 8h24M4 16h24M4 24h24" />
+          </svg>
+        </button>
+      </div>
+      <nav
+        data-desktop-nav
+        aria-label="Hlavní navigace"
+        class="col-span-2 lg:col-span-1 flex flex-wrap items-center gap-x-5 gap-y-1 text-[0.7rem] font-semibold tracking-[0.06em] uppercase sm:justify-end lg:justify-center xl:gap-x-7 xl:text-[0.74rem]"
+      >
+        {links.map(({ label, href, current }) => (
+          <a
+            href={href}
+            aria-current={current ? 'page' : undefined}
+            class:list={[
+              'border-b py-2 transition-colors hover:text-accent',
+              current ? 'border-accent text-accent' : 'border-transparent',
+            ]}
+          >
+            {label}
+          </a>
+        ))}
+      </nav>
+
+      <div class="hidden items-center justify-end gap-3 lg:flex">
+        <p class="text-right font-annotation mt-3 text-3xl leading-[0.9] text-accent -rotate-12">
+          Dobré věci
+          <br />
+          rostou pomalu.
+        </p>
+        <Image
+          src={navigationHop}
+          alt=""
+          aria-hidden="true"
+          width={82}
+          loading="eager"
+          class="h-auto w-20 opacity-90"
+        />
+      </div>
+    </div>
+    <div class="h-px bg-line"></div>
+  </header>
+
+  <dialog id="mobile-menu" aria-label="Hlavní menu" class="mobile-menu">
+    <!-- Clip the translated panel so autofocus cannot scroll it into view. -->
+    <div data-menu-viewport class="grid min-h-full overflow-clip">
+      <div
+        data-menu-panel
+        class="menu-panel relative ml-auto flex min-h-full w-[88%] max-w-[26rem] flex-col bg-paper px-6 pt-8 pb-7 text-ink shadow-2xl sm:px-8"
+      >
+        <div class="flex items-start justify-between gap-3">
+          <a href="/" aria-label="Rádi bydlíme — úvod" class="inline-block">
+            <BrandMark loading="eager" />
+          </a>
+          <button
+            data-menu-close
+            type="button"
+            autofocus
+            aria-label="Zavřít menu"
+            class="-mt-2 -mr-2 grid size-12 shrink-0 place-items-center hover:text-accent"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 32 32"
+              class="size-8"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            >
+              <path d="m6 6 20 20M26 6 6 26" />
+            </svg>
+          </button>
+        </div>
+        <p class="mt-5 border-b border-line pb-6 text-[0.58rem] font-semibold tracking-[0.15em] text-muted uppercase">
           dům · dílna · zahrada · rodina
         </p>
-      </span>
-    </a>
-
-    <nav
-      aria-label="Hlavní navigace"
-      class="flex flex-wrap items-center gap-x-5 gap-y-1 text-[0.7rem] font-semibold tracking-[0.06em] uppercase sm:justify-end lg:justify-center xl:gap-x-7 xl:text-[0.74rem]"
-    >
-      {links.map(({ label, href, current }) => (
-        <a
-          href={href}
-          aria-current={current ? 'page' : undefined}
-          class:list={[
-            'border-b py-2 transition-colors hover:text-accent',
-            current ? 'border-accent text-accent' : 'border-transparent',
-          ]}
-        >
-          {label}
-        </a>
-      ))}
-    </nav>
-
-    <div class="hidden items-center justify-end gap-3 lg:flex">
-      <p class="text-right font-annotation mt-3 text-3xl leading-[0.9] text-accent -rotate-12">
-        Dobré věci
-        <br />
-        rostou pomalu.
-      </p>
-      <Image
-        src={navigationHop}
-        alt=""
-        aria-hidden="true"
-        width={82}
-        loading="eager"
-        class="h-auto w-20 opacity-90"
-      />
+        <nav aria-label="Hlavní navigace" class="relative z-10 mt-5">
+          <ul class="space-y-1">
+            {links.map(({ label, href, current }) => (
+              <li>
+                <a
+                  {href}
+                  aria-current={current ? 'page' : undefined}
+                  class:list={[
+                    'inline-flex min-h-12 items-center border-b py-2 text-lg tracking-[0.08em] uppercase hover:text-accent',
+                    current
+                      ? 'border-accent text-accent'
+                      : 'border-transparent',
+                  ]}
+                >
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <div class="relative mt-auto min-h-36 pt-9">
+          <p class="relative z-10 w-fit font-annotation text-3xl leading-tight -rotate-6">
+            Žijeme
+            <br />
+            blíž přírodě.
+            <span aria-hidden="true" class="ml-3 text-accent">
+              ♡
+            </span>
+          </p>
+          <Image
+            src={menuBotanical}
+            alt=""
+            aria-hidden="true"
+            width={220}
+            class="pointer-events-none absolute -right-6 bottom-0 h-44 w-32 object-contain opacity-75 sm:-right-8"
+          />
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="h-px bg-line"></div>
-</header>
+  </dialog>
+</site-navigation>
+<style>
+  .mobile-menu {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .mobile-menu::backdrop {
+    background: rgb(25 31 24 / 58%);
+    opacity: 0;
+    transition: opacity 280ms ease;
+  }
+  .menu-panel {
+    transform: translateX(100%);
+    transition: transform 320ms cubic-bezier(0.22, 0.68, 0.22, 1);
+  }
+  .mobile-menu.is-open .menu-panel {
+    transform: translateX(0);
+  }
+  .mobile-menu.is-open::backdrop {
+    opacity: 1;
+  }
+  @media (max-width: 1023px) {
+    site-navigation[data-enhanced] [data-desktop-nav] {
+      display: none;
+    }
+    site-navigation[data-enhanced] [data-menu-open] {
+      display: flex;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .menu-panel,
+    .mobile-menu::backdrop {
+      transition: none;
+    }
+  }
+</style>
+<script>
+  class SiteNavigation extends HTMLElement {
+    connectedCallback() {
+      const dialog = this.querySelector<HTMLDialogElement>('dialog')!;
+      const trigger =
+        this.querySelector<HTMLButtonElement>('[data-menu-open]')!;
+      const closer =
+        this.querySelector<HTMLButtonElement>('[data-menu-close]')!;
+      const desktop = matchMedia('(min-width:1024px)');
+      const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      let oldOverflow = '';
+      const finish = () => {
+        clearTimeout(timer);
+        dialog.classList.remove('is-open');
+        if (dialog.open) dialog.close();
+      };
+      const close = () => {
+        dialog.classList.remove('is-open');
+        clearTimeout(timer);
+        if (reduced.matches) finish();
+        else timer = setTimeout(finish, 320);
+      };
+      trigger.addEventListener('click', () => {
+        if (dialog.open || desktop.matches) return;
+        oldOverflow = document.documentElement.style.overflow;
+        document.documentElement.style.overflow = 'hidden';
+        dialog.showModal();
+        trigger.setAttribute('aria-expanded', 'true');
+        // Establish the off-screen state before starting the entry transition.
+        void dialog.offsetWidth;
+        dialog.classList.add('is-open');
+      });
+      closer.addEventListener('click', close);
+      dialog.addEventListener('cancel', (event) => {
+        event.preventDefault();
+        close();
+      });
+      dialog.addEventListener('click', (event) => {
+        if (
+          event.target === dialog ||
+          event.target === this.querySelector('[data-menu-viewport]')
+        )
+          close();
+      });
+      dialog
+        .querySelectorAll('a')
+        .forEach((link) => link.addEventListener('click', finish));
+      dialog.addEventListener('close', () => {
+        document.documentElement.style.overflow = oldOverflow;
+        trigger.setAttribute('aria-expanded', 'false');
+        if (!desktop.matches) trigger.focus({ preventScroll: true });
+      });
+      const onResize = () => {
+        if (desktop.matches && dialog.open) finish();
+      };
+      desktop.addEventListener('change', onResize);
+      this.cleanup = () => {
+        finish();
+        desktop.removeEventListener('change', onResize);
+      };
+      this.dataset.enhanced = 'true';
+      trigger.hidden = false;
+    }
+    cleanup?: () => void;
+    disconnectedCallback() {
+      this.cleanup?.();
+    }
+  }
+  if (!customElements.get('site-navigation'))
+    customElements.define('site-navigation', SiteNavigation);
+</script>

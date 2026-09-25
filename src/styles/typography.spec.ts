@@ -64,10 +64,7 @@ import SiteLayout from '../layouts/site/SiteLayout.astro';
       join(directory, 'dist/typography/index.html'),
       'utf8',
     );
-    assert.doesNotMatch(
-      html,
-      /<script|astro-island|fonts.googleapis|fonts.gstatic/,
-    );
+    assert.doesNotMatch(html, /astro-island|fonts.googleapis|fonts.gstatic/);
     const styles = [
       ...html.matchAll(/<link[^>]+href="([^"]+\.css)"[^>]*>/g),
     ].map((match) => match[1]);

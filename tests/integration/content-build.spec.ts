@@ -139,8 +139,10 @@ Text beside an ornament.
     assert.match(timberProject, /construction-house\.[^" ]+\.webp/);
     assert.doesNotMatch(timberProject, /author-leaf-sprig\.[^" ]+\.webp/);
 
-    assert.doesNotMatch(home, /<script[\s>]|<astro-island[\s>]/);
-    assert.doesNotMatch(chapters, /<script[\s>]|<astro-island[\s>]/);
+    assert.doesNotMatch(home, /<astro-island[\s>]/);
+    assert.match(home, /aria-controls="mobile-menu"/);
+    assert.match(home, /<dialog[^>]*id="mobile-menu"/);
+    assert.doesNotMatch(chapters, /<astro-island[\s>]/);
     assert.match(project, /<script type="module">/);
     assert.match(project, /radibydlime:article-preferences/);
     assert.doesNotMatch(project, /<astro-island[\s>]/);
@@ -486,7 +488,7 @@ test('media IDs resolve to static public images and catalog metadata without fet
         /<astro-island[\s>]|localhost:11434|scripts\/media/,
       );
       if (page === 'index.html') {
-        assert.doesNotMatch(html, /<script[\s>]/);
+        assert.match(html, /aria-controls="mobile-menu"/);
       } else {
         assert.match(html, /radibydlime:article-preferences/);
       }
