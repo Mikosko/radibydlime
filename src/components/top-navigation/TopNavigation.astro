@@ -42,20 +42,13 @@ const links = [
       >
         <span class="block">
           <BrandMark loading="eager" />
-          <p class="mt-2 ml-5 text-[0.48rem] font-semibold tracking-[0.15em] text-muted uppercase sm:mt-3 sm:text-[0.65rem] sm:tracking-[0.2em]">
+          <p class="mt-2 ml-5 whitespace-nowrap text-[0.48rem] font-semibold tracking-[0.15em] text-muted uppercase sm:mt-3 sm:text-[0.65rem] sm:tracking-[0.2em]">
             dům · dílna · zahrada · rodina
           </p>
         </span>
       </a>
 
       <div class="flex items-center gap-3 lg:hidden">
-        <Image
-          src={navigationHop}
-          alt=""
-          aria-hidden="true"
-          width={60}
-          class="h-16 w-12 object-contain sm:h-20 sm:w-16"
-        />
         <button
           data-menu-open
           hidden
@@ -120,18 +113,21 @@ const links = [
     <div data-menu-viewport class="grid min-h-full overflow-clip">
       <div
         data-menu-panel
-        class="menu-panel relative ml-auto flex min-h-full w-[88%] max-w-[26rem] flex-col bg-paper px-6 pt-8 pb-7 text-ink shadow-2xl sm:px-8"
+        class="menu-panel relative ml-auto flex min-h-full w-[88%] max-w-[26rem] flex-col bg-paper pl-6 pr-5 pt-5.5 pb-7 text-ink shadow-2xl sm:px-8"
       >
-        <div class="flex items-start justify-between gap-3">
+        <div class="flex items-center justify-between gap-2">
           <a href="/" aria-label="Rádi bydlíme — úvod" class="inline-block">
             <BrandMark loading="eager" />
+            <p class="mt-2 ml-5 whitespace-nowrap text-[0.48rem] font-semibold tracking-[0.15em] text-muted uppercase sm:mt-3 sm:text-[0.65rem] sm:tracking-[0.2em]">
+              dům · dílna · zahrada · rodina
+            </p>
           </a>
           <button
             data-menu-close
             type="button"
             autofocus
             aria-label="Zavřít menu"
-            class="-mt-2 -mr-2 grid size-12 shrink-0 place-items-center hover:text-accent"
+            class="grid size-12 shrink-0 place-items-center hover:text-accent"
           >
             <svg
               aria-hidden="true"
@@ -145,9 +141,7 @@ const links = [
             </svg>
           </button>
         </div>
-        <p class="mt-5 border-b border-line pb-6 text-[0.58rem] font-semibold tracking-[0.15em] text-muted uppercase">
-          dům · dílna · zahrada · rodina
-        </p>
+        <div class="mt-5 h-px bg-line"></div>
         <nav aria-label="Hlavní navigace" class="relative z-10 mt-5">
           <ul class="space-y-1">
             {links.map(({ label, href, current }) => (
