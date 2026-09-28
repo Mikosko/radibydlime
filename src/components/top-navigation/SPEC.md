@@ -1,6 +1,6 @@
 # Top navigation
 
-TopNavigation owns the canonical homepage logo link and the seven shared routes: Úvod, Náš příběh, Kapitoly (including project details), Galerie, Dílny, Inzerce and Kontakt. Build-time pathname matching sets `aria-current="page"` and the accent underline. Reuse BrandMark and existing decorative assets with empty alt text.
+TopNavigation owns the canonical homepage logo link and the seven shared routes: Úvod, Náš příběh, Kapitoly (including project details), Galerie, Dílny, Inzerce and Kontakt. Build-time pathname matching sets `aria-current="page"` and the accent underline. Desktop and mobile links share the editorial links’ hand-drawn pen underline on hover or keyboard focus; it remains visible for the current page. Reuse BrandMark and existing decorative assets with empty alt text.
 
 Desktop (1024px and above) retains the horizontal navigation and handwritten hop annotation. Below that breakpoint, the enhanced header pairs the logo with a 48px hamburger button. The owner’s `src/assets/inspiration/MENU.png` reference informs the right-side paper drawer, oversized spaced links, quiet divider, dim backdrop, logo, close icon and botanical/handwritten footer; the inspiration file is not a production asset.
 

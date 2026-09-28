@@ -28,7 +28,10 @@ test('production site configuration uses the custom domain at the URL root', asy
       await readFile(join(directory, 'dist/site.txt'), 'utf8'),
       'https://www.radibydlime.cz/',
     );
-    const home = await readFile(join(directory, 'dist/index.html'), 'utf8');
+    const home = await readFile(
+      join(directory, 'dist/nahled/index.html'),
+      'utf8',
+    );
     assert.match(home, /href="\/projekty\/jak-zacala-obnova-naseho-domu\/"/);
     assert.match(home, /(?:href|src)="\/_astro\//);
     assert.doesNotMatch(home, /\/radibydlime\//);
@@ -53,7 +56,10 @@ Text beside an ornament.
 `,
     );
     await build(directory);
-    const home = await readFile(join(directory, 'dist/index.html'), 'utf8');
+    const home = await readFile(
+      join(directory, 'dist/nahled/index.html'),
+      'utf8',
+    );
     const chapters = await readFile(
       join(directory, 'dist/kapitoly/index.html'),
       'utf8',
@@ -278,7 +284,10 @@ test('renaming the file and localized slug preserves the canonical collection id
       await readFile(join(directory, 'dist/identity.txt'), 'utf8'),
       'project-0001',
     );
-    const home = await readFile(join(directory, 'dist/index.html'), 'utf8');
+    const home = await readFile(
+      join(directory, 'dist/nahled/index.html'),
+      'utf8',
+    );
     assert.match(home, /href="\/projekty\/obnova-domu\/"/);
     const chapters = await readFile(
       join(directory, 'dist/kapitoly/index.html'),
@@ -317,7 +326,10 @@ test('draft and archived Projects have no public listing, narrative, or detail r
         .replace('status: published', 'status: archived'),
     );
     await build(directory);
-    const home = await readFile(join(directory, 'dist/index.html'), 'utf8');
+    const home = await readFile(
+      join(directory, 'dist/nahled/index.html'),
+      'utf8',
+    );
     const chapters = await readFile(
       join(directory, 'dist/kapitoly/index.html'),
       'utf8',
@@ -464,7 +476,7 @@ test('media IDs resolve to static public images and catalog metadata without fet
     await writeFile(join(directory, samplePath), withMediaHero);
     // This fixture path intentionally has no uploaded bytes. Building must remain offline.
     await build(directory);
-    for (const page of ['index.html', projectRoute]) {
+    for (const page of ['nahled/index.html', projectRoute]) {
       const html = await readFile(join(directory, 'dist', page), 'utf8');
       assert.ok(
         html.includes(`src="https://media.radibydlime.cz${mediaRecord.path}"`),
@@ -473,11 +485,11 @@ test('media IDs resolve to static public images and catalog metadata without fet
       assert.match(html, /decoding="async"/);
       assert.match(
         html,
-        page === 'index.html' ? /loading="lazy"/ : /loading="eager"/,
+        page === 'nahled/index.html' ? /loading="lazy"/ : /loading="eager"/,
       );
       assert.match(
         html,
-        page === 'index.html'
+        page === 'nahled/index.html'
           ? /class="aspect-\[3\/2\] w-full object-cover"/
           : /class="aspect-\[16\/8\.5\] w-full bg-line object-cover"/,
       );
@@ -487,7 +499,7 @@ test('media IDs resolve to static public images and catalog metadata without fet
         html,
         /<astro-island[\s>]|localhost:11434|scripts\/media/,
       );
-      if (page === 'index.html') {
+      if (page === 'nahled/index.html') {
         assert.match(html, /aria-controls="mobile-menu"/);
       } else {
         assert.match(html, /radibydlime:article-preferences/);

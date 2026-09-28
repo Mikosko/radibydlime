@@ -80,8 +80,8 @@ const links = [
             href={href}
             aria-current={current ? 'page' : undefined}
             class:list={[
-              'border-b py-2 transition-colors hover:text-accent',
-              current ? 'border-accent text-accent' : 'border-transparent',
+              'pen-underline relative py-2 transition-colors hover:text-accent',
+              current && 'text-accent',
             ]}
           >
             {label}
@@ -150,10 +150,8 @@ const links = [
                   {href}
                   aria-current={current ? 'page' : undefined}
                   class:list={[
-                    'inline-flex min-h-12 items-center border-b py-2 text-lg tracking-[0.08em] uppercase hover:text-accent',
-                    current
-                      ? 'border-accent text-accent'
-                      : 'border-transparent',
+                    'pen-underline relative inline-flex min-h-12 items-center py-2 text-lg tracking-[0.08em] uppercase hover:text-accent',
+                    current && 'text-accent',
                   ]}
                 >
                   {label}

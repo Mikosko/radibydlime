@@ -1,0 +1,78 @@
+---
+import { Image } from 'astro:assets';
+import SiteLayout from '../../layouts/site/SiteLayout.astro';
+import BrandMark from '../../components/brand-mark/BrandMark.astro';
+import village from '../../assets/decor/initial.png';
+import paper from '../../assets/decor/torn-paper.png';
+---
+
+<SiteLayout
+  minimal
+  title="Náš web právě roste"
+  description="Připravujeme nový web Rádi bydlíme. Příběhy z domu, dílny, zahrady a rodinného života v Tuchořicích. Napište nám na info@radibydlime.cz."
+>
+  <div class="mx-auto flex min-h-svh max-w-6xl flex-col items-center px-1 pt-10 pb-6 text-center sm:pt-12">
+    <a href="/" aria-label="Rádi bydlíme — úvod" class="inline-block">
+      <BrandMark loading="eager" />
+    </a>
+    <p class="mt-5 text-[0.6rem] tracking-[0.2em] text-muted uppercase">
+      dům · dílna · zahrada · rodina
+    </p>
+    <section aria-labelledby="pripravujeme" class="mt-10 w-full sm:mt-12">
+      <p class="font-editorial-note text-xs tracking-[0.16em] text-accent uppercase">
+        Tady se zabydlujeme
+      </p>
+      <h1
+        id="pripravujeme"
+        class="mx-auto mt-4 max-w-3xl font-display text-5xl leading-[1.05] sm:text-7xl"
+      >
+        I náš web potřebuje
+        <br />
+        trochu péče.
+      </h1>
+      <p class="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
+        Mezi prací na domě, v dílně a na zahradě pro vás chystáme místo, kde
+        budeme sdílet naše příběhy, nápady a malé radosti.
+      </p>
+      <div class="relative mx-auto mt-7 w-full max-w-[450px]">
+        <Image
+          src={village}
+          alt=""
+          loading="eager"
+          widths={[450, 900]}
+          sizes="(max-width: 498px) calc(100vw - 48px), 450px"
+          class="h-auto w-full"
+        />
+        <div class="relative mx-auto -mt-10 w-fit max-w-full px-7 py-4 -rotate-3 sm:-mt-12 sm:rotate-3">
+          <Image
+            src={paper}
+            alt=""
+            class="pointer-events-none absolute inset-0 size-full object-fill drop-shadow-sm"
+          />
+          <p class="relative font-annotation text-2xl leading-tight text-accent sm:text-3xl">
+            Dobré věci rostou pomalu.
+          </p>
+        </div>
+      </div>
+      <p class="mt-7 text-sm text-muted">
+        Než otevřeme vrátka, můžete nám napsat.
+      </p>
+      <a
+        href="mailto:info@radibydlime.cz"
+        class="pen-underline relative mt-1 inline-flex min-h-12 items-center text-lg text-accent"
+      >
+        info@radibydlime.cz
+      </a>
+    </section>
+    <footer class="mt-auto w-full pt-9">
+      <div class="mx-auto flex max-w-sm items-center gap-5" aria-hidden="true">
+        <span class="h-px flex-1 bg-line"></span>
+        <span class="text-accent">♥</span>
+        <span class="h-px flex-1 bg-line"></span>
+      </div>
+      <p class="mt-4 text-xs tracking-wide text-muted">
+        Rádi bydlíme · Tuchořice
+      </p>
+    </footer>
+  </div>
+</SiteLayout>

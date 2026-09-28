@@ -23,3 +23,7 @@ Use them as quiet, non-semantic support for editorial hierarchy. Render them wit
 `chapters-terrace.png` is the owner-supplied September 16 illustration of three arched windows, a garden table and chairs. Copied unchanged from the inspiration folder into a durable production asset path for the Kapitoly header. It is decorative; the heading and handwritten annotation remain HTML.
 
 `story-botanical-stem.png` is a transparent derivative of the narrow upright sprig immediately left of the hero photo in the owner-supplied about-page inspiration. Built-in imagegen prompt: isolate that specific curved stem, five pointed leaves and top buds; preserve fine olive-black outlines, proportions and leaf veins; remove paper, text, neighboring objects, shadow and glow; tightly frame the full stem on transparent alpha. The Náš příběh header places it beside the photo in a reserved gap.
+
+## Not-found illustrations
+
+`not-found-{gate,wheelbarrow,cat,signpost}.png` were generated with the built-in image tool from the owner's `src/assets/inspiration/404.png` style reference. Prompt set: standalone garden gate with daisies/robin; wildflower-filled wooden wheelbarrow; sleeping tabby beside geranium pots; blank wooden signpost in meadow flowers. Shared direction: antique botanical pen-and-ink with muted watercolor, olive/brown/terracotta, landscape 3:2, transparent background, no lettering or logo. Text belongs to the 404 page HTML. Original generated alpha is preserved.

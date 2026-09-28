@@ -1,0 +1,112 @@
+---
+import { getImage } from 'astro:assets';
+import SiteLayout from '../../layouts/site/SiteLayout.astro';
+import EditorialLink from '../../components/editorial-link/EditorialLink.astro';
+import gate from '../../assets/decor/not-found-gate.png';
+import wheelbarrow from '../../assets/decor/not-found-wheelbarrow.png';
+import cat from '../../assets/decor/not-found-cat.png';
+import signpost from '../../assets/decor/not-found-signpost.png';
+
+const scenes = await Promise.all(
+  [
+    {
+      image: gate,
+      title: 'Tahle vrátka nikam nevedou.',
+      note: 'Možná jsme odbočili moc brzy. Pojďme zpátky domů.',
+    },
+    {
+      image: wheelbarrow,
+      title: 'Tady jsme nic nezasadili.',
+      note: 'Ale jinde už to u nás pěkně roste.',
+    },
+    {
+      image: cat,
+      title: 'Tady má někdo svůj klid.',
+      note: 'Kočku nebudíme. Raději se vrátíme domů.',
+    },
+    {
+      image: signpost,
+      title: 'Asi jsme se zatoulali.',
+      note: 'I malá odbočka může být hezká. Tahle ale končí tady.',
+    },
+  ].map(async ({ image, ...text }) => {
+    const optimized = await getImage({
+      src: image,
+      width: 800,
+      format: 'webp',
+    });
+    return {
+      ...text,
+      src: optimized.src,
+      width: optimized.attributes.width,
+      height: optimized.attributes.height,
+    };
+  }),
+);
+const first = scenes[0];
+---
+
+<SiteLayout
+  title="Stránka nenalezena"
+  description="Tahle stránka se zatoulala. Vraťte se s námi domů na Rádi bydlíme."
+>
+  <section
+    data-not-found
+    data-scenes={JSON.stringify(scenes)}
+    class="mx-auto max-w-3xl py-10 text-center sm:py-14"
+  >
+    <p class="font-editorial-note text-sm tracking-[0.2em] text-muted uppercase">
+      404 · Stránka nenalezena
+    </p>
+    <div class="mx-auto mt-3 aspect-[3/2] w-full max-w-lg">
+      <img
+        data-scene-image
+        src={first.src}
+        width={first.width}
+        height={first.height}
+        alt=""
+        class="h-full w-full object-contain"
+        decoding="async"
+      />
+    </div>
+    <h1
+      data-scene-title
+      class="mt-3 font-display text-4xl leading-tight sm:text-5xl"
+    >
+      {first.title}
+    </h1>
+    <p
+      data-scene-note
+      class="mx-auto mt-4 max-w-lg text-base leading-relaxed text-muted sm:text-lg"
+    >
+      {first.note}
+    </p>
+    <p class="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted">
+      Na této adrese jsme stránku nenašli. Zkuste začít od úvodu, nebo
+      nahlédněte do našich kapitol.
+    </p>
+    <div class="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
+      <a
+        href="/"
+        class="inline-flex min-h-12 items-center rounded-sm bg-ink px-6 py-3 text-sm text-paper transition-colors hover:bg-accent"
+      >
+        Zpátky domů
+      </a>
+      <EditorialLink href="/kapitoly/">Naše kapitoly</EditorialLink>
+    </div>
+  </section>
+  <script is:inline>
+    (() => {
+      const section = document.querySelector('[data-not-found]');
+      const scenes = JSON.parse(section.dataset.scenes);
+      const scene = scenes[Math.floor(Math.random() * scenes.length)];
+      const image = section.querySelector('[data-scene-image]');
+      image.src = scene.src;
+      image.width = scene.width;
+      image.height = scene.height;
+      section.querySelector('[data-scene-title]').textContent = scene.title;
+      section.querySelector('[data-scene-note]').textContent = scene.note;
+    })();
+  </script>
+  <Fragment slot="footer-intro" />
+</SiteLayout>

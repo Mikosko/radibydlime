@@ -129,3 +129,33 @@
     @apply border-l-2 border-accent pl-6 font-body text-2xl text-ink italic;
   }
 }
+
+/* Shared hand-drawn underline for editorial links and primary navigation. */
+
+.pen-underline::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: 5px;
+  height: 3px;
+  background: currentColor;
+  opacity: 0;
+  transform: rotate(-0.7deg);
+  clip-path: polygon(
+    0 45%,
+    18% 30%,
+    43% 40%,
+    70% 15%,
+    100% 30%,
+    98% 65%,
+    72% 60%,
+    44% 88%,
+    17% 70%,
+    1% 85%
+  );
+}
+.pen-underline[aria-current='page']::after,
+.pen-underline:hover::after,
+.pen-underline:focus-visible::after {
+  opacity: 1;
+}
