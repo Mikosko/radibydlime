@@ -1,5 +1,7 @@
 # Contact page
 
+Personal digital cards live at `/kontakt/<slug>/` under the [contact-record contract](../../content/contacts/SPEC.md). They use a minimal mobile-first shell and download static vCards. Retired records retain a static redirect to the general contact route so printed QR links remain usable.
+
 `/kontakt/` is a static, Czech contact page for readers, prospective clients, buyers, and potential collaborators. It uses the shared site shell and the existing paper, typography, and botanical assets.
 
 The owner-confirmed public address is Tuchořice 37, 439 69 Tuchořice. Display it in the contact sidebar beneath the email, with semantic address markup and a decorative location icon.

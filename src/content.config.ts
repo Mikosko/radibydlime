@@ -247,4 +247,38 @@ const workshops = defineCollection({
       })
       .strict(),
 });
-export const collections = { projects, media, albums, saleItems, workshops };
+const contacts = defineCollection({
+  loader: glob({ pattern: '*.json', base: './src/content/contacts' }),
+  schema: z.discriminatedUnion('status', [
+    z
+      .object({
+        id: z.string().regex(/^contact-[a-z0-9-]+$/),
+        slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+        status: z.literal('published'),
+        name: z.string().min(1),
+        givenName: z.string().min(1),
+        familyName: z.string().min(1),
+        role: z.string().min(1),
+        introduction: z.string().min(1),
+        phone: z.string().regex(/^\+[1-9][0-9]{7,14}$/),
+        phoneLabel: z.string().min(1),
+        email: z.email(),
+      })
+      .strict(),
+    z
+      .object({
+        id: z.string().regex(/^contact-[a-z0-9-]+$/),
+        slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+        status: z.literal('archived'),
+      })
+      .strict(),
+  ]),
+});
+export const collections = {
+  projects,
+  media,
+  albums,
+  saleItems,
+  workshops,
+  contacts,
+};

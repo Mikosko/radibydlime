@@ -1,0 +1,11 @@
+# Personal contact cards
+
+The contacts collection owns public personal-contact details for `/kontakt/<slug>/`, downloadable `/kontakt/<slug>.vcf` files and printed QR cards. Each JSON record has a stable language-neutral ID and a permanent slug. IDs and slugs must be unique, including retired records. These are confirmed contact details, separate from the site's illustrative author profiles.
+
+Published records contain names, a short introduction and role, E.164 phone plus display label, and email. The mobile-first personal page offers native telephone and email links, a downloadable UTF-8 vCard 3.0, relevant existing site links and a return to `/kontakt/`. Use existing decorative artwork rather than an invented portrait. No form submission, database, analytics, hosted QR service or client framework is required.
+
+To retire a person, replace their JSON with only `id`, `slug`, and `status: "archived"`. Keep this tombstone indefinitely rather than deleting it or reassigning its slug. Its static HTML redirects to `/kontakt/`, with a visible link fallback; no personal details or vCard are emitted. GitHub Pages serves this HTML redirect, not an HTTP redirect. Existing printed QR URLs therefore remain useful. An owner-facing print workspace referencing that ID shows general contact information when archived. This mechanism covers retained known URLs, not arbitrary nonexistent paths.
+
+QR generation uses the production site origin and permanent personal route, performed at build time with `qrcode`. SVG provides crisp printing with four-module warm ivory quiet zones, dark olive modules and medium error correction. The rose card anchors an 18 mm square at the bottom-right below its values, with a separate watercolor wash behind that corner; texture and paint never show through the QR. Test the actual finished print with a phone before ordering cards. Browser code never needs the encoder.
+
+Validate the published page/contact file, escaped Czech vCard fields and CRLF lines, unique identity, QR payload and quiet zone, retired-page output without personal details, static build and unchanged two-page card printing. Download behavior ultimately follows the phone's contact application; no automatic saving is claimed.

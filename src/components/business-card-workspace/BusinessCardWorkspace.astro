@@ -1,0 +1,1420 @@
+---
+import { Image } from 'astro:assets';
+import QRCode from 'qrcode';
+import type { CollectionEntry } from 'astro:content';
+import SiteLayout from '../../layouts/site/SiteLayout.astro';
+import BrandMark from '../brand-mark/BrandMark.astro';
+import botanical from '../../assets/decor/botanical-yarrow.png';
+import craft from '../../assets/decor/business-card-craft.png';
+import watercolor from '../../assets/decor/business-card-watercolor.png';
+import paperTexture from '../../assets/decor/card-texture-paper.png';
+import washTexture from '../../assets/decor/card-texture-wash.png';
+import fiberTexture from '../../assets/decor/card-texture-fibers.png';
+import linenTexture from '../../assets/decor/card-texture-linen.png';
+interface Props {
+  design: 'natural' | 'rose';
+  contact: CollectionEntry<'contacts'>['data'];
+}
+const { design, contact } = Astro.props;
+// Paused until the varnish treatment has been revised and reviewed.
+const enableVarnishPreview = false;
+const person = contact.status === 'published' ? contact : null;
+const personalUrl = new URL(`/kontakt/${contact.slug}/`, Astro.site).href;
+const qrSvg = await QRCode.toString(personalUrl, {
+  type: 'svg',
+  errorCorrectionLevel: 'M',
+  margin: 4,
+  color: { dark: '#45533e', light: '#f8f1e7' },
+});
+const qrSource = `data:image/svg+xml,${encodeURIComponent(qrSvg)}`;
+const textures = [
+  ['smooth', 'Hladký papír', 'Bez struktury'],
+  ['paper', 'Jemný papír', 'Měkké papírové zrno'],
+  ['wash', 'Akvarelový nádech', 'Jemné nepravidelnosti'],
+  ['fibers', 'Přírodní vlákna', 'Drobné rostlinné příměsi'],
+  ['linen', 'Plátno', 'Jemná tkaná struktura'],
+] as const;
+const textureVars = `--texture-paper: url('${paperTexture.src}'); --texture-wash: url('${washTexture.src}'); --texture-fibers: url('${fiberTexture.src}'); --texture-linen: url('${linenTexture.src}');`;
+
+const papers = [
+  ['original', 'Původní krémová', 'var(--color-paper)', 'smooth'],
+  ['ivory', 'Slonová kost', '#faf7ef', 'grain'],
+  ['blush', 'Pudrová růžová', '#f3e2df', 'grain'],
+  ['rose', 'Starorůžová', '#e9ceca', 'grain'],
+  ['sage', 'Šalvějová', '#e2e7db', 'grain'],
+  ['linen', 'Přírodní len', '#ece4d7', 'linen'],
+  ['kraft', 'Světlý kraft', '#ddc6a6', 'grain'],
+  ['lilac', 'Jemná levandule', '#e8e1ec', 'grain'],
+  ['moss', 'Světlá olivová', '#e2e4d0', 'grain'],
+  ['mist', 'Šedozelená', '#e4e7e0', 'grain'],
+  ['peach', 'Broskvová', '#f3e1d1', 'grain'],
+] as const;
+---
+
+<SiteLayout
+  minimal
+  noindex
+  title="Vizitka — Jitka Rajnošková"
+  description="Tiskový náhled přední a zadní strany vizitky Rádi bydlíme."
+>
+  <div
+    class="card-workspace mx-auto max-w-6xl py-10 sm:py-14"
+    style={textureVars}
+  >
+    <header class="screen-only mb-8">
+      <p class="text-xs tracking-[0.16em] text-accent uppercase">
+        Rádi bydlíme · tiskoviny
+      </p>
+      <h1 class="mt-3 font-display text-4xl sm:text-5xl">
+        Vizitka Jitky Rajnoškové
+      </h1>
+      <p class="mt-3 max-w-2xl text-muted">
+        Malý kousek našeho světa do kapsy. Přední strana patří značce, zadní
+        osobnímu kontaktu.
+      </p>
+    </header>
+    <div class="preview-stage" data-preview-stage>
+      <div class="preview-settings screen-only">
+        <fieldset class="screen-only mb-9">
+          <legend class="mb-5 text-sm">Textura papíru</legend>
+          <div class="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5">
+            {textures.map(([id, label, note]) => (
+              <label class="texture-choice cursor-pointer text-center">
+                <input
+                  type="radio"
+                  name="texture"
+                  id={`texture-${id}`}
+                  class="sr-only"
+                  checked={id === 'paper'}
+                />
+                <span aria-hidden="true" class={`texture-swatch ${id}`}></span>
+                <span class="mt-3 block text-sm">{label}</span>
+                <span class="mt-1 block text-xs text-muted">{note}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+        <fieldset class="paper-picker screen-only mb-7">
+          <legend class="mb-3 text-sm">Barva papíru</legend>
+          <div class="grid grid-cols-3 gap-3 sm:grid-cols-6 lg:grid-cols-12">
+            {papers.map(([id, label, color]) => (
+              <label class="paper-choice cursor-pointer p-2 text-center">
+                <input
+                  type="radio"
+                  name="paper"
+                  id={`paper-${id}`}
+                  checked={id === 'original'}
+                  class="sr-only"
+                />
+                <span
+                  aria-hidden="true"
+                  class="paper-swatch"
+                  style={`--paper-tone: ${color}`}
+                ></span>
+                <span class="mt-2 block text-xs leading-snug">{label}</span>
+              </label>
+            ))}
+            <label class="paper-choice cursor-pointer p-2 text-center">
+              <input
+                type="radio"
+                name="paper"
+                id="transparent-bg"
+                class="sr-only"
+              />
+              <span aria-hidden="true" class="paper-swatch transparent"></span>
+              <span class="mt-2 block text-xs leading-snug">Průhledné</span>
+            </label>
+          </div>
+          <p class="mt-3 text-xs text-muted">
+            Barva i jemná textura se tisknou. Průhledná varianta ponechá barvu
+            skutečného papíru; šachovnice je pouze v náhledu.
+          </p>
+        </fieldset>
+      </div>
+      <div class="preview-toolbar screen-only">
+        <div class="preview-actions flex items-center justify-end gap-2">
+          {enableVarnishPreview && (
+            <label
+              class="preview-icon"
+              title="Parciální lak — logo a srdce (pouze náhled)"
+            >
+              <input id="varnish-preview" type="checkbox" class="sr-only" />
+              <span class="sr-only">
+                Parciální lak na logu a srdci — pouze náhled
+              </span>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                aria-hidden="true"
+              >
+                <path d="m9 3 2.2 6.8L18 12l-6.8 2.2L9 21l-2.2-6.8L0 12l6.8-2.2L9 3Zm10-2 1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3Z" />
+              </svg>
+            </label>
+          )}
+          <label class="preview-icon" title="Skutečný vzhled">
+            <input id="real-preview" type="checkbox" class="sr-only" />
+            <span class="sr-only">Skutečný vzhled</span>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              aria-hidden="true"
+            >
+              <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </label>
+          <button
+            data-fullscreen
+            hidden
+            type="button"
+            class="preview-icon"
+            title="Celá obrazovka"
+            aria-label="Celá obrazovka"
+            aria-pressed="false"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              aria-hidden="true"
+            >
+              <path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5" />
+            </svg>
+          </button>
+        </div>
+        <fieldset class="guide-controls screen-only rounded-sm border border-line bg-white/30 p-4">
+          <legend class="px-2 text-sm">Pomocné linky náhledu</legend>
+          <div class="flex flex-wrap gap-x-7 gap-y-3">
+            <label
+              title="Bezpečná oblast"
+              class="flex min-h-11 cursor-pointer items-center gap-3"
+            >
+              <input
+                id="safe-guide"
+                type="checkbox"
+                class="size-4 accent-ink"
+              />{' '}
+              <svg
+                class="guide-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                aria-hidden="true"
+              >
+                <rect
+                  x="4"
+                  y="4"
+                  width="16"
+                  height="16"
+                  stroke-dasharray="3 3"
+                />
+              </svg>
+              <span class="guide-label">Bezpečná oblast</span>
+            </label>
+            <label
+              title="Rozměr / ořez"
+              class="flex min-h-11 cursor-pointer items-center gap-3"
+            >
+              <input
+                id="trim-guide"
+                type="checkbox"
+                class="size-4 accent-ink"
+                checked
+              />{' '}
+              <svg
+                class="guide-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                aria-hidden="true"
+              >
+                <path d="M7 2v15h15M2 7h15v15" />
+              </svg>
+              <span class="guide-label">Rozměr / ořez</span>
+            </label>
+            <label
+              title="Zaoblené rohy"
+              class="flex min-h-11 cursor-pointer items-center gap-3"
+            >
+              <input
+                id="round-guide"
+                type="checkbox"
+                class="size-4 accent-ink"
+              />{' '}
+              <svg
+                class="guide-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                aria-hidden="true"
+              >
+                <rect x="4" y="4" width="16" height="16" rx="5" />
+              </svg>
+              <span class="guide-label">Zaoblené rohy</span>
+            </label>
+          </div>
+          <p class="mt-3 text-xs leading-relaxed text-muted">
+            Hotová vizitka 90 × 50 mm · spadávka 3 mm · bezpečný odstup 3 mm od
+            ořezu · poloměr rohů 3 mm. Pomocné linky se netisknou.
+          </p>
+        </fieldset>
+      </div>
+      <div class="preview-cards">
+        <div class="card-pairs">
+          {[design].map((design) => (
+            <div
+              class:list={[
+                'sides design grid grid-cols-1 gap-10 xl:grid-cols-2',
+                design,
+              ]}
+            >
+              {['front', 'back'].map((side) => (
+                <section
+                  class="side"
+                  aria-label={
+                    side === 'front' ? 'Přední strana' : 'Zadní strana'
+                  }
+                >
+                  <h2 class="screen-only mb-4 flex items-center gap-3 text-xs tracking-[0.15em] text-muted uppercase">
+                    <span class="text-accent">
+                      {side === 'front' ? '01' : '02'}
+                    </span>
+                    {side === 'front' ? 'Přední strana' : 'Zadní strana'}
+                  </h2>
+                  <div class="preview-window">
+                    <div class="card-object">
+                      <svg
+                        class="print-crop-marks"
+                        viewBox="0 0 106 66"
+                        fill="none"
+                        stroke="#000"
+                        stroke-width="0.18"
+                        aria-hidden="true"
+                      >
+                        <path d="M8 1v3M98 1v3M8 62v3M98 62v3M1 8h3M1 58h3M102 8h3M102 58h3" />
+                      </svg>
+                      <div class:list={['business-card', side]}>
+                        {side === 'front' ? (
+                          <>
+                            {design === 'rose' && (
+                              <>
+                                <Image
+                                  src={watercolor}
+                                  format="png"
+                                  alt=""
+                                  loading="eager"
+                                  class="pink-wash"
+                                />
+                                <Image
+                                  src={craft}
+                                  format="png"
+                                  alt=""
+                                  loading="eager"
+                                  class="craft-illustration"
+                                />
+                                <p class="front-annotation">
+                                  Tvoříme
+                                  <br />
+                                  krásnější
+                                  <br />
+                                  domov.
+                                </p>
+                              </>
+                            )}
+                            <div class="front-content">
+                              <BrandMark loading="eager" printQuality />
+                              <p class="card-motto">dům · zahrada · rodina</p>
+                              <span
+                                class="brand-rule"
+                                aria-hidden="true"
+                              ></span>
+                              {design === 'rose' && (
+                                <p class="front-description">
+                                  Kreativní dílny
+                                  <br />a inspirace pro domov.
+                                </p>
+                              )}
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div class="back-content">
+                              <p class="person-name">
+                                {person?.name ?? 'Rádi bydlíme'}
+                              </p>
+                              <p class="person-brand">
+                                {design === 'rose'
+                                  ? 'Kreativní dílny'
+                                  : 'Květiny · domov · malé radosti'}
+                              </p>
+                              <span
+                                class="contact-rule"
+                                aria-hidden="true"
+                              ></span>
+                              <address>
+                                {person && (
+                                  <a href={`tel:${person.phone}`}>
+                                    {person.phoneLabel}
+                                  </a>
+                                )}
+                                <a
+                                  href={`mailto:${person?.email ?? 'info@radibydlime.cz'}`}
+                                >
+                                  {person?.email ?? 'info@radibydlime.cz'}
+                                </a>
+                                <a href="https://www.radibydlime.cz/">
+                                  www.radibydlime.cz
+                                </a>
+                              </address>
+                              {design === 'natural' && (
+                                <p class="card-note">S láskou k přírodě.</p>
+                              )}
+                            </div>
+                            {design === 'rose' && (
+                              <>
+                                <div class="values">
+                                  <span aria-hidden="true">♥</span>
+                                  <p>
+                                    Kreativita
+                                    <br />
+                                    Příroda
+                                    <br />
+                                    Domov
+                                    <br />
+                                    Lidé
+                                  </p>
+                                </div>
+                                <Image
+                                  src={watercolor}
+                                  format="png"
+                                  alt=""
+                                  loading="eager"
+                                  class="qr-watercolor"
+                                />
+                                <a
+                                  class="contact-qr"
+                                  href={personalUrl}
+                                  aria-label="Otevřít digitální vizitku"
+                                >
+                                  <img
+                                    src={qrSource}
+                                    width="180"
+                                    height="180"
+                                    alt="QR kód — digitální vizitka"
+                                    loading="eager"
+                                  />
+                                </a>
+                                <p class="back-closing">
+                                  Malé radosti. Velký smysl.
+                                </p>
+                                <Image
+                                  src={watercolor}
+                                  format="png"
+                                  alt=""
+                                  loading="eager"
+                                  class="pink-wash"
+                                />
+                              </>
+                            )}
+                            <Image
+                              src={botanical}
+                              format="png"
+                              alt=""
+                              loading="eager"
+                              class="back-botanical"
+                            />
+                          </>
+                        )}
+                        <span
+                          class="guide trim-guide"
+                          aria-hidden="true"
+                        ></span>
+                        <span
+                          class="guide safe-guide"
+                          aria-hidden="true"
+                        ></span>
+                        <span
+                          class="guide round-guide"
+                          aria-hidden="true"
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+    <section class="screen-only mt-10 border-t border-line pt-6">
+      <div class="flex flex-wrap items-start justify-between gap-6">
+        <div class="max-w-2xl text-sm leading-relaxed text-muted">
+          <h2 class="mb-2 font-semibold text-ink">Tisk / uložit jako PDF</h2>
+          <p>
+            Tiskne se pouze vybraná varianta: dvě stránky 106 × 66 mm s
+            ořezovými značkami, nebo 96 × 56 mm bez značek (včetně spadávky).
+            Řežte podle protilehlých černých značek na výsledný rozměr 90 × 50
+            mm. V dialogu tisku použijte měřítko 100 %, žádné okraje, vypnutá
+            záhlaví a zápatí a zapnutou grafiku na pozadí.
+          </p>
+          <p class="mt-2">
+            Pro tiskárnu nejprve ověřte požadovaný formát a spadávku. Zaoblení
+            je pouze návrhová pomůcka; rohy se zaoblují až při dokončení tisku.
+            Toto není arch pro automatický oboustranný tisk.
+          </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-4">
+          <label class="flex min-h-11 cursor-pointer items-center gap-2 text-sm">
+            <input
+              id="print-crop-marks"
+              type="checkbox"
+              checked
+              class="size-4 accent-ink"
+            />
+            Ořezové značky
+          </label>
+          <button
+            data-print
+            hidden
+            type="button"
+            class="min-h-12 rounded-sm bg-ink px-6 py-3 text-paper hover:bg-accent"
+          >
+            Vytisknout vizitku
+          </button>
+        </div>
+        <noscript>
+          <p>Tisk otevřete příkazem prohlížeče (Ctrl/Cmd + P).</p>
+        </noscript>
+      </div>
+      <p data-print-status role="status" class="mt-3 text-sm text-accent"></p>
+    </section>
+  </div>
+</SiteLayout>
+
+<style>
+  .card-workspace {
+    --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Cpath fill='%236f5c4e' opacity='.085' filter='url(%23n)' d='M0 0h160v160H0z'/%3E%3C/svg%3E");
+    --linen:
+      repeating-linear-gradient(0deg, #76665509 0 1px, transparent 1px 3px),
+      repeating-linear-gradient(90deg, #76665509 0 1px, transparent 1px 4px);
+  }
+  .paper-swatch {
+    display: block;
+    width: min(100%, 4rem);
+    aspect-ratio: 1;
+    margin-inline: auto;
+    border-radius: 50%;
+    border: 4px solid #fffaf1;
+    box-shadow: 0 3px 8px #443a2520;
+    background-color: var(--paper-tone);
+  }
+  .paper-swatch.grain {
+    background-image: var(--grain);
+  }
+  .paper-swatch.linen {
+    background-image: var(--linen);
+  }
+  .paper-swatch.transparent {
+    background: conic-gradient(#e8e7e2 25%, #fff 0 50%, #e8e7e2 0 75%, #fff 0);
+    background-size: 12px 12px;
+  }
+  .paper-choice:has(input:checked) .paper-swatch {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+  .paper-choice:has(input:focus-visible) .paper-swatch {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 3px;
+  }
+  .card-workspace:has(#paper-original:checked) {
+    --card-paper: var(--color-paper);
+  }
+  .card-workspace:has(#paper-ivory:checked) {
+    --card-paper: #faf7ef;
+  }
+  .card-workspace:has(#paper-blush:checked) {
+    --card-paper: #f3e2df;
+  }
+  .card-workspace:has(#paper-rose:checked) {
+    --card-paper: #e9ceca;
+  }
+  .card-workspace:has(#paper-sage:checked) {
+    --card-paper: #e2e7db;
+  }
+  .card-workspace:has(#paper-linen:checked) {
+    --card-paper: #ece4d7;
+  }
+  .card-workspace:has(#paper-kraft:checked) {
+    --card-paper: #ddc6a6;
+  }
+  .card-workspace:has(#paper-lilac:checked) {
+    --card-paper: #e8e1ec;
+  }
+  .card-workspace:has(#paper-moss:checked) {
+    --card-paper: #e2e4d0;
+  }
+  .card-workspace:has(#paper-mist:checked) {
+    --card-paper: #e4e7e0;
+  }
+  .card-workspace:has(#paper-peach:checked) {
+    --card-paper: #f3e1d1;
+  }
+  .card-workspace:has(#texture-smooth:checked) {
+    --card-texture: none;
+  }
+  .card-workspace:has(#texture-paper:checked) {
+    --card-texture: var(--texture-paper);
+  }
+  .card-workspace:has(#texture-wash:checked) {
+    --card-texture: var(--texture-wash);
+  }
+  .card-workspace:has(#texture-fibers:checked) {
+    --card-texture: var(--texture-fibers);
+  }
+  .card-workspace:has(#texture-linen:checked) {
+    --card-texture: var(--texture-linen);
+  }
+  .texture-swatch,
+  .business-card {
+    /* Keep the paper color intact with a restrained texture overlay. */
+    --paper-veil: linear-gradient(
+      color-mix(
+        in srgb,
+        var(--card-paper, var(--color-paper)) 65%,
+        transparent
+      ),
+      color-mix(in srgb, var(--card-paper, var(--color-paper)) 65%, transparent)
+    );
+  }
+  .texture-swatch {
+    display: block;
+    width: min(100%, 7.5rem);
+    aspect-ratio: 1;
+    margin-inline: auto;
+    border-radius: 50%;
+    border: 5px solid #fffaf1;
+    box-shadow: 0 3px 8px #443a2520;
+    background-color: var(--card-paper, var(--color-paper));
+    background-size: cover;
+    background-blend-mode: normal, multiply;
+  }
+  .texture-swatch.paper {
+    background-image: var(--paper-veil), var(--texture-paper);
+  }
+  .texture-swatch.wash {
+    background-image: var(--paper-veil), var(--texture-wash);
+  }
+  .texture-swatch.fibers {
+    background-image: var(--paper-veil), var(--texture-fibers);
+  }
+  .texture-swatch.linen {
+    background-image: var(--paper-veil), var(--texture-linen);
+  }
+  .texture-choice:has(input:checked) .texture-swatch {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+  }
+  .texture-choice:has(input:focus-visible) .texture-swatch {
+    outline: 3px solid var(--color-ink);
+    outline-offset: 4px;
+  }
+  .preview-toolbar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .preview-actions {
+    order: 1;
+    flex-shrink: 0;
+    margin: 0;
+  }
+  @media (max-width: 359px) {
+    .preview-toolbar {
+      gap: 0;
+    }
+    .preview-actions,
+    .guide-controls > div {
+      gap: 2px;
+    }
+  }
+  .guide-controls {
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+  }
+  .guide-controls > div {
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+  }
+  .guide-controls label {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    justify-content: center;
+    border: 1px solid var(--color-line);
+    border-radius: 50%;
+    gap: 0;
+  }
+  .guide-controls label:has(input:checked) {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+  .guide-controls label:has(input:focus-visible) {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+  .guide-controls :is(input, .guide-label, legend) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .guide-controls > p {
+    display: none;
+  }
+  .preview-icon {
+    display: inline-grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    border: 1px solid var(--color-line);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .preview-icon[hidden] {
+    display: none;
+  }
+  .preview-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+  .preview-icon:has(input:checked),
+  .preview-icon[aria-pressed='true'] {
+    color: var(--color-paper);
+    background: var(--color-ink);
+  }
+  .preview-icon:has(input:focus-visible) {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+  .guide-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+  @media screen {
+    .card-workspace:has(#varnish-preview:checked)
+      .front-content
+      :global([data-brand-mark] > span) {
+      background-color: var(--color-ink);
+      background-image: linear-gradient(
+        115deg,
+        transparent 28%,
+        #ffffff08 39%,
+        #ffffffa8 47%,
+        #ffffffd9 49%,
+        #ffffff45 52%,
+        transparent 63%
+      );
+      background-size: 250% 100%;
+      background-position: var(--gloss-x, 50%) center;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 0.15px 0 #fff8);
+    }
+    .card-workspace:has(#varnish-preview:checked)
+      .front-content
+      :global([data-brand-mark] > span:first-child) {
+      background-color: var(--rose-ink, var(--color-accent));
+    }
+    .preview-stage:fullscreen,
+    .preview-stage.is-expanded {
+      background: var(--color-paper);
+      padding: 5rem clamp(1rem, 3vw, 3rem) clamp(1rem, 3vw, 3rem);
+      overflow: auto;
+      width: 100%;
+      height: 100%;
+    }
+    .preview-stage.is-expanded {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+    }
+    .preview-stage:is(:fullscreen, .is-expanded) .preview-toolbar {
+      position: fixed;
+      top: 4rem;
+      right: 1rem;
+      left: 1rem;
+      z-index: 20;
+      margin: 0;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+    .preview-stage:is(:fullscreen, .is-expanded) .preview-toolbar > * {
+      pointer-events: auto;
+      background: var(--color-paper);
+      border-radius: 24px;
+    }
+    .preview-stage:is(:fullscreen, .is-expanded) .preview-settings {
+      font-size: 0.85rem;
+    }
+    .preview-stage:is(:fullscreen, .is-expanded) .texture-swatch {
+      width: 3.5rem;
+      border-width: 3px;
+    }
+    .preview-stage:is(:fullscreen, .is-expanded) .paper-swatch {
+      width: 2.75rem;
+      border-width: 3px;
+    }
+    .preview-stage:is(:fullscreen, .is-expanded) .preview-settings fieldset {
+      margin-bottom: 1.25rem;
+    }
+    .preview-stage:is(:fullscreen, .is-expanded) .preview-settings .grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.5rem;
+    }
+    .preview-stage:is(:fullscreen, .is-expanded)
+      .texture-choice
+      > span:last-child {
+      display: none;
+    }
+    .preview-stage:is(:fullscreen, .is-expanded) .preview-cards {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .preview-stage:is(:fullscreen, .is-expanded) .guide-controls {
+      margin: 0;
+    }
+    .preview-stage:is(:fullscreen, .is-expanded) .guide-controls > div {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .preview-stage:is(:fullscreen, .is-expanded) .guide-controls label {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      justify-content: center;
+      border: 1px solid var(--color-line);
+      border-radius: 50%;
+      gap: 0;
+    }
+    .preview-stage:is(:fullscreen, .is-expanded)
+      .guide-controls
+      label:has(input:checked) {
+      background: var(--color-ink);
+      color: var(--color-paper);
+    }
+    .preview-stage:is(:fullscreen, .is-expanded)
+      .guide-controls
+      label:has(input:focus-visible) {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 3px;
+    }
+    .preview-stage:is(:fullscreen, .is-expanded)
+      .guide-controls
+      :is(input, .guide-label, legend) {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    .preview-stage:is(:fullscreen, .is-expanded) .guide-controls > p {
+      display: none;
+    }
+    .preview-stage:is(:fullscreen, .is-expanded) .card-pairs {
+      display: flex;
+      flex: 1;
+      align-items: safe center;
+      justify-content: center;
+      width: 100%;
+    }
+    .preview-stage:is(:fullscreen, .is-expanded) .sides {
+      grid-template-columns: minmax(0, 1fr);
+      width: 100%;
+      max-width: 38rem;
+      gap: 1.5rem;
+    }
+    @media (min-width: 900px) {
+      .preview-stage:is(:fullscreen, .is-expanded) .preview-toolbar {
+        left: calc(33.333% + 3rem);
+      }
+      .preview-stage:is(:fullscreen, .is-expanded) {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+        gap: 2rem;
+        overflow: hidden;
+      }
+      .preview-stage:is(:fullscreen, .is-expanded) .preview-settings,
+      .preview-stage:is(:fullscreen, .is-expanded) .preview-cards {
+        overflow-y: auto;
+        padding: 0.5rem;
+      }
+      .preview-stage:is(:fullscreen, .is-expanded) .preview-settings {
+        padding-right: 1.5rem;
+        border-right: 1px solid var(--color-line);
+      }
+    }
+  }
+  .preview-window {
+    padding: 10px;
+  }
+  .business-card {
+    position: relative;
+    width: 96mm;
+    height: 56mm;
+    overflow: hidden;
+    background-color: var(--card-paper, var(--color-paper));
+    background-image: var(--paper-veil), var(--card-texture, none);
+    background-size: 48mm 48mm;
+    background-blend-mode: normal, multiply;
+    color: var(--color-ink);
+    box-shadow: 0 4px 24px rgb(40 45 30 / 12%);
+  }
+  .front
+    :is(.front-content, .pink-wash, .craft-illustration, .front-annotation) {
+    translate: 0 8px;
+  }
+  .front-content {
+    position: absolute;
+    inset: 3mm;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  /* Lock the existing logo to a physical print scale, independent of viewport breakpoints. */
+  .front-content :global([data-brand-mark]) {
+    transform: scale(1.05);
+  }
+  .front-content :global([data-brand-mark] > span:last-child) {
+    font-size: 27pt;
+  }
+  .front-content :global([data-brand-mark] > span:first-child) {
+    font-size: 16pt;
+  }
+  .card-motto {
+    margin-top: 5mm;
+    font-size: 7pt;
+    letter-spacing: 0.55mm;
+    text-transform: uppercase;
+  }
+  .brand-rule {
+    width: 12mm;
+    height: 0.2mm;
+    background: var(--color-line);
+    margin-top: 3mm;
+  }
+  .back-content {
+    position: absolute;
+    top: 8mm;
+    left: 10mm;
+    z-index: 1;
+  }
+  .person-name {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 17pt;
+    line-height: 1.1;
+  }
+  .person-brand {
+    margin-top: 1.8mm;
+    font-size: 7pt;
+    letter-spacing: 0.5mm;
+    text-transform: uppercase;
+  }
+  .contact-rule {
+    display: block;
+    width: 10mm;
+    height: 0.2mm;
+    background: var(--color-line);
+    margin: 3mm 0;
+  }
+  address {
+    display: flex;
+    flex-direction: column;
+    gap: 1.7mm;
+    font-size: 9pt;
+    line-height: 1.3;
+    font-style: normal;
+  }
+  .card-note {
+    margin-top: 3mm;
+    color: var(--color-accent);
+    font-family: var(--font-annotation);
+    font-size: 13pt;
+  }
+  .back-botanical {
+    position: absolute;
+    right: 7mm;
+    bottom: 6mm;
+    width: 18mm;
+    height: 37mm;
+    object-fit: contain;
+    opacity: 1;
+  }
+  .design {
+    display: grid;
+  }
+  .rose {
+    --rose-ink: #94645f;
+  }
+  .rose .front-content {
+    inset: 10mm auto auto 5.5mm;
+    width: 40mm;
+    height: 37mm;
+    justify-content: flex-start;
+    z-index: 2;
+  }
+  .rose .front-content :global([data-brand-mark]) {
+    width: max-content;
+    flex-shrink: 0;
+    white-space: nowrap;
+    transform: scale(0.84);
+    transform-origin: center top;
+    margin-bottom: -4mm;
+  }
+  .rose .front-content :global([data-brand-mark] > span:first-child) {
+    color: var(--rose-ink);
+  }
+  .rose .card-motto {
+    font-size: 5.7pt;
+    letter-spacing: 0.4mm;
+    margin-top: 5mm;
+    white-space: nowrap;
+  }
+  .rose .brand-rule {
+    background: var(--rose-ink);
+    width: 7mm;
+    margin-top: 2.5mm;
+  }
+  .front-description {
+    margin-top: 2.5mm;
+    font-size: 8pt;
+    line-height: 1.45;
+    text-align: center;
+  }
+  .craft-illustration {
+    z-index: 1;
+    position: absolute;
+    right: 4mm;
+    bottom: 5mm;
+    width: 50mm;
+    height: 44mm;
+    object-fit: contain;
+  }
+  .front-annotation {
+    z-index: 2;
+    position: absolute;
+    top: 5.5mm;
+    right: 7mm;
+    font-family: var(--font-annotation);
+    font-size: 13.5pt;
+    line-height: 1.05;
+    text-align: center;
+    transform: rotate(-8deg);
+  }
+  .pink-wash {
+    position: absolute;
+    pointer-events: none;
+    z-index: 0;
+    object-fit: contain;
+    opacity: 0.65;
+  }
+  .front .pink-wash {
+    right: 4mm;
+    bottom: 4mm;
+    width: 43mm;
+    height: 41mm;
+  }
+  .rose .back-content {
+    top: 8mm;
+    left: 23mm;
+  }
+  .rose .person-name {
+    font-size: 14pt;
+  }
+  .rose .person-brand {
+    color: var(--rose-ink);
+    font-size: 6.8pt;
+    letter-spacing: 0.6mm;
+  }
+  .rose address {
+    font-size: 8pt;
+    gap: 1.8mm;
+  }
+  .rose .contact-rule {
+    background: var(--rose-ink);
+    margin: 3.5mm 0;
+    width: 6mm;
+  }
+  .rose .back-botanical {
+    left: calc(-15mm);
+    right: auto;
+    bottom: -5mm;
+    width: 38mm;
+    height: auto;
+    z-index: 1;
+  }
+  .back .pink-wash {
+    left: -49mm;
+    top: -5mm;
+    width: 78mm;
+    height: auto;
+    transform: rotate(-18deg);
+  }
+  .values {
+    z-index: 2;
+    position: absolute;
+    top: 7mm;
+    bottom: 8mm;
+    right: 6mm;
+    width: 18mm;
+    text-align: center;
+  }
+  .values::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -3mm;
+    border-left: 0.2mm solid var(--rose-ink);
+  }
+  .values > span {
+    color: var(--rose-ink);
+    font-size: 10pt;
+  }
+  .values p {
+    margin-top: 2mm;
+    font-size: 5.5pt;
+    line-height: 1.75;
+    letter-spacing: 0.5mm;
+    text-transform: uppercase;
+  }
+  .contact-qr {
+    position: absolute;
+    z-index: 2;
+    right: 6mm;
+    bottom: 6mm;
+    display: block;
+    width: 18mm;
+    height: 18mm;
+    border-radius: 1mm;
+    overflow: hidden;
+    box-shadow: 0 0.4mm 1.2mm #79534812;
+  }
+  .qr-watercolor {
+    position: absolute;
+    z-index: 0;
+    right: -1mm;
+    bottom: -2mm;
+    width: 31mm;
+    height: 32mm;
+    object-fit: contain;
+    opacity: 0.45;
+    transform: rotate(14deg);
+    pointer-events: none;
+  }
+  .contact-qr img {
+    width: 100%;
+    height: 100%;
+  }
+  .back-closing {
+    z-index: 2;
+    position: absolute;
+    bottom: 7mm;
+    left: 23mm;
+    color: var(--rose-ink);
+    font-size: 5.5pt;
+    letter-spacing: 0.55mm;
+    text-transform: uppercase;
+  }
+  .guide {
+    display: none;
+    position: absolute;
+    pointer-events: none;
+    z-index: 5;
+  }
+  .trim-guide {
+    inset: 3mm;
+    border: 1px solid #a44f30;
+  }
+  .safe-guide {
+    inset: 6mm;
+    border: 1px dashed #397263;
+  }
+  .round-guide {
+    inset: 3mm;
+    border: 1px dashed #765995;
+    border-radius: 3mm;
+  }
+  .card-workspace:has(#trim-guide:checked) .trim-guide,
+  .card-workspace:has(#safe-guide:checked) .safe-guide,
+  .card-workspace:has(#round-guide:checked) .round-guide {
+    display: block;
+  }
+  .card-workspace:has(#transparent-bg:checked) .business-card {
+    background: transparent;
+  }
+  @media screen {
+    .card-workspace:has(#transparent-bg:checked) .preview-window {
+      background-color: #fff;
+      background-image: conic-gradient(
+        #e8e7e2 25%,
+        transparent 0 50%,
+        #e8e7e2 0 75%,
+        transparent 0
+      );
+      background-size: 16px 16px;
+    }
+  }
+  @media screen {
+    .card-workspace:has(#real-preview:checked) .preview-window {
+      padding: 24px;
+      background: transparent;
+      border-radius: 4px;
+    }
+    .card-workspace:has(#real-preview:checked) .business-card {
+      clip-path: inset(3mm);
+      box-shadow: none;
+    }
+    .card-workspace:has(#real-preview:checked) .card-object {
+      width: fit-content;
+      margin-inline: auto;
+      transform: rotate(-2deg);
+      filter: drop-shadow(0 0.25mm 0 #c2b6a5) drop-shadow(0 0.2mm 0 #e8dfd1)
+        drop-shadow(0 2px 2px rgb(58 43 28 / 16%))
+        drop-shadow(0 9px 9px rgb(58 43 28 / 20%));
+    }
+    .card-workspace:has(#real-preview:checked) .side:last-child .card-object {
+      transform: rotate(2deg);
+    }
+    .card-workspace:has(#real-preview:checked) .guide {
+      display: none;
+    }
+    .card-workspace:has(#real-preview:checked):has(#round-guide:checked)
+      .business-card {
+      clip-path: inset(3mm round 3mm);
+    }
+  }
+  .print-crop-marks {
+    display: none;
+  }
+  @media print {
+    :global(html:has(#transparent-bg:checked)),
+    :global(body:has(#transparent-bg:checked)) {
+      background: transparent !important;
+    }
+
+    @page {
+      size: 96mm 56mm;
+      margin: 0;
+    }
+    @page card-with-marks {
+      size: 106mm 66mm;
+      margin: 0;
+    }
+    :global(html),
+    :global(body) {
+      margin: 0 !important;
+      padding: 0 !important;
+      background: white;
+    }
+    :global(body > a),
+    .screen-only,
+    .guide {
+      display: none !important;
+    }
+    :global(main#obsah) {
+      width: 96mm !important;
+      max-width: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    :global(html:has(#print-crop-marks:checked) main#obsah) {
+      width: 106mm !important;
+    }
+    .preview-stage,
+    .preview-cards,
+    .card-pairs,
+    .card-workspace,
+    .sides,
+    .side,
+    .preview-window {
+      display: block;
+      margin: 0;
+      padding: 0;
+      max-width: none;
+      overflow: visible;
+      position: static;
+      height: auto;
+    }
+    .business-card {
+      zoom: 1 !important;
+      box-shadow: none;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+    .card-object {
+      position: relative;
+      box-sizing: border-box;
+      width: 96mm;
+      height: 56mm;
+      padding: 0;
+    }
+    .card-workspace:has(#print-crop-marks:checked) .card-object {
+      width: 106mm;
+      height: 66mm;
+      padding: 5mm;
+    }
+    .print-crop-marks {
+      position: absolute;
+      inset: 0;
+      width: 106mm;
+      height: 66mm;
+      pointer-events: none;
+    }
+    .card-workspace:has(#print-crop-marks:checked) .print-crop-marks {
+      display: block;
+    }
+    .card-workspace:has(#print-crop-marks:checked) .side {
+      page: card-with-marks;
+    }
+    .design {
+      display: block;
+    }
+    .side {
+      break-inside: avoid;
+      break-after: page;
+    }
+    .side:last-child {
+      break-after: auto;
+    }
+  }
+</style>
+<script>
+  const varnish = document.querySelector<HTMLInputElement>('#varnish-preview');
+  if (varnish) {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    document
+      .querySelectorAll<HTMLElement>('.business-card.front')
+      .forEach((card) => {
+        card.addEventListener('pointermove', (event) => {
+          if (!varnish.checked || reducedMotion.matches) return;
+          const bounds = card.getBoundingClientRect();
+          const position = Math.max(
+            0,
+            Math.min(100, ((event.clientX - bounds.left) / bounds.width) * 100),
+          );
+          card.style.setProperty('--gloss-x', `${position}%`);
+        });
+        card.addEventListener('pointerleave', () =>
+          card.style.removeProperty('--gloss-x'),
+        );
+      });
+  }
+  const stage = document.querySelector<HTMLElement>('[data-preview-stage]')!;
+  const fullscreen =
+    document.querySelector<HTMLButtonElement>('[data-fullscreen]')!;
+  fullscreen.hidden = false;
+  let previousOverflow = '';
+  const updateFullscreen = () => {
+    const active =
+      document.fullscreenElement === stage ||
+      stage.classList.contains('is-expanded');
+    fullscreen.setAttribute('aria-pressed', String(active));
+    fullscreen.setAttribute(
+      'aria-label',
+      active ? 'Zavřít celou obrazovku' : 'Celá obrazovka',
+    );
+    fullscreen.title = active ? 'Zavřít celou obrazovku' : 'Celá obrazovka';
+  };
+  const closeFallback = () => {
+    stage.classList.remove('is-expanded');
+    document.documentElement.style.overflow = previousOverflow;
+    updateFullscreen();
+    fullscreen.focus({ preventScroll: true });
+  };
+  fullscreen.addEventListener('click', async () => {
+    if (document.fullscreenElement === stage) {
+      await document.exitFullscreen();
+      return;
+    }
+    if (stage.classList.contains('is-expanded')) {
+      closeFallback();
+      return;
+    }
+    try {
+      if (!stage.requestFullscreen) throw new Error('Fullscreen unavailable');
+      await stage.requestFullscreen();
+    } catch {
+      previousOverflow = document.documentElement.style.overflow;
+      document.documentElement.style.overflow = 'hidden';
+      stage.classList.add('is-expanded');
+    }
+    updateFullscreen();
+  });
+  document.addEventListener('fullscreenchange', updateFullscreen);
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && stage.classList.contains('is-expanded'))
+      closeFallback();
+  });
+
+  // Fit the physical card to the preview only; print always retains its mm size.
+  const observer = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      if (!entry.contentRect.width) continue;
+      const card = entry.target.querySelector<HTMLElement>('.business-card')!;
+      card.style.zoom = String(
+        Math.min(1.4, entry.contentRect.width / ((96 * 96) / 25.4)),
+      );
+    }
+  });
+  document
+    .querySelectorAll('.preview-window')
+    .forEach((element) => observer.observe(element));
+  const button = document.querySelector<HTMLButtonElement>('[data-print]')!;
+  const status = document.querySelector<HTMLElement>('[data-print-status]')!;
+  button.hidden = false;
+  button.addEventListener('click', async () => {
+    button.disabled = true;
+    status.textContent = 'Připravujeme tisk…';
+    try {
+      await document.fonts.ready;
+      await Promise.all(
+        [
+          ...document.querySelectorAll<HTMLImageElement>('.business-card img'),
+        ].map((image) => image.decode()),
+      );
+      status.textContent = '';
+      window.print();
+    } catch {
+      status.textContent =
+        'Ilustrace se nepodařilo načíst. Obnovte stránku a zkuste tisk znovu.';
+    } finally {
+      button.disabled = false;
+    }
+  });
+</script>

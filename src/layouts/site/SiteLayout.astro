@@ -18,9 +18,10 @@ interface Props {
   title: string;
   description: string;
   minimal?: boolean;
+  noindex?: boolean;
 }
 
-const { title, description, minimal = false } = Astro.props;
+const { title, description, minimal = false, noindex = false } = Astro.props;
 const currentYear = new Date().getUTCFullYear();
 
 const footerLinks = [
@@ -99,6 +100,7 @@ const discoveryLinks = [
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link
       rel="preload"
       href={bodyFont}

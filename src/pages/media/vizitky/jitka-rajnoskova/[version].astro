@@ -1,0 +1,17 @@
+---
+import BusinessCardWorkspace from '../../../../components/business-card-workspace/BusinessCardWorkspace.astro';
+import { getContact } from '../../../../content/contacts/query';
+
+export async function getStaticPaths() {
+  const { data: contact } = await getContact('contact-jitka');
+  return [
+    {
+      params: { version: 'v1' },
+      props: { design: 'natural' as const, contact },
+    },
+    { params: { version: 'v2' }, props: { design: 'rose' as const, contact } },
+  ];
+}
+---
+
+<BusinessCardWorkspace {...Astro.props} />

@@ -5,6 +5,7 @@ import brandBotanical from '../../assets/decor/brand-botanical.png';
 interface Props {
   class?: string;
   loading?: 'eager' | 'lazy';
+  printQuality?: boolean;
   size?: 'compact' | 'large';
   variant?: 'stacked' | 'inline';
 }
@@ -12,6 +13,7 @@ interface Props {
 const {
   class: className,
   loading = 'lazy',
+  printQuality = false,
   size = 'compact',
   variant = 'stacked',
 } = Astro.props;
@@ -34,7 +36,7 @@ const textSize =
   </span>
   <span
     class:list={[
-      'block font-body font-semibold leading-[0.78] tracking-[-0.045em] text-ink',
+      'block text-left font-body font-semibold leading-[0.78] tracking-[-0.045em] text-ink',
       textSize,
     ]}
   >
@@ -49,7 +51,8 @@ const textSize =
               src={brandBotanical}
               alt=""
               aria-hidden="true"
-              width={42}
+              width={printQuality ? brandBotanical.width : 42}
+              format={printQuality ? 'png' : 'webp'}
               loading={loading}
               class="absolute right-[-0.45em] bottom-[0.62em] h-auto w-[1.05em] opacity-90"
             />
@@ -65,7 +68,8 @@ const textSize =
             src={brandBotanical}
             alt=""
             aria-hidden="true"
-            width={42}
+            width={printQuality ? brandBotanical.width : 42}
+            format={printQuality ? 'png' : 'webp'}
             loading={loading}
             class="absolute right-[-0.45em] bottom-[0.62em] h-auto w-[1.05em] opacity-90"
           />
